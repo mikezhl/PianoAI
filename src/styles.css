@@ -125,6 +125,7 @@ button:focus-visible {
   border-width: 2px;
   border-radius: 8px;
   font-weight: 700;
+  text-decoration: none;
   white-space: nowrap;
 }
 
@@ -149,6 +150,19 @@ button:focus-visible {
 .library-button,
 .tempo-button {
   border-color: #c5cbd3;
+}
+
+.github-link {
+  width: 42px;
+  border: 0;
+  padding: 0;
+  color: #000000;
+}
+
+.github-link:hover {
+  border: 0;
+  background: #f6f7f9;
+  color: #000000;
 }
 
 .tempo-control {
