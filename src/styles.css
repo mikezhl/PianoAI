@@ -60,9 +60,12 @@ button:focus-visible {
 }
 
 .app-shell {
+  --topbar-height: 64px;
+  --keyboard-height: max(176px, 31vh);
+  --controls-gap: 14px;
   position: relative;
   display: grid;
-  grid-template-rows: 64px minmax(0, 1fr) minmax(176px, 31vh);
+  grid-template-rows: var(--topbar-height) minmax(0, 1fr) var(--keyboard-height);
   width: 100%;
   height: 100%;
   background: #ffffff;
@@ -75,7 +78,7 @@ button:focus-visible {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 18px;
-  height: 64px;
+  height: var(--topbar-height);
   padding: 10px 18px;
   background: #ffffff;
   border-bottom: 1px solid #e4e7ec;
@@ -91,6 +94,11 @@ button:focus-visible {
 
 .topbar-right {
   justify-content: flex-end;
+}
+
+.topbar-right .flat-button {
+  font-size: 14px;
+  line-height: 1;
 }
 
 .score-title {
@@ -148,6 +156,7 @@ button:focus-visible {
 .import-button,
 .midi-button,
 .library-button,
+.score-zoom-button,
 .tempo-button {
   border-color: #c5cbd3;
 }
@@ -165,8 +174,14 @@ button:focus-visible {
   color: #000000;
 }
 
+.score-zoom-control,
 .tempo-control {
   position: relative;
+}
+
+.score-zoom-button {
+  min-width: 106px;
+  padding-inline: 12px 10px;
 }
 
 .tempo-button {
@@ -180,6 +195,15 @@ button:focus-visible {
   color: #2563eb;
 }
 
+.score-zoom-button:hover,
+.score-zoom-button.active {
+  border-color: #68707c;
+  background: #f6f7f9;
+  color: #16181d;
+}
+
+.score-zoom-button svg:first-child,
+.score-zoom-button-chevron,
 .tempo-button svg:first-child,
 .tempo-button-chevron {
   color: #68707c;
@@ -195,16 +219,29 @@ button:focus-visible {
   color: #2563eb;
 }
 
+.score-zoom-button:hover svg:first-child,
+.score-zoom-button:hover .score-zoom-button-chevron,
+.score-zoom-button.active svg:first-child,
+.score-zoom-button.active .score-zoom-button-chevron {
+  color: #16181d;
+}
+
+.score-zoom-button.active .score-zoom-button-chevron,
 .tempo-button.active .tempo-button-chevron {
   transform: rotate(180deg);
 }
 
+.score-zoom-button-value,
 .tempo-button-value,
 .tempo-option-value {
   min-width: 32px;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   text-align: right;
+}
+
+.score-zoom-button-value {
+  min-width: 42px;
 }
 
 .tempo-button-unit,
@@ -245,6 +282,7 @@ button:focus-visible {
 
 .midi-panel,
 .library-panel,
+.score-zoom-panel,
 .tempo-panel {
   position: absolute;
   top: 48px;
@@ -290,6 +328,94 @@ button:focus-visible {
   right: auto;
   left: 0;
   width: min(210px, calc(100vw - 20px));
+}
+
+.score-zoom-panel {
+  right: auto;
+  left: 0;
+  width: min(184px, calc(100vw - 20px));
+  padding: 10px 12px;
+}
+
+.score-zoom-slider-row {
+  display: flex;
+  align-items: center;
+}
+
+.score-zoom-range {
+  display: block;
+  width: 100%;
+  height: 26px;
+  margin: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.score-zoom-range::-webkit-slider-runnable-track {
+  height: 5px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--accent-mid) 0 var(--score-zoom-progress, 38%),
+    var(--line) var(--score-zoom-progress, 38%) 100%
+  );
+}
+
+.score-zoom-range::-webkit-slider-thumb {
+  width: 16px;
+  height: 16px;
+  margin-top: -5.5px;
+  -webkit-appearance: none;
+  appearance: none;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 2px 7px rgba(22, 24, 29, 0.12);
+}
+
+.score-zoom-range::-moz-range-track {
+  height: 5px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+.score-zoom-range::-moz-range-progress {
+  height: 5px;
+  border-radius: 999px;
+  background: var(--accent-mid);
+}
+
+.score-zoom-range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 2px 7px rgba(22, 24, 29, 0.12);
+}
+
+.score-zoom-range:hover::-webkit-slider-runnable-track {
+  background: linear-gradient(
+    90deg,
+    var(--accent-mid) 0 var(--score-zoom-progress, 38%),
+    var(--line-strong) var(--score-zoom-progress, 38%) 100%
+  );
+}
+
+.score-zoom-range:hover::-moz-range-track {
+  background: var(--line-strong);
+}
+
+.score-zoom-range:hover::-moz-range-progress {
+  background: var(--accent-mid);
+}
+
+.score-zoom-range:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
 }
 
 .library-panel {
@@ -364,7 +490,7 @@ button:focus-visible {
 
 .notice-strip {
   position: absolute;
-  top: 64px;
+  top: var(--topbar-height);
   left: 50%;
   z-index: 20;
   max-width: min(720px, calc(100vw - 32px));
@@ -381,7 +507,7 @@ button:focus-visible {
 
 .practice-controls {
   position: absolute;
-  bottom: calc(max(176px, 31vh) + 14px);
+  bottom: calc(var(--keyboard-height) + var(--controls-gap));
   left: 50%;
   z-index: 11;
   display: inline-flex;
@@ -606,8 +732,8 @@ button:focus-visible {
   position: absolute;
   z-index: 8;
   display: inline-flex;
-  width: 26px;
-  min-height: 34px;
+  width: 36px;
+  min-height: 42px;
   align-items: center;
   justify-content: center;
   padding: 0;
@@ -632,8 +758,8 @@ button:focus-visible {
 }
 
 .selection-resize-handle svg {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   stroke-width: 3;
 }
 
@@ -670,18 +796,21 @@ button:focus-visible {
   position: absolute;
   z-index: 7;
   display: inline-flex;
-  width: 24px;
-  height: 24px;
+  width: 40px;
+  height: 40px;
   align-items: center;
   justify-content: center;
   padding: 0;
-  border: 0;
+  border: 1px solid #cfe1ff;
   border-radius: 50%;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.94);
   color: #2563eb;
   cursor: pointer;
+  box-shadow: 0 6px 18px rgba(22, 24, 29, 0.1);
   transform: translateX(-50%) scale(1);
   transition:
+    background 120ms ease,
+    border-color 120ms ease,
     color 120ms ease,
     transform 120ms ease;
 }
@@ -693,6 +822,8 @@ button:focus-visible {
 }
 
 .selection-action-button:hover {
+  border-color: #2563eb;
+  background: #edf4ff;
   color: #1d4ed8;
   transform: translateX(-50%) scale(1.08);
 }
@@ -700,6 +831,16 @@ button:focus-visible {
 .selection-action-button:focus-visible {
   outline: 2px solid #2563eb;
   outline-offset: 1px;
+}
+
+.app-shell[data-has-coarse-pointer="true"] .selection-resize-handle {
+  width: 44px;
+  min-height: 44px;
+}
+
+.app-shell[data-has-coarse-pointer="true"] .selection-action-button {
+  width: 44px;
+  height: 44px;
 }
 
 .midi-note-layer {
@@ -871,63 +1012,121 @@ button:focus-visible {
   }
 }
 
-@media (max-width: 900px) {
-  .app-shell {
-    grid-template-rows: 60px minmax(0, 1fr) minmax(190px, 36vh);
-  }
-
-  .topbar {
-    grid-template-columns: minmax(0, 1fr) auto;
-    height: 60px;
-    gap: 8px;
-    padding-inline: 10px;
-  }
-
-  .flat-button {
-    min-width: 42px;
-    padding: 0 11px;
-  }
-
-  .flat-button span:not(.status-dot):not(.tempo-button-value),
-  .score-title {
-    display: none;
-  }
-
-  .tempo-button {
-    min-width: 76px;
-    padding-inline: 8px;
-    gap: 6px;
-  }
-
-  .practice-controls {
-    bottom: calc(max(190px, 36vh) + 12px);
-    min-height: 44px;
-    gap: 8px;
-    padding: 0;
-  }
-
-  .practice-play-button {
-    width: 44px;
-    height: 44px;
-  }
-
-  .practice-hand-button {
-    min-width: 54px;
-    height: 40px;
-    padding: 0 8px;
-  }
-
-  .notice-strip {
-    top: 60px;
-  }
+.app-shell[data-layout-mode="natural-long-edge"] {
+  width: 100%;
+  height: 100%;
+  transform: none;
 }
 
-@media (orientation: portrait) and (max-width: 900px) {
-  .app-shell {
-    grid-template-rows: 60px minmax(0, 1fr) minmax(210px, 38vh);
-  }
+.app-shell[data-layout-mode="rotated-long-edge"] {
+  width: var(--viewport-long-edge);
+  height: var(--viewport-short-edge);
+  transform: rotate(90deg) translateY(-100%);
+  transform-origin: top left;
+}
 
-  .practice-controls {
-    bottom: calc(max(210px, 38vh) + 12px);
-  }
+.app-shell[data-size-class="compact"] {
+  --topbar-height: 52px;
+  --keyboard-height: clamp(96px, calc(var(--viewport-short-edge) * 0.26), 128px);
+  --controls-gap: 8px;
+}
+
+.app-shell[data-size-class="regular"] {
+  --topbar-height: 56px;
+  --keyboard-height: clamp(118px, calc(var(--viewport-short-edge) * 0.22), 168px);
+  --controls-gap: 10px;
+}
+
+.app-shell[data-size-class="compact"] .topbar,
+.app-shell[data-size-class="regular"] .topbar {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  padding: 7px 10px;
+}
+
+.app-shell[data-size-class="compact"] .flat-button,
+.app-shell[data-size-class="regular"] .flat-button {
+  min-height: 38px;
+  min-width: 42px;
+  padding: 0 10px;
+  gap: 6px;
+}
+
+.app-shell[data-size-class="compact"] .topbar-right .flat-button,
+.app-shell[data-size-class="regular"] .topbar-right .flat-button {
+  font-size: 13px;
+}
+
+.app-shell[data-size-class="compact"] .flat-button span:not(.status-dot):not(.tempo-button-value):not(.score-zoom-button-value),
+.app-shell[data-size-class="compact"] .score-title {
+  display: none;
+}
+
+.app-shell[data-size-class="compact"] .score-zoom-button {
+  min-width: 82px;
+  padding-inline: 8px;
+  gap: 6px;
+}
+
+.app-shell[data-size-class="compact"] .tempo-button {
+  min-width: 76px;
+  padding-inline: 8px;
+  gap: 6px;
+}
+
+.app-shell[data-size-class="compact"] .midi-panel,
+.app-shell[data-size-class="compact"] .library-panel,
+.app-shell[data-size-class="compact"] .score-zoom-panel,
+.app-shell[data-size-class="compact"] .tempo-panel,
+.app-shell[data-size-class="regular"] .midi-panel,
+.app-shell[data-size-class="regular"] .library-panel,
+.app-shell[data-size-class="regular"] .score-zoom-panel,
+.app-shell[data-size-class="regular"] .tempo-panel {
+  top: 44px;
+}
+
+.app-shell[data-size-class="compact"] .practice-controls,
+.app-shell[data-size-class="regular"] .practice-controls {
+  min-height: 44px;
+  gap: 8px;
+  padding: 0;
+}
+
+.app-shell[data-size-class="compact"] .practice-play-button,
+.app-shell[data-size-class="regular"] .practice-play-button {
+  width: 44px;
+  height: 44px;
+}
+
+.app-shell[data-size-class="compact"] .practice-hand-button,
+.app-shell[data-size-class="regular"] .practice-hand-button {
+  min-width: 54px;
+  height: 38px;
+  padding: 0 8px;
+}
+
+.app-shell[data-size-class="compact"] .keyboard,
+.app-shell[data-size-class="regular"] .keyboard {
+  min-height: 0;
+}
+
+.app-shell[data-size-class="compact"] .black-key,
+.app-shell[data-size-class="regular"] .black-key {
+  height: 58%;
+}
+
+.app-shell[data-size-class="compact"] .piano-key span,
+.app-shell[data-size-class="regular"] .piano-key span {
+  min-width: 22px;
+  height: 19px;
+  margin-bottom: 5px;
+  font-size: 10px;
+}
+
+.app-shell[data-size-class="compact"] .black-key span,
+.app-shell[data-size-class="regular"] .black-key span {
+  min-width: 20px;
+  height: 17px;
+  margin-bottom: 4px;
+  font-size: 9px;
 }

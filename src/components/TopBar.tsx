@@ -1,5 +1,6 @@
-import { Check, ChevronDown, Gauge, Keyboard, Music, Upload } from "lucide-react";
-import type { RefObject } from "react";
+import { Check, ChevronDown, Gauge, Keyboard, Music, Upload, ZoomIn } from "lucide-react";
+import type { CSSProperties, RefObject } from "react";
+import { MAX_SCORE_ZOOM, MIN_SCORE_ZOOM, SCORE_ZOOM_STEP } from "../lib/scoreZoom";
 import type { MidiState } from "../types";
 import type { MusicXmlLibraryItem } from "virtual:musicxml-library";
 
@@ -8,16 +9,22 @@ interface TopBarProps {
   libraryItems: MusicXmlLibraryItem[];
   selectedLibraryItemId: string | null;
   midi: MidiState;
+  scoreZoom: number;
+  scoreZoomMax: number;
+  scoreZoomPanelOpen: boolean;
   playbackBpm: number;
   tempoPanelOpen: boolean;
   libraryPanelOpen: boolean;
   selectedInputName: string | null;
   midiPanelOpen: boolean;
+  scoreZoomControlRef: RefObject<HTMLDivElement | null>;
   tempoControlRef: RefObject<HTMLDivElement | null>;
   libraryControlRef: RefObject<HTMLDivElement | null>;
   midiControlRef: RefObject<HTMLDivElement | null>;
+  onToggleScoreZoomPanel: () => void;
   onToggleTempoPanel: () => void;
   onToggleLibraryPanel: () => void;
+  onScoreZoomChange: (zoom: number) => void;
   onPlaybackBpmChange: (bpm: number) => void;
   onImportScore: () => void;
   onToggleMidiPanel: () => void;
@@ -52,16 +59,22 @@ export default function TopBar({
   libraryItems,
   selectedLibraryItemId,
   midi,
+  scoreZoom,
+  scoreZoomMax,
+  scoreZoomPanelOpen,
   playbackBpm,
   tempoPanelOpen,
   libraryPanelOpen,
   selectedInputName,
   midiPanelOpen,
+  scoreZoomControlRef,
   tempoControlRef,
   libraryControlRef,
   midiControlRef,
+  onToggleScoreZoomPanel,
   onToggleTempoPanel,
   onToggleLibraryPanel,
+  onScoreZoomChange,
   onPlaybackBpmChange,
   onImportScore,
   onToggleMidiPanel,
@@ -72,6 +85,11 @@ export default function TopBar({
   const playbackBpmOptions = PLAYBACK_BPM_OPTIONS.includes(playbackBpm)
     ? PLAYBACK_BPM_OPTIONS
     : [...PLAYBACK_BPM_OPTIONS, playbackBpm].sort((a, b) => a - b);
+  const scoreZoomRange = Math.max(SCORE_ZOOM_STEP, scoreZoomMax - MIN_SCORE_ZOOM);
+  const scoreZoomProgress = Math.max(
+    0,
+    Math.min(100, ((scoreZoom - MIN_SCORE_ZOOM) / scoreZoomRange) * 100),
+  );
 
   return (
     <header className="topbar">
@@ -92,6 +110,42 @@ export default function TopBar({
         >
           <GitHubIcon />
         </a>
+
+        <div className="score-zoom-control" ref={scoreZoomControlRef}>
+          <button
+            type="button"
+            className={`flat-button score-zoom-button ${scoreZoomPanelOpen ? "active" : ""}`}
+            onClick={onToggleScoreZoomPanel}
+            aria-label={`谱面缩放 ${scoreZoom}%`}
+            aria-haspopup="true"
+            aria-controls="score-zoom-panel"
+            aria-expanded={scoreZoomPanelOpen}
+            title="谱面缩放"
+          >
+            <ZoomIn size={20} aria-hidden="true" />
+            <span className="score-zoom-button-value">{scoreZoom}%</span>
+            <ChevronDown size={16} className="score-zoom-button-chevron" aria-hidden="true" />
+          </button>
+
+          {scoreZoomPanelOpen ? (
+            <div id="score-zoom-panel" className="score-zoom-panel" role="group" aria-label="谱面缩放">
+              <div className="score-zoom-slider-row">
+                <input
+                  id="score-zoom-range"
+                  className="score-zoom-range"
+                  type="range"
+                  min={MIN_SCORE_ZOOM}
+                  max={Math.max(MIN_SCORE_ZOOM, Math.min(MAX_SCORE_ZOOM, scoreZoomMax))}
+                  step={SCORE_ZOOM_STEP}
+                  value={scoreZoom}
+                  style={{ "--score-zoom-progress": `${scoreZoomProgress}%` } as CSSProperties}
+                  onChange={(event) => onScoreZoomChange(Number(event.target.value))}
+                  aria-label="谱面缩放"
+                />
+              </div>
+            </div>
+          ) : null}
+        </div>
 
         <div className="tempo-control" ref={tempoControlRef}>
           <button

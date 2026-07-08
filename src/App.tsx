@@ -1,4 +1,5 @@
-import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { ChangeEvent, CSSProperties } from "react";
 import PianoKeyboard from "./components/PianoKeyboard";
 import PracticeControls from "./components/PracticeControls";
 import ScoreViewer from "./components/ScoreViewer";
@@ -25,6 +26,7 @@ import {
   setSelectionHands,
 } from "./lib/practice";
 import { clampPlaybackBpm, DEFAULT_PLAYBACK_BPM, ticksToMilliseconds } from "./lib/playbackTiming";
+import { clampScoreZoom, floorScoreZoomToStep, MAX_SCORE_ZOOM, MIN_SCORE_ZOOM } from "./lib/scoreZoom";
 import { Hand, ScoreData, SelectionState } from "./types";
 import { MUSICXML_LIBRARY, type MusicXmlLibraryItem } from "virtual:musicxml-library";
 
@@ -32,8 +34,79 @@ function playbackDelayMs(durationTicks: number, playbackBpm: number): number {
   return Math.max(1, ticksToMilliseconds(durationTicks, playbackBpm));
 }
 
+type AppLayoutMode = "natural-long-edge" | "rotated-long-edge";
+type AppSizeClass = "desktop" | "compact" | "regular";
+
+interface ViewportProfile {
+  layoutMode: AppLayoutMode;
+  sizeClass: AppSizeClass;
+  hasCoarsePointer: boolean;
+  hasFinePointer: boolean;
+  allowBoxSelect: boolean;
+  longEdge: number;
+  shortEdge: number;
+}
+
+function queryMedia(query: string): boolean {
+  return typeof window !== "undefined" && window.matchMedia(query).matches;
+}
+
+function getViewportProfile(): ViewportProfile {
+  const viewport = typeof window !== "undefined" ? window.visualViewport : null;
+  const width = Math.max(1, Math.round(viewport?.width ?? window.innerWidth));
+  const height = Math.max(1, Math.round(viewport?.height ?? window.innerHeight));
+  const longEdge = Math.max(width, height);
+  const shortEdge = Math.min(width, height);
+  const isPortrait = height > width;
+  const hasFinePointer = queryMedia("(any-pointer: fine)") || queryMedia("(pointer: fine)");
+  const hasCoarsePointer =
+    queryMedia("(any-pointer: coarse)") || queryMedia("(pointer: coarse)") || navigator.maxTouchPoints > 0;
+  const sizeClass: AppSizeClass =
+    shortEdge < 700 ? "compact" : (hasCoarsePointer || isPortrait) && shortEdge < 1100 ? "regular" : "desktop";
+
+  return {
+    layoutMode: isPortrait ? "rotated-long-edge" : "natural-long-edge",
+    sizeClass,
+    hasCoarsePointer,
+    hasFinePointer,
+    allowBoxSelect: hasFinePointer,
+    longEdge,
+    shortEdge,
+  };
+}
+
+function useViewportProfile(): ViewportProfile {
+  const [profile, setProfile] = useState(getViewportProfile);
+
+  useEffect(() => {
+    const updateProfile = () => setProfile(getViewportProfile());
+    const mediaQueries = [
+      window.matchMedia("(any-pointer: fine)"),
+      window.matchMedia("(any-pointer: coarse)"),
+      window.matchMedia("(pointer: fine)"),
+      window.matchMedia("(pointer: coarse)"),
+    ];
+
+    window.addEventListener("resize", updateProfile);
+    window.addEventListener("orientationchange", updateProfile);
+    window.visualViewport?.addEventListener("resize", updateProfile);
+    mediaQueries.forEach((query) => query.addEventListener("change", updateProfile));
+    updateProfile();
+
+    return () => {
+      window.removeEventListener("resize", updateProfile);
+      window.removeEventListener("orientationchange", updateProfile);
+      window.visualViewport?.removeEventListener("resize", updateProfile);
+      mediaQueries.forEach((query) => query.removeEventListener("change", updateProfile));
+    };
+  }, []);
+
+  return profile;
+}
+
 export default function App() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const scoreZoomControlRef = useRef<HTMLDivElement | null>(null);
   const tempoControlRef = useRef<HTMLDivElement | null>(null);
   const libraryControlRef = useRef<HTMLDivElement | null>(null);
   const midiControlRef = useRef<HTMLDivElement | null>(null);
@@ -58,7 +131,15 @@ export default function App() {
     range: null,
     loopIndex: 0,
   });
+  const viewportProfile = useViewportProfile();
   const { midi, selectedInputName, requestAccess, selectInput } = useMidi();
+  const appShellStyle = useMemo(
+    () => ({
+      "--viewport-long-edge": `${viewportProfile.longEdge}px`,
+      "--viewport-short-edge": `${viewportProfile.shortEdge}px`,
+    }) as CSSProperties,
+    [viewportProfile.longEdge, viewportProfile.shortEdge],
+  );
 
   const loadScoreXml = useCallback((xml: string, fileName: string) => {
     const parsed = parseMusicXml(xml, fileName);
@@ -69,6 +150,7 @@ export default function App() {
     setCurrentStepIndex(0);
     setSelection({ range: null, loopIndex: 0 });
     setHoveredGroupId(null);
+    setScoreZoomMax(MAX_SCORE_ZOOM);
   }, []);
 
   const stepTicks = useMemo(() => getStepTicks(score), [score]);
@@ -99,6 +181,9 @@ export default function App() {
     [followLeft, followRight, loopTargetGroups],
   );
   const hoveredGroup = score?.noteGroups.find((group) => group.id === hoveredGroupId) ?? null;
+  const [scoreZoom, setScoreZoom] = useState(100);
+  const [scoreZoomMax, setScoreZoomMax] = useState(MAX_SCORE_ZOOM);
+  const [scoreZoomPanelOpen, setScoreZoomPanelOpen] = useState(false);
 
   const targetGroups = useMemo(() => {
     if (loopTargetStep) {
@@ -278,7 +363,7 @@ export default function App() {
   }, [moveSelection]);
 
   useEffect(() => {
-    if (!tempoPanelOpen && !libraryPanelOpen && !midiPanelOpen) {
+    if (!scoreZoomPanelOpen && !tempoPanelOpen && !libraryPanelOpen && !midiPanelOpen) {
       return;
     }
 
@@ -293,6 +378,11 @@ export default function App() {
         return;
       }
 
+      const scoreZoomControl = scoreZoomControlRef.current;
+      if (scoreZoomControl && scoreZoomControl.contains(target)) {
+        return;
+      }
+
       const libraryControl = libraryControlRef.current;
       if (libraryControl && libraryControl.contains(target)) {
         return;
@@ -303,6 +393,7 @@ export default function App() {
         return;
       }
 
+      setScoreZoomPanelOpen(false);
       setTempoPanelOpen(false);
       setLibraryPanelOpen(false);
       setMidiPanelOpen(false);
@@ -310,6 +401,7 @@ export default function App() {
 
     function handleEscape(event: KeyboardEvent) {
       if (event.key === "Escape") {
+        setScoreZoomPanelOpen(false);
         setTempoPanelOpen(false);
         setLibraryPanelOpen(false);
         setMidiPanelOpen(false);
@@ -322,7 +414,7 @@ export default function App() {
       document.removeEventListener("pointerdown", handlePointerDown);
       window.removeEventListener("keydown", handleEscape);
     };
-  }, [tempoPanelOpen, libraryPanelOpen, midiPanelOpen]);
+  }, [scoreZoomPanelOpen, tempoPanelOpen, libraryPanelOpen, midiPanelOpen]);
 
   useEffect(() => {
     const previous = new Set(lastAudibleMidiNotesRef.current);
@@ -424,6 +516,15 @@ export default function App() {
     waitingGroups.length,
   ]);
 
+  const handleScoreZoomLimitChange = useCallback((nextMaxZoom: number) => {
+    const nextLimit = Math.max(
+      MIN_SCORE_ZOOM,
+      Math.min(MAX_SCORE_ZOOM, floorScoreZoomToStep(nextMaxZoom)),
+    );
+    setScoreZoomMax((current) => (current === nextLimit ? current : nextLimit));
+    setScoreZoom((current) => (current > nextLimit ? nextLimit : current));
+  }, []);
+
   function toggleHand(hand: Hand) {
     if (hand === "left") {
       setFollowLeft((current) => !current);
@@ -456,6 +557,7 @@ export default function App() {
   }
 
   function toggleMidiPanel() {
+    setScoreZoomPanelOpen(false);
     setTempoPanelOpen(false);
     setLibraryPanelOpen(false);
     setMidiPanelOpen((current) => !current);
@@ -465,15 +567,28 @@ export default function App() {
   }
 
   function toggleLibraryPanel() {
+    setScoreZoomPanelOpen(false);
     setTempoPanelOpen(false);
     setMidiPanelOpen(false);
     setLibraryPanelOpen((current) => !current);
   }
 
   function toggleTempoPanel() {
+    setScoreZoomPanelOpen(false);
     setLibraryPanelOpen(false);
     setMidiPanelOpen(false);
     setTempoPanelOpen((current) => !current);
+  }
+
+  function toggleScoreZoomPanel() {
+    setTempoPanelOpen(false);
+    setLibraryPanelOpen(false);
+    setMidiPanelOpen(false);
+    setScoreZoomPanelOpen((current) => !current);
+  }
+
+  function handleScoreZoomChange(nextZoom: number) {
+    setScoreZoom(clampScoreZoom(nextZoom, scoreZoomMax));
   }
 
   function handlePlaybackBpmChange(nextBpm: number) {
@@ -518,7 +633,14 @@ export default function App() {
   }
 
   return (
-    <main className="app-shell">
+    <main
+      className="app-shell"
+      data-layout-mode={viewportProfile.layoutMode}
+      data-size-class={viewportProfile.sizeClass}
+      data-has-coarse-pointer={viewportProfile.hasCoarsePointer ? "true" : "false"}
+      data-has-fine-pointer={viewportProfile.hasFinePointer ? "true" : "false"}
+      style={appShellStyle}
+    >
       <input
         ref={fileInputRef}
         type="file"
@@ -532,18 +654,25 @@ export default function App() {
         libraryItems={MUSICXML_LIBRARY}
         selectedLibraryItemId={selectedLibraryItemId}
         midi={midi}
+        scoreZoom={scoreZoom}
+        scoreZoomMax={scoreZoomMax}
+        scoreZoomPanelOpen={scoreZoomPanelOpen}
         playbackBpm={playbackBpm}
         tempoPanelOpen={tempoPanelOpen}
         libraryPanelOpen={libraryPanelOpen}
         selectedInputName={selectedInputName}
         midiPanelOpen={midiPanelOpen}
+        scoreZoomControlRef={scoreZoomControlRef}
         tempoControlRef={tempoControlRef}
         libraryControlRef={libraryControlRef}
         midiControlRef={midiControlRef}
+        onToggleScoreZoomPanel={toggleScoreZoomPanel}
         onToggleTempoPanel={toggleTempoPanel}
         onToggleLibraryPanel={toggleLibraryPanel}
+        onScoreZoomChange={handleScoreZoomChange}
         onPlaybackBpmChange={handlePlaybackBpmChange}
         onImportScore={() => {
+          setScoreZoomPanelOpen(false);
           setTempoPanelOpen(false);
           setLibraryPanelOpen(false);
           setMidiPanelOpen(false);
@@ -558,6 +687,9 @@ export default function App() {
 
       <ScoreViewer
         score={score}
+        scoreZoom={scoreZoom / 100}
+        onScoreZoomLimitChange={handleScoreZoomLimitChange}
+        allowBoxSelect={viewportProfile.allowBoxSelect}
         activeGroups={scoreActiveGroups}
         followActive={isPlaying}
         selectedIds={selectedIds}

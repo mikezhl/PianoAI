@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp } from "lucide-react";
 import type { GroupLayout, Hand, NoteGroup, ScoreData } from "../types";
 import { prepareMusicXmlForPracticeDisplay } from "../lib/displayXml";
+import { MAX_SCORE_ZOOM, MIN_SCORE_ZOOM } from "../lib/scoreZoom";
 import {
   HIT_GAP,
   buildScoreOverlayLayout,
@@ -14,6 +15,9 @@ import type { ScoreGroupLayout, ScoreStaffGeometry } from "../lib/scoreOverlay";
 
 interface ScoreViewerProps {
   score: ScoreData | null;
+  scoreZoom: number;
+  onScoreZoomLimitChange: (maxZoom: number) => void;
+  allowBoxSelect: boolean;
   activeGroups: NoteGroup[];
   followActive: boolean;
   selectedIds: string[];
@@ -40,6 +44,7 @@ interface PointerSession {
   currentY: number;
   scrollLeft: number;
   moved: boolean;
+  pointerType: string;
   startGroupId: string | null;
   extend: boolean;
   resizeEdge?: SelectionResizeEdge;
@@ -48,8 +53,12 @@ interface PointerSession {
 
 const EMPTY_STAFF_GEOMETRY: ScoreStaffGeometry = { right: null, left: null };
 const HANDS: Hand[] = ["right", "left"];
-const SELECTION_ACTION_TOP_OFFSET = 28;
-const SELECTION_ACTION_BOTTOM_OFFSET = 4;
+const POINTER_MOVE_THRESHOLD_MOUSE = 6;
+const POINTER_MOVE_THRESHOLD_TOUCH = 12;
+const SELECTION_ACTION_TOP_OFFSET = 48;
+const SELECTION_ACTION_BOTTOM_OFFSET = 6;
+const SELECTION_ACTION_SIZE = 44;
+const SELECTION_ACTION_VIEWPORT_PAD = 8;
 
 interface SelectionAction {
   key: string;
@@ -113,8 +122,46 @@ function medianNumber(values: number[]): number | null {
   return sorted.length % 2 === 0 ? (sorted[middle - 1] + sorted[middle]) / 2 : sorted[middle];
 }
 
+function clampNumber(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
+}
+
+function withUntransformedApp<T>(element: HTMLElement, measure: () => T): T {
+  const appShell = element.closest<HTMLElement>(".app-shell");
+  if (!appShell || appShell.dataset.layoutMode !== "rotated-long-edge") {
+    return measure();
+  }
+
+  const previousTransform = appShell.style.transform;
+  appShell.style.transform = "none";
+  appShell.getBoundingClientRect();
+
+  try {
+    return measure();
+  } finally {
+    appShell.style.transform = previousTransform;
+  }
+}
+
+function getLayoutOffsetWithinAncestor(element: HTMLElement, ancestor: HTMLElement): { x: number; y: number } {
+  let x = 0;
+  let y = 0;
+  let current: HTMLElement | null = element;
+
+  while (current && current !== ancestor) {
+    x += current.offsetLeft;
+    y += current.offsetTop;
+    current = current.offsetParent as HTMLElement | null;
+  }
+
+  return { x, y };
+}
+
 export default function ScoreViewer({
   score,
+  scoreZoom,
+  onScoreZoomLimitChange,
+  allowBoxSelect,
   activeGroups,
   followActive,
   selectedIds,
@@ -133,11 +180,15 @@ export default function ScoreViewer({
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const pointerRef = useRef<PointerSession | null>(null);
-  const longPressRef = useRef<number | null>(null);
+  const scoreZoomRef = useRef(scoreZoom);
+  const onScoreZoomLimitChangeRef = useRef(onScoreZoomLimitChange);
+  const lastPublishedScoreZoomLimitRef = useRef<number | null>(null);
+  const scheduleMeasureRef = useRef<(() => void) | null>(null);
   const svgTargetsByGroupRef = useRef<Map<string, Element[]>>(new Map());
   const coloredElementsRef = useRef<Set<Element>>(new Set());
   const [layouts, setLayouts] = useState<ScoreGroupLayout[]>([]);
   const [surfaceSize, setSurfaceSize] = useState({ width: 1600, height: 360 });
+  const [scoreViewportHeight, setScoreViewportHeight] = useState(360);
   const [scoreFrame, setScoreFrame] = useState({ top: 0, height: 260 });
   const [staffGeometry, setStaffGeometry] = useState<ScoreStaffGeometry>(EMPTY_STAFF_GEOMETRY);
   const [selectionBox, setSelectionBox] = useState<GroupLayout | null>(null);
@@ -212,12 +263,18 @@ export default function ScoreViewer({
     const rightBounds = boundsFromLayouts(selectedLayouts.filter((layout) => layout.hand === "right"));
     const leftBounds = boundsFromLayouts(selectedLayouts.filter((layout) => layout.hand === "left"));
     const actions: SelectionAction[] = [];
+    const minActionY = SELECTION_ACTION_VIEWPORT_PAD;
+    const maxActionY = Math.max(
+      minActionY,
+      scoreViewportHeight - SELECTION_ACTION_SIZE - SELECTION_ACTION_VIEWPORT_PAD,
+    );
+    const clampActionY = (y: number) => clampNumber(y, minActionY, maxActionY);
 
     if (selectedHands.length === 1 && selectedHands[0] === "right" && hasHandInRange("left") && rightBounds) {
       actions.push({
         key: "expand-down",
         x: centerX,
-        y: rightBounds.y + rightBounds.height + SELECTION_ACTION_BOTTOM_OFFSET,
+        y: clampActionY(rightBounds.y + rightBounds.height + SELECTION_ACTION_BOTTOM_OFFSET),
         label: "扩选到左右手",
         icon: "down",
         onClick: onExpandSelectionToBothHands,
@@ -228,7 +285,7 @@ export default function ScoreViewer({
       actions.push({
         key: "expand-up",
         x: centerX,
-        y: Math.max(4, leftBounds.y - SELECTION_ACTION_TOP_OFFSET),
+        y: clampActionY(leftBounds.y - SELECTION_ACTION_TOP_OFFSET),
         label: "扩选到左右手",
         icon: "up",
         onClick: onExpandSelectionToBothHands,
@@ -240,7 +297,7 @@ export default function ScoreViewer({
         actions.push({
           key: "shrink-left",
           x: centerX,
-          y: Math.max(4, rightBounds.y - SELECTION_ACTION_TOP_OFFSET),
+          y: clampActionY(rightBounds.y - SELECTION_ACTION_TOP_OFFSET),
           label: "仅保留低音",
           icon: "down",
           onClick: () => onShrinkSelectionToHand("left"),
@@ -251,7 +308,7 @@ export default function ScoreViewer({
         actions.push({
           key: "shrink-right",
           x: centerX,
-          y: leftBounds.y + leftBounds.height + SELECTION_ACTION_BOTTOM_OFFSET,
+          y: clampActionY(leftBounds.y + leftBounds.height + SELECTION_ACTION_BOTTOM_OFFSET),
           label: "仅保留高音",
           icon: "up",
           onClick: () => onShrinkSelectionToHand("right"),
@@ -265,6 +322,7 @@ export default function ScoreViewer({
     onExpandSelectionToBothHands,
     onShrinkSelectionToHand,
     score,
+    scoreViewportHeight,
     selectedGroups,
     selectedHands,
     selectedIdSet,
@@ -278,33 +336,62 @@ export default function ScoreViewer({
     );
   }, [activeGroups, layoutById]);
 
+  function publishScoreZoomLimit(maxZoom: number) {
+    const normalized = Math.max(MIN_SCORE_ZOOM, Math.min(MAX_SCORE_ZOOM, maxZoom));
+    if (
+      lastPublishedScoreZoomLimitRef.current != null
+      && Math.abs(lastPublishedScoreZoomLimitRef.current - normalized) < 0.5
+    ) {
+      return;
+    }
+
+    lastPublishedScoreZoomLimitRef.current = normalized;
+    onScoreZoomLimitChangeRef.current(normalized);
+  }
+
+  useEffect(() => {
+    onScoreZoomLimitChangeRef.current = onScoreZoomLimitChange;
+  }, [onScoreZoomLimitChange]);
+
+  useEffect(() => {
+    scoreZoomRef.current = scoreZoom;
+    scheduleMeasureRef.current?.();
+  }, [scoreZoom]);
+
   useEffect(() => {
     let disposed = false;
     let animationFrameId: number | null = null;
+    let resizeObserver: ResizeObserver | null = null;
+    let handleViewportChange: (() => void) | null = null;
     const host = osmdHostRef.current;
     if (!host) {
       return;
     }
+    const hostElement = host;
 
-    host.replaceChildren();
+    hostElement.replaceChildren();
     svgTargetsByGroupRef.current = new Map();
     setLayouts([]);
     setSurfaceSize({ width: 1600, height: 360 });
+    setScoreViewportHeight(360);
     setScoreFrame({ top: 0, height: 260 });
     setStaffGeometry(EMPTY_STAFF_GEOMETRY);
     setScrollProgress(1);
     setRenderError(null);
 
     if (!score) {
+      publishScoreZoomLimit(MAX_SCORE_ZOOM);
       return;
     }
+    const scoreData = score;
 
     const failCurrentRender = () => {
       if (disposed) {
         return;
       }
 
-      host.replaceChildren();
+      hostElement.replaceChildren();
+      resizeObserver?.disconnect();
       svgTargetsByGroupRef.current = new Map();
       setLayouts([]);
       setRenderError("谱面渲染失败");
@@ -312,7 +399,7 @@ export default function ScoreViewer({
 
     void import("opensheetmusicdisplay")
       .then(async ({ OpenSheetMusicDisplay }) => {
-        const osmd = new OpenSheetMusicDisplay(host, {
+        const osmd = new OpenSheetMusicDisplay(hostElement, {
           backend: "svg",
           autoResize: false,
           drawCredits: false,
@@ -337,21 +424,87 @@ export default function ScoreViewer({
           renderSingleHorizontalStaffline: true,
         });
 
-        await osmd.load(prepareMusicXmlForPracticeDisplay(score.xml), score.title);
+        await osmd.load(prepareMusicXmlForPracticeDisplay(scoreData.xml), scoreData.title);
         if (disposed) {
           return;
         }
 
-        osmd.Zoom = 1.05;
+        const getViewportHeight = () => scrollRef.current?.clientHeight ?? hostElement.getBoundingClientRect().height;
+        const getBaseZoom = () => {
+          const viewportHeight = getViewportHeight();
+          if (viewportHeight < 260) {
+            return 0.78;
+          }
+          if (viewportHeight < 340) {
+            return 0.9;
+          }
+          return 1.05;
+        };
+
+        osmd.Zoom = getBaseZoom() * scoreZoomRef.current;
         osmd.render();
 
-        const measureAndPlace = () => {
+        function scheduleMeasure() {
+          if (disposed) {
+            return;
+          }
+
+          if (animationFrameId != null) {
+            cancelAnimationFrame(animationFrameId);
+          }
+          animationFrameId = requestAnimationFrame(measureAndPlace);
+        }
+
+        function applyTargetZoom(svg: SVGSVGElement, hostRect: DOMRect, viewportHeight: number): boolean {
+          const rect = svg.getBoundingClientRect();
+          const currentZoom = osmd.Zoom || 1;
+          const unscaledWidth = rect.width / currentZoom;
+          const unscaledHeight = rect.height / currentZoom;
+          if (unscaledWidth <= 0 || unscaledHeight <= 0) {
+            return false;
+          }
+
+          const verticalSafeArea = viewportHeight < 260 ? 22 : 28;
+          const maxScoreHeight = Math.max(150, viewportHeight - verticalSafeArea * 2);
+          const heightFitZoom = maxScoreHeight / unscaledHeight;
+          const maxBaseZoom = 2.3;
+          const desiredWidth = hostRect.width * (viewportHeight < 260 ? 0.52 : 0.68);
+          let baseZoom = getBaseZoom();
+
+          if (unscaledHeight * baseZoom > maxScoreHeight) {
+            baseZoom = heightFitZoom;
+          }
+
+          if (unscaledHeight * baseZoom < maxScoreHeight - 2 && unscaledWidth * baseZoom < desiredWidth) {
+            baseZoom = Math.min(maxBaseZoom, desiredWidth / unscaledWidth, heightFitZoom);
+          }
+
+          const maxUserZoom = Math.min(
+            MAX_SCORE_ZOOM / 100,
+            (maxBaseZoom * 1.5) / baseZoom,
+            heightFitZoom / baseZoom,
+          );
+          publishScoreZoomLimit(maxUserZoom * 100);
+
+          const requestedZoom = baseZoom * scoreZoomRef.current;
+          const targetZoom = Math.min(maxBaseZoom * 1.5, requestedZoom, heightFitZoom);
+          if (Math.abs(targetZoom - currentZoom) < 0.003) {
+            return false;
+          }
+
+          osmd.Zoom = targetZoom;
+          osmd.render();
+          return true;
+        }
+
+        function measureAndPlace() {
+          animationFrameId = null;
           if (disposed) {
             return;
           }
 
           try {
-            const svg = host.querySelector("svg") as SVGSVGElement | null;
+            const svg = hostElement.querySelector("svg") as SVGSVGElement | null;
             const overlay = overlayRef.current;
             if (!svg || !overlay) {
               return;
@@ -360,29 +513,43 @@ export default function ScoreViewer({
             svg.setAttribute("preserveAspectRatio", "xMinYMin meet");
             svg.style.display = "block";
 
-            const rect = svg.getBoundingClientRect();
-            const hostRect = host.getBoundingClientRect();
-            const viewportHeight = scrollRef.current?.clientHeight ?? hostRect.height;
-            const desiredWidth = hostRect.width * 0.68;
-            if (rect.width > 0 && rect.width < desiredWidth && osmd.Zoom < 2.3) {
-              osmd.Zoom = Math.min(2.3, osmd.Zoom * (desiredWidth / rect.width));
-              osmd.render();
-              animationFrameId = requestAnimationFrame(measureAndPlace);
-              return;
-            }
+            let shouldRemeasure = false;
+            withUntransformedApp(hostElement, () => {
+              const hostRect = hostElement.getBoundingClientRect();
+              const viewportHeight = getViewportHeight();
+              setScoreViewportHeight(viewportHeight);
+              if (applyTargetZoom(svg, hostRect, viewportHeight)) {
+                shouldRemeasure = true;
+                return;
+              }
 
-            const overlayLayout = buildScoreOverlayLayout(host, overlay, svg, osmd, score, viewportHeight);
-            svgTargetsByGroupRef.current = overlayLayout.svgTargets;
-            setLayouts(overlayLayout.layouts);
-            setScoreFrame(overlayLayout.scoreFrame);
-            setStaffGeometry(overlayLayout.staffGeometry);
-            setSurfaceSize(overlayLayout.surfaceSize);
+              const overlayLayout = buildScoreOverlayLayout(hostElement, overlay, svg, osmd, scoreData, viewportHeight);
+              svgTargetsByGroupRef.current = overlayLayout.svgTargets;
+              setLayouts(overlayLayout.layouts);
+              setScoreFrame(overlayLayout.scoreFrame);
+              setStaffGeometry(overlayLayout.staffGeometry);
+              setSurfaceSize(overlayLayout.surfaceSize);
+            });
+
+            if (shouldRemeasure) {
+              scheduleMeasure();
+            }
           } catch {
             failCurrentRender();
           }
-        };
+        }
 
-        animationFrameId = requestAnimationFrame(measureAndPlace);
+        scheduleMeasureRef.current = scheduleMeasure;
+        resizeObserver = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(scheduleMeasure);
+        resizeObserver?.observe(hostElement);
+        if (scrollRef.current) {
+          resizeObserver?.observe(scrollRef.current);
+        }
+
+        handleViewportChange = scheduleMeasure;
+        window.addEventListener("resize", handleViewportChange);
+        window.addEventListener("orientationchange", handleViewportChange);
+        scheduleMeasure();
       })
       .catch(() => {
         failCurrentRender();
@@ -390,8 +557,16 @@ export default function ScoreViewer({
 
     return () => {
       disposed = true;
+      resizeObserver?.disconnect();
+      if (handleViewportChange) {
+        window.removeEventListener("resize", handleViewportChange);
+        window.removeEventListener("orientationchange", handleViewportChange);
+      }
       if (animationFrameId != null) {
         cancelAnimationFrame(animationFrameId);
+      }
+      if (scheduleMeasureRef.current === handleViewportChange) {
+        scheduleMeasureRef.current = null;
       }
     };
   }, [score]);
@@ -514,6 +689,22 @@ export default function ScoreViewer({
       return { x: 0, y: 0 };
     }
 
+    const appShell = overlay.closest<HTMLElement>(".app-shell");
+    if (appShell?.dataset.layoutMode === "rotated-long-edge") {
+      const transform = window.getComputedStyle(appShell).transform;
+      if (transform && transform !== "none") {
+        const appPoint = new DOMPoint(event.clientX, event.clientY).matrixTransform(
+          new DOMMatrixReadOnly(transform).inverse(),
+        );
+        const overlayOffset = getLayoutOffsetWithinAncestor(overlay, appShell);
+        const scrollLeft = scrollRef.current?.scrollLeft ?? 0;
+        return {
+          x: appPoint.x - overlayOffset.x + scrollLeft,
+          y: appPoint.y - overlayOffset.y,
+        };
+      }
+    }
+
     const rect = overlay.getBoundingClientRect();
     return {
       x: event.clientX - rect.left,
@@ -548,13 +739,6 @@ export default function ScoreViewer({
 
     session.lastResizeTick = tick;
     onResizeSelectionBoundary(session.resizeEdge, tick);
-  }
-
-  function clearLongPress() {
-    if (longPressRef.current != null) {
-      window.clearTimeout(longPressRef.current);
-      longPressRef.current = null;
-    }
   }
 
   function updateSelectionBox(session: PointerSession) {
@@ -611,6 +795,7 @@ export default function ScoreViewer({
         currentY: point.y,
         scrollLeft: scrollRef.current?.scrollLeft ?? 0,
         moved: false,
+        pointerType: event.pointerType,
         startGroupId: null,
         extend: false,
         resizeEdge,
@@ -619,7 +804,7 @@ export default function ScoreViewer({
       return;
     }
 
-    if (event.pointerType === "touch") {
+    if (event.pointerType !== "mouse" || !allowBoxSelect) {
       const session: PointerSession = {
         mode: "pan-pending",
         pointerId: event.pointerId,
@@ -629,16 +814,11 @@ export default function ScoreViewer({
         currentY: point.y,
         scrollLeft: scrollRef.current?.scrollLeft ?? 0,
         moved: false,
+        pointerType: event.pointerType,
         startGroupId: targetGroupId,
         extend: event.shiftKey,
       };
       pointerRef.current = session;
-      longPressRef.current = window.setTimeout(() => {
-        if (pointerRef.current?.pointerId === event.pointerId) {
-          pointerRef.current.mode = "select";
-          updateSelectionBox(pointerRef.current);
-        }
-      }, 520);
       return;
     }
 
@@ -651,6 +831,7 @@ export default function ScoreViewer({
       currentY: point.y,
       scrollLeft: scrollRef.current?.scrollLeft ?? 0,
       moved: false,
+      pointerType: event.pointerType,
       startGroupId: targetGroupId,
       extend: event.shiftKey,
     };
@@ -667,7 +848,9 @@ export default function ScoreViewer({
     const dy = point.y - session.startY;
     session.currentX = point.x;
     session.currentY = point.y;
-    session.moved = session.moved || Math.abs(dx) > 6 || Math.abs(dy) > 6;
+    const moveThreshold =
+      session.pointerType === "mouse" ? POINTER_MOVE_THRESHOLD_MOUSE : POINTER_MOVE_THRESHOLD_TOUCH;
+    session.moved = session.moved || Math.abs(dx) > moveThreshold || Math.abs(dy) > moveThreshold;
 
     if (session.mode === "resize-selection") {
       updateSelectionResize(session);
@@ -675,7 +858,6 @@ export default function ScoreViewer({
     }
 
     if (session.mode === "pan-pending" && session.moved) {
-      clearLongPress();
       session.mode = "pan";
     }
 
@@ -693,7 +875,6 @@ export default function ScoreViewer({
 
   function handlePointerUp(event: React.PointerEvent<HTMLDivElement>) {
     const session = pointerRef.current;
-    clearLongPress();
     pointerRef.current = null;
 
     if (!session || session.pointerId !== event.pointerId) {
@@ -705,8 +886,12 @@ export default function ScoreViewer({
       return;
     }
 
-    if (session.mode === "pan-pending" && !session.moved && session.startGroupId) {
-      onGroupSelect(session.startGroupId, session.extend);
+    if (session.mode === "pan-pending" && !session.moved) {
+      if (session.startGroupId) {
+        onGroupSelect(session.startGroupId, session.extend);
+      } else {
+        onClearSelection();
+      }
       return;
     }
 
