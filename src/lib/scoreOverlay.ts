@@ -6,6 +6,11 @@ export interface ScoreGroupLayout extends GroupLayout {
   measureIndex: number;
   measureX: number;
   measureRight: number;
+  startTick: number;
+  glyphX: number;
+  glyphY: number;
+  glyphWidth: number;
+  glyphHeight: number;
   centerX: number;
   timeX: number;
   segmentX: number;
@@ -69,10 +74,30 @@ interface OsmdLike {
   };
 }
 
+interface RawMeasureLayout {
+  x: number;
+  right: number;
+  begin: number;
+}
+
 interface MeasureLayout {
   x: number;
   right: number;
   contentX: number;
+}
+
+export interface TrackSegmentInput {
+  groupId: string;
+  startTick: number;
+  anchorX: number;
+  trackLeft: number;
+  trackRight: number;
+}
+
+export interface TrackSegment {
+  groupId: string;
+  x: number;
+  width: number;
 }
 
 function isGraphicalMeasure(measure: GraphicalMeasureLike | null | undefined): measure is GraphicalMeasureLike {
@@ -87,12 +112,13 @@ interface ScoreOverlayLayout {
   svgTargets: Map<string, Element[]>;
 }
 
-export const HIT_GAP = 8;
+export const HIT_GAP = 0;
 
 const hands: Hand[] = ["right", "left"];
 const FRAME_VERTICAL_PAD = 18;
 const STAFF_FRAME_PAD = 2.1;
 const BASS_FRAME_BOTTOM_PAD = 5.2;
+const MIN_TRACK_SEGMENT_WIDTH = 1;
 
 export function rectsIntersect(a: DOMRect | GroupLayout, b: GroupLayout): boolean {
   const ax1 = "left" in a ? a.left : a.x;
@@ -105,6 +131,24 @@ export function rectsIntersect(a: DOMRect | GroupLayout, b: GroupLayout): boolea
   const by2 = b.y + b.height;
 
   return ax1 < bx2 && ax2 > bx1 && ay1 < by2 && ay2 > by1;
+}
+
+function glyphLayout(layout: ScoreGroupLayout): GroupLayout {
+  return {
+    groupId: layout.groupId,
+    x: layout.glyphX,
+    y: layout.glyphY,
+    width: layout.glyphWidth,
+    height: layout.glyphHeight,
+  };
+}
+
+function boxContainsPoint(box: GroupLayout, x: number, y: number): boolean {
+  return x >= box.x && x <= box.x + box.width && y >= box.y && y <= box.y + box.height;
+}
+
+function trackAnchorIntersectsBox(layout: ScoreGroupLayout, box: GroupLayout): boolean {
+  return boxContainsPoint(box, layout.timeX, layout.y + layout.height * 0.5);
 }
 
 function parseSvgDimension(value: string | null): number {
@@ -209,11 +253,7 @@ function getNoteSvgElement(note: unknown): Element | null {
     getVFNoteSVG?: () => Element;
   };
 
-  try {
-    return maybeNote.getSVGGElement?.() ?? maybeNote.getVFNoteSVG?.() ?? null;
-  } catch {
-    return null;
-  }
+  return maybeNote.getVFNoteSVG?.() ?? maybeNote.getSVGGElement?.() ?? null;
 }
 
 function collectEntrySvgElements(entry: unknown): Element[] {
@@ -232,6 +272,56 @@ function collectEntrySvgElements(entry: unknown): Element[] {
   }
 
   return [...elements];
+}
+
+function staffSplitY(staffBands: StaffBands): number | null {
+  const rightBottom = bandBottom(staffBands.hit.right);
+  const leftTop = staffBands.hit.left.top;
+  return rightBottom <= leftTop ? (rightBottom + leftTop) / 2 : null;
+}
+
+function pointBelongsToHand(centerY: number, hand: Hand, staffBands: StaffBands): boolean {
+  const splitY = staffSplitY(staffBands);
+  if (splitY == null) {
+    return true;
+  }
+
+  return hand === "right" ? centerY < splitY : centerY >= splitY;
+}
+
+function getNoteheadSvgChildren(element: Element): Element[] {
+  const children = Array.from(element.querySelectorAll(".vf-notehead path"));
+  return element.matches(".vf-notehead path") ? [element, ...children] : children;
+}
+
+function getElementBounds(
+  groupId: string,
+  elements: Element[],
+  overlayRect: DOMRect,
+  hand: Hand,
+  staffBands: StaffBands,
+): GroupLayout | null {
+  return elements.reduce<GroupLayout | null>((bounds, element) => {
+    return getNoteheadSvgChildren(element).reduce<GroupLayout | null>((childBounds, child) => {
+      const rect = child.getBoundingClientRect();
+      if (rect.width < 1 && rect.height < 1) {
+        return childBounds;
+      }
+
+      const centerY = rect.top - overlayRect.top + rect.height * 0.5;
+      if (!pointBelongsToHand(centerY, hand, staffBands)) {
+        return childBounds;
+      }
+
+      return mergeBounds(groupId, childBounds, {
+        groupId,
+        x: rect.left - overlayRect.left,
+        y: rect.top - overlayRect.top,
+        width: rect.width,
+        height: rect.height,
+      });
+    }, bounds);
+  }, null);
 }
 
 function mergeBounds(groupId: string, current: GroupLayout | null, next: GroupLayout | null): GroupLayout | null {
@@ -257,29 +347,22 @@ function mergeBounds(groupId: string, current: GroupLayout | null, next: GroupLa
   };
 }
 
-function getElementBounds(groupId: string, elements: Element[], overlayRect: DOMRect): GroupLayout | null {
-  return elements.reduce<GroupLayout | null>((bounds, element) => {
-    const rect = element.getBoundingClientRect();
-    if (rect.width < 1 && rect.height < 1) {
-      return bounds;
-    }
-
-    return mergeBounds(groupId, bounds, {
-      groupId,
-      x: rect.left - overlayRect.left,
-      y: rect.top - overlayRect.top,
-      width: rect.width,
-      height: rect.height,
-    });
-  }, null);
-}
-
 function getStaffLineYClusters(host: HTMLElement, overlayRect: DOMRect): number[] {
   return clusterNumbers(
     Array.from(host.querySelectorAll("svg path"))
       .map((path) => path.getBoundingClientRect())
       .filter((rect) => rect.width > 100 && rect.height <= 2)
       .map((rect) => rect.top - overlayRect.top),
+    3,
+  );
+}
+
+function getMeasureBarlineXClusters(host: HTMLElement, overlayRect: DOMRect): number[] {
+  return clusterNumbers(
+    Array.from(host.querySelectorAll("svg rect"))
+      .map((rect) => rect.getBoundingClientRect())
+      .filter((rect) => rect.width > 0 && rect.width <= 4 && rect.height > 100)
+      .map((rect) => rect.left - overlayRect.left),
     3,
   );
 }
@@ -374,46 +457,142 @@ function applyHorizontalSegments(layouts: ScoreGroupLayout[]): ScoreGroupLayout[
       });
 
     for (const measureLayouts of byMeasure.values()) {
-      measureLayouts.sort((a, b) => a.centerX - b.centerX);
+      const segments = new Map(
+        buildContiguousTrackSegments(
+          measureLayouts.map((layout) => ({
+            groupId: layout.groupId,
+            startTick: layout.startTick,
+            anchorX: layout.centerX,
+            trackLeft: layout.measureX,
+            trackRight: layout.measureRight,
+          })),
+        ).map((segment) => [segment.groupId, segment]),
+      );
 
-      measureLayouts.forEach((layout, index) => {
-        const previous = measureLayouts[index - 1];
-        const following = measureLayouts[index + 1];
-        const leftLimit = layout.measureX;
-        const rightLimit = layout.measureRight;
-        const measureWidth = rightLimit - leftLimit;
-        const previousDistance = previous ? layout.centerX - previous.centerX : 72;
-        const followingDistance = following ? following.centerX - layout.centerX : 72;
-        const rawLeftEdge = previous
-          ? (previous.centerX + layout.centerX) / 2
-          : layout.centerX - Math.max(34, Math.min(74, followingDistance * 0.5));
-        const rawRightEdge = following
-          ? (layout.centerX + following.centerX) / 2
-          : layout.centerX + Math.max(34, Math.min(74, previousDistance * 0.5));
-        const minSegmentWidth = Math.min(14, measureWidth);
-        let leftEdge = clamp(rawLeftEdge, leftLimit, rightLimit);
-        let rightEdge = clamp(rawRightEdge, leftLimit, rightLimit);
+      measureLayouts.forEach((layout) => {
+        const segment = segments.get(layout.groupId)!;
 
-        if (rightEdge - leftEdge < minSegmentWidth) {
-          const center = clamp(layout.centerX, leftLimit + minSegmentWidth * 0.5, rightLimit - minSegmentWidth * 0.5);
-          leftEdge = center - minSegmentWidth * 0.5;
-          rightEdge = center + minSegmentWidth * 0.5;
-        }
-
-        const segmentWidth = Math.max(0, rightEdge - leftEdge);
-        const gap = Math.min(12, Math.max(6, segmentWidth * 0.16));
-
-        layout.x = leftEdge;
-        layout.width = segmentWidth;
-        layout.segmentX = leftEdge + gap * 0.5;
-        layout.segmentWidth = Math.max(8, segmentWidth - gap);
-        layout.frameX = layout.segmentX;
-        layout.frameWidth = layout.segmentWidth;
+        layout.x = segment.x;
+        layout.width = segment.width;
+        layout.segmentX = segment.x;
+        layout.segmentWidth = segment.width;
+        layout.frameX = segment.x;
+        layout.frameWidth = segment.width;
+        layout.timeX = clamp(layout.centerX, segment.x, segment.x + segment.width);
       });
     }
   }
 
   return next;
+}
+
+export function buildContiguousTrackSegments(inputs: TrackSegmentInput[]): TrackSegment[] {
+  if (inputs.length === 0) {
+    return [];
+  }
+
+  const ordered = [...inputs].sort((a, b) => {
+    if (a.startTick !== b.startTick) {
+      return a.startTick - b.startTick;
+    }
+
+    if (a.anchorX !== b.anchorX) {
+      return a.anchorX - b.anchorX;
+    }
+
+    return a.groupId.localeCompare(b.groupId);
+  });
+  const trackLeft = ordered[0].trackLeft;
+  const trackRight = ordered[0].trackRight;
+  const trackWidth = trackRight - trackLeft;
+  const anchors = ordered.map((input) => clamp(input.anchorX, trackLeft, trackRight));
+  const boundaries = [trackLeft];
+
+  for (let index = 0; index < ordered.length - 1; index += 1) {
+    const midpoint = (anchors[index] + anchors[index + 1]) / 2;
+    boundaries.push(clamp(midpoint, trackLeft, trackRight));
+  }
+
+  boundaries.push(trackRight);
+  const minWidth = Math.min(MIN_TRACK_SEGMENT_WIDTH, trackWidth / ordered.length);
+
+  for (let index = 1; index < boundaries.length; index += 1) {
+    boundaries[index] = Math.max(boundaries[index], boundaries[index - 1] + minWidth);
+  }
+
+  boundaries[boundaries.length - 1] = trackRight;
+
+  for (let index = boundaries.length - 2; index >= 0; index -= 1) {
+    boundaries[index] = Math.min(boundaries[index], boundaries[index + 1] - minWidth);
+  }
+
+  boundaries[0] = trackLeft;
+
+  return ordered.map((input, index) => ({
+    groupId: input.groupId,
+    x: boundaries[index],
+    width: boundaries[index + 1] - boundaries[index],
+  }));
+}
+
+export function buildMeasureLayouts(
+  rawMeasureLayouts: RawMeasureLayout[],
+  firstGlyphLeftByMeasure = new Map<number, number>(),
+  measureBarlineXs: number[] = [],
+): MeasureLayout[] {
+  const sortedBarlines = [...measureBarlineXs].filter(Number.isFinite).sort((a, b) => a - b);
+  let barlineIndex = 0;
+  const adjustedMeasureLayouts = rawMeasureLayouts.map((measure, index) => {
+    const maxDistance = Math.max(90, Math.min(220, (measure.right - measure.x) * 0.45));
+
+    while (barlineIndex < sortedBarlines.length && sortedBarlines[barlineIndex] < measure.x - maxDistance) {
+      barlineIndex += 1;
+    }
+
+    let matchedBarlineX: number | null = null;
+    let matchedBarlineIndex = -1;
+    for (
+      let candidateIndex = barlineIndex;
+      candidateIndex < sortedBarlines.length && sortedBarlines[candidateIndex] <= measure.x + maxDistance;
+      candidateIndex += 1
+    ) {
+      const candidateX = sortedBarlines[candidateIndex];
+      if (
+        matchedBarlineX == null
+        || Math.abs(candidateX - measure.x) < Math.abs(matchedBarlineX - measure.x)
+      ) {
+        matchedBarlineX = candidateX;
+        matchedBarlineIndex = candidateIndex;
+      }
+    }
+
+    if (matchedBarlineIndex >= 0) {
+      barlineIndex = matchedBarlineIndex + 1;
+    }
+
+    const fallbackGlyphLeft = firstGlyphLeftByMeasure.get(index);
+    const x = matchedBarlineX ?? Math.min(measure.x, fallbackGlyphLeft ?? measure.x);
+
+    return {
+      ...measure,
+      x,
+    };
+  });
+
+  return adjustedMeasureLayouts.map<MeasureLayout>((measure, index) => {
+    const nextMeasureX = adjustedMeasureLayouts[index + 1]?.x;
+    const right =
+      nextMeasureX != null && nextMeasureX > measure.x
+        ? Math.max(measure.x, Math.min(measure.right, nextMeasureX))
+        : measure.right;
+    const contentInset = Math.max(12, Math.min(90, measure.begin));
+
+    return {
+      x: measure.x,
+      right,
+      contentX: Math.min(right, Math.max(measure.x, rawMeasureLayouts[index].x + contentInset)),
+    };
+  });
 }
 
 export function frameFromLayouts(key: string, className: string, layouts: ScoreGroupLayout[]): VisualFrame | null {
@@ -435,6 +614,12 @@ export function frameFromLayouts(key: string, className: string, layouts: ScoreG
     width: right - x,
     height: bottom - y,
   };
+}
+
+export function getBoxSelectedGroupIds(layouts: ScoreGroupLayout[], box: GroupLayout): string[] {
+  return layouts
+    .filter((layout) => trackAnchorIntersectsBox(layout, box) || rectsIntersect(box, glyphLayout(layout)))
+    .map((layout) => layout.groupId);
 }
 
 export function buildSelectedFrames(
@@ -497,29 +682,15 @@ export function buildScoreOverlayLayout(
   }, 0);
   const unitToCss = rawRight > 0 ? rect.width / rawRight : viewBoxWidth > 0 ? rect.width / viewBoxWidth : 10;
 
-  const rawMeasureLayouts = rawMeasures.map((measure) => {
+  const rawMeasureLayouts = rawMeasures.map<RawMeasureLayout>((measure) => {
     const shape = measure.PositionAndShape;
     const x = offsetLeft + shape.AbsolutePosition.x * unitToCss;
     const width = Math.max(40, shape.Size.width * unitToCss);
     const begin = Math.max(0, (measure.beginInstructionsWidth ?? 0) * unitToCss);
-    return { x, width, begin };
+    return { x, right: x + width, begin };
   });
-
-  const measureLayouts = rawMeasureLayouts.map<MeasureLayout>((measure, index) => {
-    const nextMeasureX = rawMeasureLayouts[index + 1]?.x;
-    const rawRight = measure.x + measure.width;
-    const right =
-      nextMeasureX != null && nextMeasureX > measure.x
-        ? Math.max(measure.x, Math.min(rawRight, nextMeasureX))
-        : rawRight;
-    const contentInset = Math.max(12, Math.min(90, measure.begin));
-
-    return {
-      x: measure.x,
-      right,
-      contentX: Math.min(right, measure.x + contentInset),
-    };
-  });
+  const staffMetrics = getStaffMetrics(host, overlayRect, rect, viewportHeight);
+  const staffBands = staffMetrics.bands;
 
   const exactGroups = new Map<string, NoteGroup>();
   const groupsByAnyHand = new Map<string, NoteGroup[]>();
@@ -568,7 +739,7 @@ export function buildScoreOverlayLayout(
         }
 
         const elements = collectEntrySvgElements(entry);
-        const bounds = getElementBounds(group.id, elements, overlayRect);
+        const bounds = getElementBounds(group.id, elements, overlayRect, hand, staffBands);
         const absolute = maybeEntry.getAbsoluteStartAndEnd?.();
         const centerX = absolute ? offsetLeft + ((absolute[0] + absolute[1]) / 2) * unitToCss : null;
         const fallbackCenterX = bounds ? bounds.x + bounds.width * 0.5 : null;
@@ -606,8 +777,33 @@ export function buildScoreOverlayLayout(
   const timeXByTick = new Map(
     Array.from(tickTimeSamples.entries()).map(([key, samples]) => [key, medianCoordinate(samples)]),
   );
-  const staffMetrics = getStaffMetrics(host, overlayRect, rect, viewportHeight);
-  const staffBands = staffMetrics.bands;
+  const firstTickByMeasure = new Map<number, number>();
+  for (const group of score.noteGroups) {
+    firstTickByMeasure.set(
+      group.measureIndex,
+      Math.min(firstTickByMeasure.get(group.measureIndex) ?? group.startTick, group.startTick),
+    );
+  }
+
+  const firstGlyphLeftByMeasure = new Map<number, number>();
+  for (const group of score.noteGroups) {
+    if (group.startTick !== firstTickByMeasure.get(group.measureIndex)) {
+      continue;
+    }
+
+    const bounds = matchedGroups.get(group.id)?.bounds;
+    if (!bounds) {
+      continue;
+    }
+
+    firstGlyphLeftByMeasure.set(
+      group.measureIndex,
+      Math.min(firstGlyphLeftByMeasure.get(group.measureIndex) ?? bounds.x, bounds.x),
+    );
+  }
+
+  const measureBarlineXs = getMeasureBarlineXClusters(host, overlayRect);
+  const measureLayouts = buildMeasureLayouts(rawMeasureLayouts, firstGlyphLeftByMeasure, measureBarlineXs);
 
   const baseLayouts = score.noteGroups.map<ScoreGroupLayout>((group) => {
     const measure = measureLayouts[group.measureIndex];
@@ -628,10 +824,14 @@ export function buildScoreOverlayLayout(
         : matched?.centerX ?? timeX;
     const centerX = clamp(rawCenterX, measureX, measureRight);
     const hitBand = staffBands.hit[group.hand];
+    const groupBounds = matched?.bounds;
+    const glyphX = groupBounds?.x ?? centerX - 1;
+    const glyphY = groupBounds?.y ?? hitBand.top;
+    const glyphWidth = groupBounds?.width ?? 2;
+    const glyphHeight = groupBounds?.height ?? hitBand.height;
     const baseFrameBand = staffBands.frame[group.hand];
     const baseFrameTop = Math.min(baseFrameBand.top, hitBand.top);
     const baseFrameBottom = Math.max(bandBottom(baseFrameBand), bandBottom(hitBand));
-    const groupBounds = matched?.bounds;
     const groupFrameBottom = groupBounds ? groupBounds.y + groupBounds.height + FRAME_VERTICAL_PAD : baseFrameBottom;
     const frameTop = Math.max(0, baseFrameTop);
     const frameBottom = Math.max(baseFrameBottom, groupFrameBottom);
@@ -642,6 +842,11 @@ export function buildScoreOverlayLayout(
       measureIndex: group.measureIndex,
       measureX,
       measureRight,
+      startTick: group.startTick,
+      glyphX,
+      glyphY,
+      glyphWidth,
+      glyphHeight,
       centerX,
       timeX,
       x: centerX - 24,

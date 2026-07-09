@@ -8,6 +8,7 @@ import {
   buildScoreOverlayLayout,
   buildSelectedFrames,
   frameFromLayouts,
+  getBoxSelectedGroupIds,
   rectsIntersect,
 } from "../lib/scoreOverlay";
 import { buildMidiScoreMarkers } from "../lib/staffNotation";
@@ -72,6 +73,11 @@ interface SelectionAction {
 interface SelectionResizeTarget {
   tick: number;
   x: number;
+}
+
+interface HighlightTarget {
+  frame: GroupLayout;
+  layouts: ScoreGroupLayout[];
 }
 
 function boundsFromLayouts(layouts: ScoreGroupLayout[]): GroupLayout | null {
@@ -155,6 +161,60 @@ function getLayoutOffsetWithinAncestor(element: HTMLElement, ancestor: HTMLEleme
   }
 
   return { x, y };
+}
+
+function svgChildBelongsToLayout(child: Element, layout: ScoreGroupLayout, overlayRect: DOMRect): boolean {
+  const rect = child.getBoundingClientRect();
+  const centerY = rect.top - overlayRect.top + rect.height * 0.5;
+  return layout.hand === "right" ? centerY < layout.y + layout.height : centerY >= layout.y;
+}
+
+function renderableSvgElements(element: Element): Element[] {
+  const children = Array.from(element.querySelectorAll("path, rect, text"));
+  return element.matches("path, rect, text") ? [element, ...children] : children;
+}
+
+function applySvgHighlight(element: Element) {
+  const svgElement = element as SVGElement;
+  const fill = svgElement.getAttribute("fill");
+  const stroke = svgElement.getAttribute("stroke");
+  if (fill !== "none") {
+    svgElement.style.fill = "#2563eb";
+  }
+  if (stroke !== "none") {
+    svgElement.style.stroke = "#2563eb";
+  }
+}
+
+function resetSvgHighlight(element: Element) {
+  for (const target of renderableSvgElements(element)) {
+    const svgElement = target as SVGElement;
+    svgElement.style.fill = "";
+    svgElement.style.stroke = "";
+  }
+}
+
+function elementIntersectsFrame(element: Element, frame: GroupLayout, overlayRect: DOMRect): boolean {
+  const rect = element.getBoundingClientRect();
+  const elementBox = {
+    groupId: "svg-element",
+    x: rect.left - overlayRect.left,
+    y: rect.top - overlayRect.top,
+    width: rect.width,
+    height: rect.height,
+  };
+
+  return rectsIntersect(elementBox, frame);
+}
+
+function layoutFrame(layout: ScoreGroupLayout): GroupLayout {
+  return {
+    groupId: layout.groupId,
+    x: layout.frameX,
+    y: layout.frameY,
+    width: layout.frameWidth,
+    height: layout.frameHeight,
+  };
 }
 
 export default function ScoreViewer({
@@ -609,10 +669,7 @@ export default function ScoreViewer({
 
   useEffect(() => {
     for (const element of coloredElementsRef.current) {
-      element.querySelectorAll("path, rect, text").forEach((child) => {
-        (child as SVGElement).style.fill = "";
-        (child as SVGElement).style.stroke = "";
-      });
+      resetSvgHighlight(element);
     }
     coloredElementsRef.current.clear();
 
@@ -625,23 +682,64 @@ export default function ScoreViewer({
       idsToColor.add(loopGroupId);
     }
 
+    const overlay = overlayRef.current;
+    if (!overlay) {
+      return;
+    }
+    const overlayRect = overlay.getBoundingClientRect();
+
     for (const groupId of idsToColor) {
+      const layout = layoutById.get(groupId);
+      if (!layout) {
+        continue;
+      }
+
       for (const element of svgTargetsByGroupRef.current.get(groupId) ?? []) {
-        element.querySelectorAll("path, rect, text").forEach((child) => {
-          const svgChild = child as SVGElement;
-          const fill = svgChild.getAttribute("fill");
-          const stroke = svgChild.getAttribute("stroke");
-          if (fill !== "none") {
-            svgChild.style.fill = "#2563eb";
+        renderableSvgElements(element).forEach((child) => {
+          if (!svgChildBelongsToLayout(child, layout, overlayRect)) {
+            return;
           }
-          if (stroke !== "none") {
-            svgChild.style.stroke = "#2563eb";
-          }
+
+          applySvgHighlight(child);
+          coloredElementsRef.current.add(child);
         });
-        coloredElementsRef.current.add(element);
       }
     }
-  }, [activeGroups, hoveredId, layouts, loopGroupIds, selectedIds]);
+
+    const selected = new Set(selectedIds);
+    const selectedLayouts = layouts.filter((layout) => selected.has(layout.groupId));
+    const selectedHighlightTargets: HighlightTarget[] = selectedVisualFrames
+      .filter((frame) => frame.className === "selected")
+      .map((frame) => ({
+        frame,
+        layouts: selectedLayouts.filter((layout) => rectsIntersect(frame, layoutFrame(layout))),
+      }))
+      .filter((target) => target.layouts.length > 0);
+    const groupHighlightTargets: HighlightTarget[] = Array.from(idsToColor).flatMap((groupId) => {
+      const layout = layoutById.get(groupId);
+      if (!layout) {
+        return [];
+      }
+
+      const frame = frameFromLayouts(`highlight-${groupId}`, "highlight", [layout]);
+      return frame ? [{ frame, layouts: [layout] }] : [];
+    });
+    const highlightTargets = [...selectedHighlightTargets, ...groupHighlightTargets];
+
+    if (highlightTargets.length > 0) {
+      for (const notehead of overlay.ownerDocument.querySelectorAll(".osmd-host svg .vf-notehead path")) {
+        if (
+          highlightTargets.some((target) =>
+            elementIntersectsFrame(notehead, target.frame, overlayRect) &&
+            target.layouts.some((layout) => svgChildBelongsToLayout(notehead, layout, overlayRect)),
+          )
+        ) {
+          applySvgHighlight(notehead);
+          coloredElementsRef.current.add(notehead);
+        }
+      }
+    }
+  }, [activeGroups, hoveredId, layoutById, layouts, loopGroupIds, selectedIds, selectedVisualFrames]);
 
   const visualFrames = useMemo(() => {
     const frames = [...selectedVisualFrames];
@@ -772,7 +870,7 @@ export default function ScoreViewer({
       return;
     }
 
-    const selected = layouts.filter((layout) => rectsIntersect(box, layout)).map((layout) => layout.groupId);
+    const selected = getBoxSelectedGroupIds(layouts, box);
     onBoxSelect(selected);
   }
 
@@ -948,7 +1046,7 @@ export default function ScoreViewer({
                   style={{
                     left: layout.x + HIT_GAP * 0.5,
                     top: layout.y,
-                    width: Math.max(8, layout.width - HIT_GAP),
+                    width: layout.width - HIT_GAP,
                     height: layout.height,
                   }}
                   onPointerEnter={() => onGroupHover(group.id)}
