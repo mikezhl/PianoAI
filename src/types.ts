@@ -4,6 +4,7 @@ export interface ParsedNote {
   id: string;
   midi: number;
   name: string;
+  writtenName?: string;
   hand: Hand;
   staff: number;
   measureIndex: number;
@@ -30,12 +31,18 @@ export interface PlaybackEvent {
   durationTicks: number;
 }
 
+export interface TimeSignature {
+  beats: number;
+  beatType: number;
+}
+
 export interface ScoreData {
   title: string;
   xml: string;
   noteGroups: NoteGroup[];
   measureStarts: number[];
   measureDurations: number[];
+  measureTimeSignatures: TimeSignature[];
   totalTicks: number;
   canSeparateHands: boolean;
   hasLeftHand: boolean;

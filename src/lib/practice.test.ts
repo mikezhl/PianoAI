@@ -50,6 +50,7 @@ const score: ScoreData = {
   ],
   measureStarts: [0],
   measureDurations: [1920],
+  measureTimeSignatures: [{ beats: 4, beatType: 4 }],
   totalTicks: 1920,
   canSeparateHands: true,
   hasLeftHand: true,

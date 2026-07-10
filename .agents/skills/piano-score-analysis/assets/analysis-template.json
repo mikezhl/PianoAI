@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "2.1.0",
+  "analysisVersion": "1",
+  "score": {
+    "id": "todo-score",
+    "sourceFile": "TODO.mxl",
+    "sourceHash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "title": "TODO title",
+    "composer": "TODO composer",
+    "key": "TODO key",
+    "meter": "TODO meter",
+    "measureCount": 1,
+    "internalMeasureCount": 1,
+    "pickupMeasureIndex": null,
+    "measureNumberByIndex": [
+      "1"
+    ]
+  },
+  "form": {
+    "label": "TODO form",
+    "summary": "TODO form summary"
+  },
+  "sources": [
+    {
+      "id": "source-score",
+      "title": "PianoAI source score",
+      "url": "pianoai://library/todo-score",
+      "kind": "score",
+      "use": "Primary source for notes, notation, coordinates, and deterministic comparison."
+    }
+  ],
+  "crossValidation": [
+    {
+      "id": "validation-score-facts",
+      "claim": "The analysis uses the exact source score and internal measure map.",
+      "status": "confirmed",
+      "evidence": [
+        "Source filename, hash, and measure map were checked."
+      ],
+      "sourceIds": [
+        "source-score"
+      ],
+      "conclusion": "Use the source score as the coordinate and notation authority."
+    }
+  ],
+  "sections": [
+    {
+      "id": "section-whole",
+      "label": "Whole piece",
+      "range": {
+        "start": {
+          "measureIndex": 0,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        "end": {
+          "measureIndex": 1,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      },
+      "summary": "TODO section summary",
+      "confidence": "high",
+      "sourceRefs": [
+        {
+          "sourceId": "source-score",
+          "claim": "Section range follows the source score."
+        }
+      ],
+      "layer": "structure",
+      "kind": "theme",
+      "displayNumber": 0,
+      "tonality": "TODO tonality",
+      "understanding": "TODO understanding"
+    }
+  ],
+  "motifFamilies": [],
+  "leftHandAnalysisMode": "chord-groups",
+  "leftHandChordGrouping": {
+    "defaultMode": "meter-beat",
+    "overrides": []
+  },
+  "leftHandChordFamilies": [],
+  "leftHandTextureFamilies": []
+}

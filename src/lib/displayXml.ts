@@ -302,14 +302,16 @@ function serializeXmlDocument(doc: Document): string {
     : `<?xml version="1.0" encoding="UTF-8"?>\n${serialized}`;
 }
 
-export function prepareMusicXmlForPracticeDisplay(xml: string): string {
+function prepareMusicXmlForDisplay(xml: string, removeFingerings: boolean): string {
   const doc = new DOMParser().parseFromString(xml, "application/xml");
   if (elementsByLocalName(doc, "parsererror").length > 0) {
     return xml;
   }
 
-  for (const fingering of elementsByLocalName(doc, "fingering")) {
-    fingering.remove();
+  if (removeFingerings) {
+    for (const fingering of elementsByLocalName(doc, "fingering")) {
+      fingering.remove();
+    }
   }
 
   normalizePitchAlters(doc);
@@ -323,4 +325,12 @@ export function prepareMusicXmlForPracticeDisplay(xml: string): string {
   removeDirectionsWithoutTypes(doc);
 
   return serializeXmlDocument(doc);
+}
+
+export function prepareMusicXmlForPracticeDisplay(xml: string): string {
+  return prepareMusicXmlForDisplay(xml, true);
+}
+
+export function prepareMusicXmlForAnalysisDisplay(xml: string): string {
+  return prepareMusicXmlForDisplay(xml, false);
 }

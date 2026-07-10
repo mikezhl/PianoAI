@@ -1,0 +1,4 @@
+interface:
+  display_name: "钢琴谱分析"
+  short_description: "逐曲生成并验证结构、动机与左手和弦分析"
+  default_prompt: "使用 $piano-score-analysis 独立分析指定 PianoAI 曲谱，生成分析 JSON、验证记录和 manifest 条目，并完成全量校验。"

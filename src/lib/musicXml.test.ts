@@ -109,6 +109,10 @@ describe("parseMusicXml", () => {
 
     expect(score.measureStarts).toEqual([0, 480]);
     expect(score.measureDurations).toEqual([480, 1440]);
+    expect(score.measureTimeSignatures).toEqual([
+      { beats: 3, beatType: 4 },
+      { beats: 3, beatType: 4 },
+    ]);
     expect(score.noteGroups.map((group) => ({
       tick: group.absoluteTick,
       midis: group.notes.map((note) => note.midi),
@@ -117,6 +121,38 @@ describe("parseMusicXml", () => {
       { tick: 480, midis: [69] },
     ]);
     expect(score.totalTicks).toBe(1920);
+  });
+
+  it("tracks the beat unit for each measure across meter changes", () => {
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<score-partwise version="3.1">
+  <part-list><score-part id="P1"><part-name>Piano</part-name></score-part></part-list>
+  <part id="P1">
+    <measure number="1">
+      <attributes>
+        <divisions>1</divisions>
+        <time><beats>3</beats><beat-type>4</beat-type></time>
+      </attributes>
+      <note><rest/><duration>3</duration><voice>1</voice></note>
+    </measure>
+    <measure number="2">
+      <attributes><time><beats>6</beats><beat-type>8</beat-type></time></attributes>
+      <note><rest/><duration>3</duration><voice>1</voice></note>
+    </measure>
+    <measure number="3">
+      <attributes><time><beats>6</beats><beat-type>4</beat-type></time></attributes>
+      <note><rest/><duration>6</duration><voice>1</voice></note>
+    </measure>
+  </part>
+</score-partwise>`;
+
+    const score = parseMusicXml(xml, "meter-change.musicxml");
+    expect(score.measureDurations).toEqual([1440, 1440, 2880]);
+    expect(score.measureTimeSignatures).toEqual([
+      { beats: 3, beatType: 4 },
+      { beats: 6, beatType: 8 },
+      { beats: 6, beatType: 4 },
+    ]);
   });
 
   it("keeps backup alignment after fractional tick durations", () => {

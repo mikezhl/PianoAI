@@ -1,0 +1,1163 @@
+{
+  "schemaVersion": "2.1.0",
+  "analysisVersion": "3",
+  "score": {
+    "id": "schumann-traumerei-op15-no7",
+    "sourceFile": "Kinderszenen Op. 15 No. 7 - Traumerei.mxl",
+    "sourceHash": "sha256:01A46C8C52741B7A458487DFB8AAAC7EC19A78151E58F5282384C3AECB1BBB7F",
+    "title": "Träumerei, Op. 15 No. 7",
+    "composer": "Robert Schumann",
+    "key": "F major",
+    "meter": "4/4",
+    "measureCount": 24,
+    "internalMeasureCount": 25,
+    "pickupMeasureIndex": 0,
+    "measureNumberByIndex": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25"
+    ]
+  },
+  "form": {
+    "label": "A(a–a′)–B(b–b′)–A′(a″–closing)",
+    "summary": "全曲是紧凑的三段式：24 个完整小节按 8+8+8 组织，每个八小节段又由两个四小节句构成。末段不是开头的机械复制，而是保留旋律与低音骨架后改写内声、句尾和终止，使回归同时承担收束功能。"
+  },
+  "sources": [
+    {
+      "id": "source-score",
+      "title": "PianoAI 内置 MusicXML 谱面",
+      "url": "pianoai://library/schumann-traumerei-op15-no7",
+      "kind": "score",
+      "use": "小节坐标、音符、声部、节奏、速度变化和确定性重复比较的首要依据。"
+    },
+    {
+      "id": "teoria-analysis",
+      "title": "Reverie (Träumerei) · Comments on the analysis",
+      "url": "https://www.teoria.com/en/articles/schumann-kinderscenen/07.php",
+      "kind": "secondary",
+      "use": "交叉核对三段式、四小节句法、半终止和中段调性展开。",
+      "limitations": "具体坐标按当前 MusicXML 的内部小节索引重新核对。"
+    },
+    {
+      "id": "melodic-clustering",
+      "title": "Melodic Clustering within Motivic Spaces: Application to Schumann’s Träumerei",
+      "url": "https://doi.org/10.1007/978-3-642-04579-0_6",
+      "kind": "academic",
+      "use": "用于确认该曲适合按旋律轮廓、句法位置和变体关系组织动机，而不能只依赖逐音完全相同。",
+      "limitations": "自动聚类的动机边界只作为辅助，最终范围以当前谱面和听觉句法判断。"
+    },
+    {
+      "id": "imslp-score",
+      "title": "Kinderszenen, Op.15 (Schumann, Robert)",
+      "url": "https://imslp.org/wiki/Kinderszenen,_Op.15_(Schumann,_Robert)",
+      "kind": "reference",
+      "use": "核对作品身份、组曲位置和公开版本背景。"
+    }
+  ],
+  "crossValidation": [
+    {
+      "id": "validation-form",
+      "claim": "作品采用 8+8+8 的三段式，并可细分为六个四小节句。",
+      "status": "confirmed",
+      "evidence": [
+        "弱起后共有 24 个完整 4/4 小节。",
+        "内部 m1、m5、m9、m13、m17、m21 均出现明确的新句入口。",
+        "m17–20 回到开头旋律和低音骨架，形成第三大段。"
+      ],
+      "sourceIds": [
+        "source-score",
+        "teoria-analysis"
+      ],
+      "conclusion": "前端以三大段为总体理解，同时把六个四小节句作为可点击结构单元。"
+    },
+    {
+      "id": "validation-return",
+      "claim": "末段是开头八小节的逐音完全重复。",
+      "status": "rejected",
+      "evidence": [
+        "全谱确定性比较没有找到连续完整小节的 full-score 精确重复。",
+        "左手仅 m3–5 与 m19–21 形成三小节精确重复。",
+        "回归段保留主要轮廓，但内声、装饰和最后终止均发生改写。"
+      ],
+      "sourceIds": [
+        "source-score",
+        "melodic-clustering"
+      ],
+      "conclusion": "把末段标为 A′，并在动机 occurrence 中区分近似回归和终止改写。"
+    },
+    {
+      "id": "validation-middle-tonality",
+      "claim": "中段稳定停留在一个新调上。",
+      "status": "qualified",
+      "evidence": [
+        "m9–12 通过 D7 强化 G minor，并继续向 B-flat 区域移动。",
+        "m13–16 又经过 B-flat major、A7/D minor 和顺阶连接。",
+        "m17 明确返回 F major 的开头材料。"
+      ],
+      "sourceIds": [
+        "source-score",
+        "teoria-analysis"
+      ],
+      "conclusion": "中段描述为相邻调区域的连续展开，不宣称单一稳定转调。"
+    }
+  ],
+  "sections": [
+    {
+      "id": "section-pickup",
+      "label": "弱起",
+      "range": {
+        "start": {
+          "measureIndex": 0,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        "end": {
+          "measureIndex": 1,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      },
+      "summary": "单独的 C 弱起不是独立主题，而是把旋律推向首个完整小节的 F。",
+      "details": [
+        "弱起落在属音级，需与下一小节的主音目标连成一次呼吸。"
+      ],
+      "confidence": "high",
+      "sourceRefs": [
+        {
+          "sourceId": "source-score",
+          "claim": "弱起音与不完整小节长度。"
+        }
+      ],
+      "layer": "structure",
+      "kind": "pickup",
+      "displayNumber": 0,
+      "tonality": "F major 的属音",
+      "understanding": "记忆时不要把 C 当作孤立开头，它属于下一句。",
+      "relatedMotifFamilyIds": [
+        "motif-opening-phrase"
+      ]
+    },
+    {
+      "id": "section-a-antecedent",
+      "label": "A：第一句",
+      "range": {
+        "start": {
+          "measureIndex": 1,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        "end": {
+          "measureIndex": 5,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      },
+      "summary": "四小节主句确立 F major、切分式内声和延迟解决的歌唱方式，并以开放终止保留继续感。",
+      "details": [
+        "旋律重心经常越过小节线。",
+        "内声长音与外声移动共同制造悬挂感。"
+      ],
+      "confidence": "high",
+      "sourceRefs": [
+        {
+          "sourceId": "source-score",
+          "claim": "四小节旋律、低音与终止位置。"
+        },
+        {
+          "sourceId": "teoria-analysis",
+          "claim": "第一段由两个四小节句组成。"
+        }
+      ],
+      "layer": "structure",
+      "kind": "theme",
+      "displayNumber": 1,
+      "tonality": "F major",
+      "understanding": "先记住弱起、上行展开和句尾延迟解决，和弦只是支撑这条长线。",
+      "relatedMotifFamilyIds": [
+        "motif-opening-phrase",
+        "motif-delayed-cadence"
+      ]
+    },
+    {
+      "id": "section-a-consequent",
+      "label": "A′：第二句",
+      "range": {
+        "start": {
+          "measureIndex": 5,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        "end": {
+          "measureIndex": 9,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      },
+      "summary": "开头手势再次出现，但旋律上探更高音区，并以 C-sharp、F-sharp 等色彩扩大离调张力。",
+      "details": [
+        "m6 的 C-sharp 形成指向 D minor 的应用属色彩。",
+        "m7–8 的半音与减和弦色彩让第二句比第一句更不稳定。"
+      ],
+      "confidence": "high",
+      "sourceRefs": [
+        {
+          "sourceId": "source-score",
+          "claim": "第二个四小节句的音高和声变化。"
+        }
+      ],
+      "layer": "structure",
+      "kind": "theme",
+      "displayNumber": 2,
+      "tonality": "F major，经过 D minor 与 dominant 色彩",
+      "understanding": "把它记作同一句法的扩大版，而不是新主题。",
+      "relatedMotifFamilyIds": [
+        "motif-opening-phrase",
+        "motif-delayed-cadence"
+      ]
+    },
+    {
+      "id": "section-b-opening",
+      "label": "B：相邻调展开",
+      "range": {
+        "start": {
+          "measureIndex": 9,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        "end": {
+          "measureIndex": 13,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      },
+      "summary": "中段从较平稳的 F major 出发，经 D7 把听觉推向 G minor，并逐步打开 B-flat 区域。",
+      "details": [
+        "m10 的 F-sharp 是 G minor 指向最明确的音。",
+        "旋律轮廓仍保持长线歌唱，但句首身份已改变。"
+      ],
+      "confidence": "medium",
+      "sourceRefs": [
+        {
+          "sourceId": "source-score",
+          "claim": "F-sharp、D7 与 G minor 音高集合。"
+        },
+        {
+          "sourceId": "teoria-analysis",
+          "claim": "中段经过 G minor 与相邻调。"
+        }
+      ],
+      "layer": "structure",
+      "kind": "contrast",
+      "displayNumber": 3,
+      "tonality": "G minor / B-flat major 区域",
+      "understanding": "辨认 F-sharp 与低音方向，比死记每个装饰音更容易定位中段。",
+      "relatedMotifFamilyIds": [
+        "motif-middle-sequence",
+        "motif-delayed-cadence"
+      ]
+    },
+    {
+      "id": "section-b-intensification",
+      "label": "B′：张力顶点",
+      "range": {
+        "start": {
+          "measureIndex": 13,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        "end": {
+          "measureIndex": 17,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      },
+      "summary": "B-flat 起点很快被 C-sharp 和 A7/D minor 色彩打破，连续的顺阶与半音连接形成全曲最集中的张力。",
+      "details": [
+        "m13 的 B-flat major 是中段的局部落脚。",
+        "m14–16 的 C-sharp 和低音连接持续指向 D minor 后再回主调。"
+      ],
+      "confidence": "medium",
+      "sourceRefs": [
+        {
+          "sourceId": "source-score",
+          "claim": "中段后半的音高集合与低音连接。"
+        }
+      ],
+      "layer": "structure",
+      "kind": "contrast",
+      "displayNumber": 4,
+      "tonality": "B-flat major，经 D minor 返回 F major",
+      "understanding": "这里的作用是把中段推到最远处，再为回归腾出空间。",
+      "relatedMotifFamilyIds": [
+        "motif-middle-sequence"
+      ]
+    },
+    {
+      "id": "section-a-return",
+      "label": "A″：回归",
+      "range": {
+        "start": {
+          "measureIndex": 17,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        "end": {
+          "measureIndex": 21,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      },
+      "summary": "开头主句回到 F major；外形熟悉，但声部配置和局部装饰并非全谱复制。",
+      "details": [
+        "左手 m19–21 与 m3–5 精确对应。",
+        "右手局部节奏和内声有变化，因此听觉上是回忆而非复印。"
+      ],
+      "confidence": "high",
+      "sourceRefs": [
+        {
+          "sourceId": "source-score",
+          "claim": "确定性左右手重复比较。"
+        },
+        {
+          "sourceId": "melodic-clustering",
+          "claim": "旋律变体应按轮廓与句法位置识别。"
+        }
+      ],
+      "layer": "structure",
+      "kind": "theme",
+      "displayNumber": 5,
+      "tonality": "F major",
+      "understanding": "回归时先抓相同低音和旋律支点，再注意内声差异。",
+      "relatedMotifFamilyIds": [
+        "motif-opening-phrase",
+        "motif-delayed-cadence"
+      ]
+    },
+    {
+      "id": "section-closing",
+      "label": "收束句",
+      "range": {
+        "start": {
+          "measureIndex": 21,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        "end": {
+          "measureIndex": 25,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      },
+      "summary": "最后四小节保留 A 段入口，却改写后半并完成此前反复延后的主调终止。",
+      "details": [
+        "m22 的 B-natural 形成短暂属功能强化。",
+        "末小节只有三拍，与最初一拍弱起合成完整四拍框架。"
+      ],
+      "confidence": "high",
+      "sourceRefs": [
+        {
+          "sourceId": "source-score",
+          "claim": "末句和不完整末小节长度。"
+        }
+      ],
+      "layer": "structure",
+      "kind": "closure",
+      "displayNumber": 6,
+      "tonality": "F major",
+      "understanding": "末句的关键不是再唱一次，而是把一直悬着的终止真正落稳。",
+      "relatedMotifFamilyIds": [
+        "motif-opening-phrase",
+        "motif-delayed-cadence"
+      ]
+    }
+  ],
+  "motifFamilies": [
+    {
+      "id": "motif-opening-phrase",
+      "label": "四小节主句家族",
+      "role": "theme",
+      "summary": "弱起 C 进入 F major 后，旋律以跨小节长线、上行展开和延迟解决组成四小节主句；首段与末段的四个句子共享该句法。",
+      "recognitionBasis": [
+        "属音弱起进入主音",
+        "旋律重心越过小节线",
+        "四小节末端保留或解决终止张力"
+      ],
+      "understanding": "记忆单位应是四小节呼吸和支点音，不是逐拍和弦清单。",
+      "occurrences": [
+        {
+          "id": "motif-opening-a1",
+          "label": "A：原型",
+          "range": {
+            "start": {
+              "measureIndex": 1,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 5,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "音域和和声最稳定的代表句。",
+          "confidence": "high",
+          "sourceRefs": [
+            {
+              "sourceId": "source-score",
+              "claim": "主句原型。"
+            }
+          ],
+          "relation": "representative",
+          "differences": []
+        },
+        {
+          "id": "motif-opening-a2",
+          "label": "A′：扩大",
+          "range": {
+            "start": {
+              "measureIndex": 5,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 9,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "保留句首与四小节框架，但音域升高、半音色彩增多。",
+          "confidence": "high",
+          "sourceRefs": [
+            {
+              "sourceId": "source-score",
+              "claim": "第二句的轮廓和变音。"
+            }
+          ],
+          "relation": "extended",
+          "differences": [
+            "上探更高音区",
+            "加入 C-sharp、F-sharp 与减和弦色彩",
+            "句尾张力更强"
+          ]
+        },
+        {
+          "id": "motif-opening-return",
+          "label": "A″：回忆",
+          "range": {
+            "start": {
+              "measureIndex": 17,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 21,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "主句轮廓与低音骨架回归，内声和装饰局部改写。",
+          "confidence": "high",
+          "sourceRefs": [
+            {
+              "sourceId": "source-score",
+              "claim": "回归段与开头的确定性比较。"
+            }
+          ],
+          "relation": "near-exact",
+          "differences": [
+            "不是全谱逐音重复",
+            "局部内声与节奏调整",
+            "速度标记进入更收敛的回归"
+          ]
+        },
+        {
+          "id": "motif-opening-close",
+          "label": "Closing：终止改写",
+          "range": {
+            "start": {
+              "measureIndex": 21,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 25,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "句首仍可识别，但后半被改造成最终主调终止。",
+          "confidence": "high",
+          "sourceRefs": [
+            {
+              "sourceId": "source-score",
+              "claim": "末句材料与终止。"
+            }
+          ],
+          "relation": "extended",
+          "differences": [
+            "加入 B-natural 的属功能指向",
+            "最后一小节缩短为三拍",
+            "终止由开放转为闭合"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "motif-middle-sequence",
+      "label": "中段顺阶推进",
+      "role": "motif",
+      "summary": "中段用相似的上行目标、悬挂音与顺阶低音，在 G minor、B-flat major 和 D minor 区域间连续转向。",
+      "recognitionBasis": [
+        "四小节句首不再使用开头弱起",
+        "变音承担明确的应用属方向",
+        "低音与内声按顺阶或半音连接"
+      ],
+      "understanding": "中段不是另一首旋律，而是把相同歌唱语法放入更不稳定的和声路径。",
+      "occurrences": [
+        {
+          "id": "motif-middle-b1",
+          "label": "B：向 G minor",
+          "range": {
+            "start": {
+              "measureIndex": 9,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 13,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "F-sharp 和 D7 把和声从主调推向 G minor。",
+          "confidence": "medium",
+          "sourceRefs": [
+            {
+              "sourceId": "source-score",
+              "claim": "m10–12 的变音与和弦音。"
+            }
+          ],
+          "relation": "representative",
+          "differences": []
+        },
+        {
+          "id": "motif-middle-b2",
+          "label": "B′：向 D minor",
+          "range": {
+            "start": {
+              "measureIndex": 13,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 17,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "从 B-flat 落脚继续以 C-sharp 和 A7 色彩推向 D minor，再折返主调。",
+          "confidence": "medium",
+          "sourceRefs": [
+            {
+              "sourceId": "source-score",
+              "claim": "m13–16 的 B-flat、C-sharp 与低音路线。"
+            }
+          ],
+          "relation": "intensified",
+          "differences": [
+            "起点更明亮",
+            "半音张力更密集",
+            "承担返回 F major 的准备"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "motif-delayed-cadence",
+      "label": "延迟终止手势",
+      "role": "cadential",
+      "summary": "句尾通过悬挂音、经过音和跨拍解决弱化方整感；前三次保留继续空间，最后一次才完成闭合。",
+      "recognitionBasis": [
+        "句尾和声已到属或主功能，旋律仍延迟落点",
+        "内声长音与外声移动形成悬挂",
+        "终止常跨越小节线"
+      ],
+      "understanding": "弹奏时先保持长线和悬挂音，再处理局部装饰，避免每拍都重新落重音。",
+      "occurrences": [
+        {
+          "id": "motif-cadence-a1",
+          "label": "A 句尾",
+          "range": {
+            "start": {
+              "measureIndex": 3,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 5,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "延迟解决制造开放的半终止感。",
+          "confidence": "high",
+          "sourceRefs": [
+            {
+              "sourceId": "teoria-analysis",
+              "claim": "第一句以半终止结束。"
+            }
+          ],
+          "relation": "representative",
+          "differences": []
+        },
+        {
+          "id": "motif-cadence-a2",
+          "label": "A′ 句尾",
+          "range": {
+            "start": {
+              "measureIndex": 7,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 9,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "同类延迟终止加入更多半音与减和弦色彩。",
+          "confidence": "medium",
+          "sourceRefs": [
+            {
+              "sourceId": "source-score",
+              "claim": "m7–8 的变音与解决。"
+            }
+          ],
+          "relation": "intensified",
+          "differences": [
+            "半音密度增加",
+            "和声方向更不稳定"
+          ]
+        },
+        {
+          "id": "motif-cadence-return",
+          "label": "回归句尾",
+          "range": {
+            "start": {
+              "measureIndex": 19,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 21,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "低音骨架与第一次句尾精确对应，外声保持回忆式变化。",
+          "confidence": "high",
+          "sourceRefs": [
+            {
+              "sourceId": "source-score",
+              "claim": "左手连续三小节精确重复。"
+            }
+          ],
+          "relation": "near-exact",
+          "differences": [
+            "左手相同",
+            "右手并非逐音相同"
+          ]
+        },
+        {
+          "id": "motif-cadence-final",
+          "label": "最终闭合",
+          "range": {
+            "start": {
+              "measureIndex": 23,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 25,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "延迟手势保留，但最终落到 F major 并补全开头弱起的节拍框架。",
+          "confidence": "high",
+          "sourceRefs": [
+            {
+              "sourceId": "source-score",
+              "claim": "末两小节的属主功能和三拍尾小节。"
+            }
+          ],
+          "relation": "extended",
+          "differences": [
+            "由开放终止转为完全闭合",
+            "末小节缩短",
+            "终止功能最明确"
+          ]
+        }
+      ]
+    }
+  ],
+  "leftHandChordFamilies": [],
+  "leftHandChordGrouping": null,
+  "leftHandAnalysisMode": "polyphonic-texture",
+  "leftHandTextureFamilies": [
+    {
+      "id": "texture-f-pedal-suspension",
+      "label": "F 低音与三拍延留",
+      "summary": "低音 F 先进入，随后由 C–A 或其缩减形态延续到小节末；这是外段的声部分层手势，不是四个逐拍和弦。",
+      "role": "sustained-interval",
+      "recognitionBasis": [
+        "小节起点的 F2 低音保持整小节",
+        "第二拍加入的内声持续三个四分拍",
+        "相同手势出现在外段开头、回归与尾部"
+      ],
+      "understanding": "先听清低音进入与上方延留的时间差，再把整小节作为一次呼吸练习；m9 只保留 C，属于有意减薄而不是缺失和弦音。",
+      "occurrences": [
+        {
+          "id": "texture-f-pedal-suspension-m1",
+          "label": "完整 C–A 延留",
+          "range": {
+            "start": {
+              "measureIndex": 1,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 2,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "F2 建立低音支点，第二拍加入 C3–A3 并保持到小节末。",
+          "noteNames": [
+            "F2",
+            "C3",
+            "A3"
+          ],
+          "relation": "representative",
+          "differences": []
+        },
+        {
+          "id": "texture-f-pedal-suspension-m5",
+          "label": "第一次完整回归",
+          "range": {
+            "start": {
+              "measureIndex": 5,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 6,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "低音、进入拍点、音高和持续长度与代表位置相同。",
+          "noteNames": [
+            "F2",
+            "C3",
+            "A3"
+          ],
+          "relation": "exact",
+          "differences": []
+        },
+        {
+          "id": "texture-f-pedal-suspension-m9",
+          "label": "省略 A 的减薄形态",
+          "range": {
+            "start": {
+              "measureIndex": 9,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 10,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "保留 F2 与第二拍进入的 C3，但省略 A3，使中段入口前的织体更空。",
+          "noteNames": [
+            "F2",
+            "C3"
+          ],
+          "relation": "varied",
+          "differences": [
+            "上方延留由 C–A 二音缩减为单独 C",
+            "低音与进入时机保持不变"
+          ]
+        },
+        {
+          "id": "texture-f-pedal-suspension-m17",
+          "label": "再现段完整回归",
+          "range": {
+            "start": {
+              "measureIndex": 17,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 18,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "再现段重新使用完整的 F2 加 C3–A3 分层。",
+          "noteNames": [
+            "F2",
+            "C3",
+            "A3"
+          ],
+          "relation": "exact",
+          "differences": []
+        },
+        {
+          "id": "texture-f-pedal-suspension-m21",
+          "label": "终段前完整回归",
+          "range": {
+            "start": {
+              "measureIndex": 21,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 22,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "终止展开前最后一次完整陈述该低音与延留手势。",
+          "noteNames": [
+            "F2",
+            "C3",
+            "A3"
+          ],
+          "relation": "exact",
+          "differences": []
+        }
+      ]
+    },
+    {
+      "id": "texture-outer-voice-leading-chain",
+      "label": "外段三小节声部链",
+      "summary": "三小节内由持续内声转入半拍移动与低音回转，完整左手材料在再现段逐音逐节奏重复。",
+      "role": "voice-leading",
+      "recognitionBasis": [
+        "事实提取确认内部 m3–5 与 m19–21 左手签名完全一致",
+        "连续半拍移动与低音回转构成一个不可拆成逐拍和弦的长单元"
+      ],
+      "understanding": "按三小节线条记忆低音方向和内声解决，不要把每个垂直切片分别命名；第二次出现可以直接作为同一手型与声部控制方案复用。",
+      "occurrences": [
+        {
+          "id": "texture-outer-voice-leading-chain-m3",
+          "label": "第一次三小节声部链",
+          "range": {
+            "start": {
+              "measureIndex": 3,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 6,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "从 C/A 支撑出发，经半拍内声移动与低音回转，落回下一次 F 低音支点。",
+          "noteNames": [
+            "C3",
+            "A3",
+            "B♭3",
+            "G3",
+            "A2",
+            "F3",
+            "G2",
+            "A2",
+            "F2"
+          ],
+          "relation": "representative",
+          "differences": []
+        },
+        {
+          "id": "texture-outer-voice-leading-chain-m19",
+          "label": "再现段精确重复",
+          "range": {
+            "start": {
+              "measureIndex": 19,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 22,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "左手音高、起点、时值与声部顺序均与第一次三小节声部链相同。",
+          "noteNames": [
+            "C3",
+            "A3",
+            "B♭3",
+            "G3",
+            "A2",
+            "F3",
+            "G2",
+            "A2",
+            "F2"
+          ],
+          "relation": "exact",
+          "differences": []
+        }
+      ]
+    },
+    {
+      "id": "texture-middle-sequential-expansion",
+      "label": "中段两次声部展开",
+      "summary": "中段以两组三小节左手线条扩大音域和张力，第二组保留相同的持续音加半拍移动逻辑，但转向更明亮、更高的音区。",
+      "role": "voice-leading",
+      "recognitionBasis": [
+        "两组都从短暂空隙后进入持续支撑音",
+        "持续声部上叠加半拍移动，末端由低音改变方向",
+        "第二组不是逐音复制，而是相同织体机制的变奏"
+      ],
+      "understanding": "把 m10–12 与 m14–16 作为两次相互呼应的展开练习：先固定持续声部，再单独练半拍移动，最后比较两组音域和出口差异。",
+      "occurrences": [
+        {
+          "id": "texture-middle-sequential-expansion-m10",
+          "label": "G 小调方向展开",
+          "range": {
+            "start": {
+              "measureIndex": 10,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 13,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "由 C3–G3 与 D3–F♯3 支撑逐步展开，并通过低音 G2–A2 转向下一句。",
+          "noteNames": [
+            "C3",
+            "G3",
+            "D3",
+            "F♯3",
+            "D4",
+            "G2",
+            "A2"
+          ],
+          "relation": "representative",
+          "differences": []
+        },
+        {
+          "id": "texture-middle-sequential-expansion-m14",
+          "label": "D 小调方向变奏",
+          "range": {
+            "start": {
+              "measureIndex": 14,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 17,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "沿用持续音与半拍移动的组织方式，但以 A、C♯、D 为中心并提高上方声部音区。",
+          "noteNames": [
+            "G3",
+            "D4",
+            "A3",
+            "C♯4",
+            "E4",
+            "A4",
+            "D4"
+          ],
+          "relation": "varied",
+          "differences": [
+            "中心音高由 G/D 方向转为 A/D 方向",
+            "上方声部扩展到 A4",
+            "出口转入再现段准备"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "texture-closing-bass-descent",
+      "label": "终止低音收束",
+      "summary": "最后三小节不再回到固定伴奏型，而是用持续内声、半拍低音下降和最终 C–F 支点完成闭合。",
+      "role": "closing-gesture",
+      "recognitionBasis": [
+        "低音依次触及 G、C、B♭、D、C 与 F 的收束路径",
+        "声部时值逐渐简化并落到最终主音支撑"
+      ],
+      "understanding": "把终止段作为一次独立的低音路线记忆，优先连接每次低音落点，并保持上方持续声部不被半拍移动打断。",
+      "occurrences": [
+        {
+          "id": "texture-closing-bass-descent-m22",
+          "label": "终止三小节",
+          "range": {
+            "start": {
+              "measureIndex": 22,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 25,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "从 G/B 支撑进入下降低音链，最终以 C2、C3 与 F2 的低音层级闭合。",
+          "noteNames": [
+            "G2",
+            "B2",
+            "C3",
+            "B♭2",
+            "D3",
+            "C2",
+            "F2"
+          ],
+          "relation": "representative",
+          "differences": []
+        }
+      ]
+    }
+  ]
+}

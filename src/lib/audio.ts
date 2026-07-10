@@ -13,6 +13,7 @@ interface PianoSound {
 interface InstrumentLike {
   volume: { value: number };
   triggerAttackRelease: (notes: string[], duration: string | number, time?: string | number) => void;
+  releaseAll?: () => void;
   dispose?: () => void;
 }
 
@@ -58,6 +59,7 @@ const salamanderGrand: PianoSound = {
 };
 
 let samplerPromise: Promise<InstrumentLike> | null = null;
+let currentInstrument: InstrumentLike | null = null;
 let playbackGeneration = 0;
 let scheduledPlaybackTimers: number[] = [];
 
@@ -67,6 +69,7 @@ export function cancelScheduledPlayback(): void {
     window.clearTimeout(timer);
   }
   scheduledPlaybackTimers = [];
+  currentInstrument?.releaseAll?.();
 }
 
 function beginPlaybackBatch(): number {
@@ -107,6 +110,7 @@ async function getInstrument(): Promise<InstrumentLike | null> {
 
   try {
     const instrument = await samplerPromise;
+    currentInstrument = instrument ?? null;
     return instrument ?? null;
   } catch (error) {
     samplerPromise = null;
@@ -146,10 +150,59 @@ export async function playGroups(
   );
 }
 
-async function playPlaybackEvents(events: PlaybackEvent[], bpm: number, generation: number): Promise<void> {
+export function buildScoreRangePlaybackEvents(
+  groups: NoteGroup[],
+  rangeStartTick: number,
+  rangeEndTick: number,
+): PlaybackEvent[] {
+  return groups.flatMap((group) => {
+    const events = group.playbackEvents.length > 0
+      ? group.playbackEvents
+      : [{
+          midis: group.notes.map((note) => note.midi),
+          offsetTicks: 0,
+          durationTicks: group.durationTicks,
+        }];
+    return events.flatMap((event) => {
+      const eventStartTick = group.absoluteTick + event.offsetTicks;
+      const eventEndTick = eventStartTick + event.durationTicks;
+      const clippedStartTick = Math.max(rangeStartTick, eventStartTick);
+      const clippedEndTick = Math.min(rangeEndTick, eventEndTick);
+      if (clippedStartTick >= clippedEndTick) {
+        return [];
+      }
+      return [{
+        ...event,
+        offsetTicks: clippedStartTick - rangeStartTick,
+        durationTicks: clippedEndTick - clippedStartTick,
+      }];
+    });
+  });
+}
+
+export async function playScoreRange(
+  groups: NoteGroup[],
+  bpm: number,
+  rangeStartTick: number,
+  rangeEndTick: number,
+): Promise<boolean> {
+  if (groups.length === 0) {
+    return false;
+  }
+
+  const generation = beginPlaybackBatch();
+  const playbackEvents = buildScoreRangePlaybackEvents(groups, rangeStartTick, rangeEndTick);
+  if (playbackEvents.length === 0) {
+    return false;
+  }
+
+  return playPlaybackEvents(playbackEvents, bpm, generation);
+}
+
+async function playPlaybackEvents(events: PlaybackEvent[], bpm: number, generation: number): Promise<boolean> {
   const player = await getInstrument();
   if (!player || generation !== playbackGeneration) {
-    return;
+    return false;
   }
 
   for (const event of mergePlaybackEvents(events)) {
@@ -177,6 +230,8 @@ async function playPlaybackEvents(events: PlaybackEvent[], bpm: number, generati
     }, offsetSeconds * 1000);
     scheduledPlaybackTimers.push(timer);
   }
+
+  return true;
 }
 
 function mergePlaybackEvents(events: PlaybackEvent[]): PlaybackEvent[] {

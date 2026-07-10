@@ -40,3 +40,8 @@ test-results/
 *.swp
 .cache/
 .vite/
+__pycache__/
+*.py[cod]
+
+# Docs
+docs/

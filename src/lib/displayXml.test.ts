@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { prepareMusicXmlForPracticeDisplay } from "./displayXml";
+import { prepareMusicXmlForAnalysisDisplay, prepareMusicXmlForPracticeDisplay } from "./displayXml";
 
 describe("prepareMusicXmlForPracticeDisplay", () => {
   it("normalizes fractional pitch alters for notation rendering", () => {
@@ -50,5 +50,14 @@ describe("prepareMusicXmlForPracticeDisplay", () => {
     } finally {
       vi.stubGlobal("XMLSerializer", OriginalXMLSerializer);
     }
+  });
+});
+
+describe("prepareMusicXmlForAnalysisDisplay", () => {
+  it("preserves source fingerings for score study", () => {
+    const xml = `<?xml version="1.0"?><score-partwise><part><measure><note><pitch><step>C</step><octave>4</octave></pitch><duration>1</duration><notations><technical><fingering>3</fingering></technical></notations></note></measure></part></score-partwise>`;
+    const result = prepareMusicXmlForAnalysisDisplay(xml);
+    const doc = new DOMParser().parseFromString(result, "application/xml");
+    expect(doc.getElementsByTagName("fingering")[0]?.textContent).toBe("3");
   });
 });

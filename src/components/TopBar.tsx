@@ -1,11 +1,14 @@
 import { Check, ChevronDown, Gauge, Keyboard, Music, Upload, ZoomIn } from "lucide-react";
 import type { CSSProperties, RefObject } from "react";
+import type { AppMode } from "../analysis/types";
 import { MAX_SCORE_ZOOM, MIN_SCORE_ZOOM, SCORE_ZOOM_STEP } from "../lib/scoreZoom";
 import type { MidiState } from "../types";
 import type { MusicXmlLibraryItem } from "virtual:musicxml-library";
+import ModeSwitch from "./ModeSwitch";
 
 interface TopBarProps {
   title: string;
+  mode: AppMode;
   libraryItems: MusicXmlLibraryItem[];
   selectedLibraryItemId: string | null;
   midi: MidiState;
@@ -22,6 +25,7 @@ interface TopBarProps {
   libraryControlRef: RefObject<HTMLDivElement | null>;
   midiControlRef: RefObject<HTMLDivElement | null>;
   onToggleScoreZoomPanel: () => void;
+  onModeChange: (mode: AppMode) => void;
   onToggleTempoPanel: () => void;
   onToggleLibraryPanel: () => void;
   onScoreZoomChange: (zoom: number) => void;
@@ -56,6 +60,7 @@ function GitHubIcon() {
 
 export default function TopBar({
   title,
+  mode,
   libraryItems,
   selectedLibraryItemId,
   midi,
@@ -72,6 +77,7 @@ export default function TopBar({
   libraryControlRef,
   midiControlRef,
   onToggleScoreZoomPanel,
+  onModeChange,
   onToggleTempoPanel,
   onToggleLibraryPanel,
   onScoreZoomChange,
@@ -97,6 +103,7 @@ export default function TopBar({
         <div className="score-title" aria-live="polite">
           {title}
         </div>
+        <ModeSwitch mode={mode} onChange={onModeChange} />
       </div>
 
       <div className="topbar-right">
@@ -186,7 +193,7 @@ export default function TopBar({
           ) : null}
         </div>
 
-        <div className="midi-control" ref={midiControlRef}>
+        {mode === "practice" ? <div className="midi-control" ref={midiControlRef}>
           <button
             type="button"
             className="flat-button midi-button"
@@ -220,7 +227,7 @@ export default function TopBar({
               )}
             </div>
           ) : null}
-        </div>
+        </div> : null}
 
         <div className="library-control" ref={libraryControlRef}>
           <button

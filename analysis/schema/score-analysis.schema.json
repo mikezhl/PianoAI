@@ -1,0 +1,735 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pianoai.local/schema/score-analysis.schema.json",
+  "title": "PianoAI Score Analysis",
+  "description": "Static, score-grounded analysis consumed by PianoAI analysis mode.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "analysisVersion",
+    "score",
+    "form",
+    "sources",
+    "crossValidation",
+    "sections",
+    "motifFamilies",
+    "leftHandAnalysisMode",
+    "leftHandChordGrouping",
+    "leftHandChordFamilies",
+    "leftHandTextureFamilies"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "2.1.0"
+    },
+    "analysisVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "score": {
+      "$ref": "#/$defs/scoreMetadata"
+    },
+    "form": {
+      "$ref": "#/$defs/form"
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/source"
+      }
+    },
+    "crossValidation": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/crossValidationItem"
+      }
+    },
+    "sections": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/section"
+      }
+    },
+    "motifFamilies": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/motifFamily"
+      }
+    },
+    "leftHandAnalysisMode": {
+      "type": "string",
+      "enum": ["chord-groups", "polyphonic-texture"]
+    },
+    "leftHandChordGrouping": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/leftHandChordGrouping"
+        }
+      ]
+    },
+    "leftHandChordFamilies": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/leftHandChordFamily"
+      }
+    },
+    "leftHandTextureFamilies": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/leftHandTextureFamily"
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "identifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["high", "medium", "low"]
+    },
+    "rational": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["numerator", "denominator"],
+      "properties": {
+        "numerator": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "denominator": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "scorePosition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["measureIndex", "offsetQuarter"],
+      "properties": {
+        "measureIndex": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "offsetQuarter": {
+          "$ref": "#/$defs/rational"
+        },
+        "staff": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "voice": {
+          "type": "string"
+        }
+      }
+    },
+    "scoreRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end"],
+      "properties": {
+        "start": {
+          "$ref": "#/$defs/scorePosition"
+        },
+        "end": {
+          "$ref": "#/$defs/scorePosition"
+        }
+      }
+    },
+    "sourceReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceId", "claim"],
+      "properties": {
+        "sourceId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "claim": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "analysisEntityBase": {
+      "type": "object",
+      "required": ["id", "label", "range", "summary", "confidence"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "label": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "range": {
+          "$ref": "#/$defs/scoreRange"
+        },
+        "summary": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        },
+        "sourceRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/sourceReference"
+          }
+        }
+      }
+    },
+    "scoreMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "sourceFile",
+        "sourceHash",
+        "title",
+        "composer",
+        "key",
+        "meter",
+        "measureCount",
+        "internalMeasureCount",
+        "pickupMeasureIndex",
+        "measureNumberByIndex"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "sourceFile": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "sourceHash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9A-F]{64}$"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "composer": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "key": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "meter": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "measureCount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "internalMeasureCount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "pickupMeasureIndex": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "measureNumberByIndex": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "form": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "summary"],
+      "properties": {
+        "label": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "summary": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "url", "kind", "use"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["score", "academic", "secondary", "reference"]
+        },
+        "use": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "limitations": {
+          "type": "string"
+        }
+      }
+    },
+    "crossValidationItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "claim", "status", "evidence", "conclusion"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "claim": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["confirmed", "qualified", "rejected"]
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "sourceIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/identifier"
+          }
+        },
+        "conclusion": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "section": {
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/analysisEntityBase"
+        },
+        {
+          "type": "object",
+          "required": ["layer", "kind", "displayNumber", "tonality", "understanding"],
+          "properties": {
+            "id": true,
+            "label": true,
+            "range": true,
+            "summary": true,
+            "details": true,
+            "confidence": true,
+            "sourceRefs": true,
+            "layer": {
+              "const": "structure"
+            },
+            "kind": {
+              "type": "string",
+              "enum": ["pickup", "theme", "contrast", "coda", "cadenza", "closure"]
+            },
+            "displayNumber": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "tonality": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "understanding": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "relatedMotifFamilyIds": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/identifier"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "motifOccurrence": {
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/analysisEntityBase"
+        },
+        {
+          "type": "object",
+          "required": ["relation", "differences"],
+          "properties": {
+            "id": true,
+            "label": true,
+            "range": true,
+            "summary": true,
+            "details": true,
+            "confidence": true,
+            "sourceRefs": true,
+            "relation": {
+              "type": "string",
+              "enum": [
+                "representative",
+                "exact",
+                "near-exact",
+                "transposed",
+                "ornamented",
+                "rhythmic-variant",
+                "fragmented",
+                "extended",
+                "intensified",
+                "other"
+              ]
+            },
+            "differences": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/nonEmptyString"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "motifFamily": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "role",
+        "summary",
+        "recognitionBasis",
+        "understanding",
+        "occurrences"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "label": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["theme", "motif", "bass", "accompaniment", "cadential", "coda"]
+        },
+        "summary": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "recognitionBasis": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "understanding": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "occurrences": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "$ref": "#/$defs/motifOccurrence"
+          }
+        }
+      }
+    },
+    "leftHandChordGroupingMode": {
+      "type": "string",
+      "enum": ["meter-beat", "notated-beat", "measure"]
+    },
+    "leftHandChordGrouping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["defaultMode", "overrides"],
+      "properties": {
+        "defaultMode": {
+          "$ref": "#/$defs/leftHandChordGroupingMode"
+        },
+        "overrides": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["startMeasureIndex", "endMeasureIndex", "mode"],
+            "properties": {
+              "startMeasureIndex": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "endMeasureIndex": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "mode": {
+                "$ref": "#/$defs/leftHandChordGroupingMode"
+              }
+            }
+          }
+        }
+      }
+    },
+    "leftHandChordOccurrence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "range",
+        "measureIndex",
+        "beatIndex",
+        "absoluteStartTick",
+        "absoluteEndTick",
+        "symbol",
+        "name",
+        "alternatives",
+        "noteNames",
+        "pitchClasses",
+        "bass",
+        "pitchClassSignature",
+        "voicingSignature",
+        "relation"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "range": {
+          "$ref": "#/$defs/scoreRange"
+        },
+        "measureIndex": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "beatIndex": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "absoluteStartTick": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "absoluteEndTick": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "symbol": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "name": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "alternatives": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "noteNames": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "pitchClasses": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "bass": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "pitchClassSignature": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "voicingSignature": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "relation": {
+          "type": "string",
+          "enum": ["representative", "exact-voicing", "voicing-variant", "inversion"]
+        }
+      }
+    },
+    "leftHandChordFamily": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "summary",
+        "pitchClasses",
+        "occurrenceCount",
+        "voicingVariantCount",
+        "bassVariants",
+        "occurrences"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "label": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "summary": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "pitchClasses": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "occurrenceCount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "voicingVariantCount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "bassVariants": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["bass", "count"],
+            "properties": {
+              "bass": {
+                "$ref": "#/$defs/nonEmptyString"
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          }
+        },
+        "occurrences": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/leftHandChordOccurrence"
+          }
+        }
+      }
+    },
+    "leftHandTextureOccurrence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "range",
+        "summary",
+        "noteNames",
+        "relation",
+        "differences"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "label": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "range": {
+          "$ref": "#/$defs/scoreRange"
+        },
+        "summary": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "noteNames": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "relation": {
+          "type": "string",
+          "enum": ["representative", "exact", "near-exact", "varied"]
+        },
+        "differences": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        }
+      }
+    },
+    "leftHandTextureFamily": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "summary",
+        "role",
+        "recognitionBasis",
+        "understanding",
+        "occurrences"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "label": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "summary": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["bass-framework", "sustained-interval", "voice-leading", "closing-gesture"]
+        },
+        "recognitionBasis": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "understanding": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "occurrences": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/leftHandTextureOccurrence"
+          }
+        }
+      }
+    }
+  }
+}

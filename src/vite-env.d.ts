@@ -6,6 +6,9 @@ declare module "virtual:musicxml-library" {
     name: string;
     fileName: string;
     url: string;
+    scoreId?: string;
+    analysisUrl?: string;
+    sourceHash?: string;
   }
 
   export const MUSICXML_LIBRARY: MusicXmlLibraryItem[];

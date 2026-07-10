@@ -4,7 +4,10 @@ import PianoKeyboard from "./components/PianoKeyboard";
 import PracticeControls from "./components/PracticeControls";
 import ScoreViewer from "./components/ScoreViewer";
 import TopBar from "./components/TopBar";
+import AnalysisWorkspace, { type AnalysisLoadState } from "./components/analysis/AnalysisWorkspace";
+import type { AppMode, ScoreAnalysis } from "./analysis/types";
 import { cancelScheduledPlayback, playGroups, playMidiNotes } from "./lib/audio";
+import { loadAnalysis } from "./lib/analysis/loadAnalysis";
 import { readScoreXmlFromFile, readScoreXmlFromUrl } from "./lib/fileImport";
 import {
   getGroupsAtTick,
@@ -113,7 +116,12 @@ export default function App() {
   const lastConsumedInputEventRef = useRef(0);
   const lastAudibleMidiNotesRef = useRef<number[]>([]);
   const pointerPressedNotesRef = useRef<Set<number>>(new Set());
+  const scoreLoadSessionRef = useRef(0);
   const [score, setScore] = useState<ScoreData | null>(null);
+  const [appMode, setAppMode] = useState<AppMode>("practice");
+  const [analysis, setAnalysis] = useState<ScoreAnalysis | null>(null);
+  const [analysisLoadState, setAnalysisLoadState] = useState<AnalysisLoadState>("idle");
+  const [analysisLoadError, setAnalysisLoadError] = useState<string | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [followLeft, setFollowLeft] = useState(false);
@@ -132,6 +140,10 @@ export default function App() {
     loopIndex: 0,
   });
   const viewportProfile = useViewportProfile();
+  const selectedLibraryItem = useMemo(
+    () => MUSICXML_LIBRARY.find((item) => item.id === selectedLibraryItemId) ?? null,
+    [selectedLibraryItemId],
+  );
   const { midi, selectedInputName, requestAccess, selectInput } = useMidi();
   const appShellStyle = useMemo(
     () => ({
@@ -140,6 +152,7 @@ export default function App() {
     }) as CSSProperties,
     [viewportProfile.longEdge, viewportProfile.shortEdge],
   );
+  const effectiveLayoutMode = appMode === "analysis" ? "natural-long-edge" : viewportProfile.layoutMode;
 
   const loadScoreXml = useCallback((xml: string, fileName: string) => {
     const parsed = parseMusicXml(xml, fileName);
@@ -184,6 +197,42 @@ export default function App() {
   const [scoreZoom, setScoreZoom] = useState(100);
   const [scoreZoomMax, setScoreZoomMax] = useState(MAX_SCORE_ZOOM);
   const [scoreZoomPanelOpen, setScoreZoomPanelOpen] = useState(false);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setAnalysis(null);
+    setAnalysisLoadError(null);
+
+    if (!score) {
+      setAnalysisLoadState("idle");
+      return () => controller.abort();
+    }
+
+    if (!selectedLibraryItem?.analysisUrl || !selectedLibraryItem.scoreId || !selectedLibraryItem.sourceHash) {
+      setAnalysisLoadState("missing");
+      return () => controller.abort();
+    }
+
+    setAnalysisLoadState("loading");
+    void loadAnalysis(
+      selectedLibraryItem.analysisUrl,
+      { scoreId: selectedLibraryItem.scoreId, sourceHash: selectedLibraryItem.sourceHash },
+      controller.signal,
+    )
+      .then((result) => {
+        setAnalysis(result);
+        setAnalysisLoadState("ready");
+      })
+      .catch((error) => {
+        if (controller.signal.aborted) {
+          return;
+        }
+        setAnalysisLoadError(error instanceof Error ? error.message : "分析结果加载失败");
+        setAnalysisLoadState("error");
+      });
+
+    return () => controller.abort();
+  }, [score, selectedLibraryItem]);
 
   const targetGroups = useMemo(() => {
     if (loopTargetStep) {
@@ -252,12 +301,20 @@ export default function App() {
       return;
     }
 
+    const session = scoreLoadSessionRef.current + 1;
+    scoreLoadSessionRef.current = session;
     void readScoreXmlFromFile(file)
       .then((xml) => {
+        if (scoreLoadSessionRef.current !== session) {
+          return;
+        }
         loadScoreXml(xml, file.name);
         setSelectedLibraryItemId(null);
       })
       .catch((error) => {
+        if (scoreLoadSessionRef.current !== session) {
+          return;
+        }
         setImportError(error instanceof Error ? error.message : "导入失败");
       });
 
@@ -342,6 +399,9 @@ export default function App() {
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
+      if (appMode !== "practice") {
+        return;
+      }
       const target = event.target as HTMLElement | null;
       if (target?.tagName === "INPUT" || target?.tagName === "TEXTAREA" || target?.tagName === "SELECT") {
         return;
@@ -360,7 +420,7 @@ export default function App() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [moveSelection]);
+  }, [appMode, moveSelection]);
 
   useEffect(() => {
     if (!scoreZoomPanelOpen && !tempoPanelOpen && !libraryPanelOpen && !midiPanelOpen) {
@@ -417,6 +477,10 @@ export default function App() {
   }, [scoreZoomPanelOpen, tempoPanelOpen, libraryPanelOpen, midiPanelOpen]);
 
   useEffect(() => {
+    if (appMode !== "practice") {
+      lastAudibleMidiNotesRef.current = midi.pressedNotes;
+      return;
+    }
     const previous = new Set(lastAudibleMidiNotesRef.current);
     const justPressed = midi.pressedNotes.filter((midiNote) => !previous.has(midiNote));
     lastAudibleMidiNotesRef.current = midi.pressedNotes;
@@ -424,7 +488,7 @@ export default function App() {
     if (justPressed.length > 0) {
       void playMidiNotes(justPressed, "8n");
     }
-  }, [midi.pressedNotes]);
+  }, [appMode, midi.pressedNotes]);
 
   useEffect(() => {
     if (!isPlaying || inputEventId === lastConsumedInputEventRef.current) {
@@ -533,6 +597,21 @@ export default function App() {
     }
   }
 
+  function handleModeChange(nextMode: AppMode) {
+    if (nextMode === appMode) {
+      return;
+    }
+
+    cancelScheduledPlayback();
+    setIsPlaying(false);
+    setScoreZoomPanelOpen(false);
+    setTempoPanelOpen(false);
+    setLibraryPanelOpen(false);
+    setMidiPanelOpen(false);
+    setScoreZoomMax(MAX_SCORE_ZOOM);
+    setAppMode(nextMode);
+  }
+
   function togglePlay() {
     if (!score) {
       fileInputRef.current?.click();
@@ -598,12 +677,20 @@ export default function App() {
 
   function handleLibraryItemSelect(libraryItem: MusicXmlLibraryItem) {
     setLibraryPanelOpen(false);
+    const session = scoreLoadSessionRef.current + 1;
+    scoreLoadSessionRef.current = session;
     void readScoreXmlFromUrl(libraryItem.url, libraryItem.fileName)
       .then((xml) => {
+        if (scoreLoadSessionRef.current !== session) {
+          return;
+        }
         loadScoreXml(xml, libraryItem.fileName);
         setSelectedLibraryItemId(libraryItem.id);
       })
       .catch((error) => {
+        if (scoreLoadSessionRef.current !== session) {
+          return;
+        }
         setImportError(error instanceof Error ? error.message : "曲库谱加载失败");
       });
   }
@@ -635,7 +722,8 @@ export default function App() {
   return (
     <main
       className="app-shell"
-      data-layout-mode={viewportProfile.layoutMode}
+      data-layout-mode={effectiveLayoutMode}
+      data-app-mode={appMode}
       data-size-class={viewportProfile.sizeClass}
       data-has-coarse-pointer={viewportProfile.hasCoarsePointer ? "true" : "false"}
       data-has-fine-pointer={viewportProfile.hasFinePointer ? "true" : "false"}
@@ -651,6 +739,7 @@ export default function App() {
 
       <TopBar
         title={score ? score.title : "PianoAI"}
+        mode={appMode}
         libraryItems={MUSICXML_LIBRARY}
         selectedLibraryItemId={selectedLibraryItemId}
         midi={midi}
@@ -667,6 +756,7 @@ export default function App() {
         libraryControlRef={libraryControlRef}
         midiControlRef={midiControlRef}
         onToggleScoreZoomPanel={toggleScoreZoomPanel}
+        onModeChange={handleModeChange}
         onToggleTempoPanel={toggleTempoPanel}
         onToggleLibraryPanel={toggleLibraryPanel}
         onScoreZoomChange={handleScoreZoomChange}
@@ -685,40 +775,53 @@ export default function App() {
 
       {importError ? <div className="notice-strip">{importError}</div> : null}
 
-      <ScoreViewer
-        score={score}
-        scoreZoom={scoreZoom / 100}
-        onScoreZoomLimitChange={handleScoreZoomLimitChange}
-        allowBoxSelect={viewportProfile.allowBoxSelect}
-        activeGroups={scoreActiveGroups}
-        followActive={isPlaying}
-        selectedIds={selectedIds}
-        hoveredId={hoveredGroupId}
-        loopGroupIds={loopGroupIds}
-        pressedNotes={midi.pressedNotes}
-        onGroupHover={setHoveredGroupId}
-        onGroupSelect={handleGroupSelect}
-        onBoxSelect={handleBoxSelect}
-        onExpandSelectionToBothHands={expandSelectionToBothHands}
-        onShrinkSelectionToHand={shrinkSelectionToHand}
-        onResizeSelectionBoundary={resizeSelectionBoundary}
-        onClearSelection={() => setSelection({ range: null, loopIndex: 0 })}
-      />
+      {appMode === "practice" ? (
+        <>
+          <ScoreViewer
+            score={score}
+            scoreZoom={scoreZoom / 100}
+            onScoreZoomLimitChange={handleScoreZoomLimitChange}
+            allowBoxSelect={viewportProfile.allowBoxSelect}
+            activeGroups={scoreActiveGroups}
+            followActive={isPlaying}
+            selectedIds={selectedIds}
+            hoveredId={hoveredGroupId}
+            loopGroupIds={loopGroupIds}
+            pressedNotes={midi.pressedNotes}
+            onGroupHover={setHoveredGroupId}
+            onGroupSelect={handleGroupSelect}
+            onBoxSelect={handleBoxSelect}
+            onExpandSelectionToBothHands={expandSelectionToBothHands}
+            onShrinkSelectionToHand={shrinkSelectionToHand}
+            onResizeSelectionBoundary={resizeSelectionBoundary}
+            onClearSelection={() => setSelection({ range: null, loopIndex: 0 })}
+          />
 
-      <PracticeControls
-        isPlaying={isPlaying}
-        followLeft={followLeft}
-        followRight={followRight}
-        onTogglePlay={togglePlay}
-        onToggleHand={toggleHand}
-      />
+          <PracticeControls
+            isPlaying={isPlaying}
+            followLeft={followLeft}
+            followRight={followRight}
+            onTogglePlay={togglePlay}
+            onToggleHand={toggleHand}
+          />
 
-      <PianoKeyboard
-        targetNotes={targetNotes}
-        pressedNotes={inputPressedNotes}
-        onKeyPress={handlePianoKeyPress}
-        onKeyRelease={handlePianoKeyRelease}
-      />
+          <PianoKeyboard
+            targetNotes={targetNotes}
+            pressedNotes={inputPressedNotes}
+            onKeyPress={handlePianoKeyPress}
+            onKeyRelease={handlePianoKeyRelease}
+          />
+        </>
+      ) : (
+        <AnalysisWorkspace
+          score={score}
+          analysis={analysis}
+          loadState={analysisLoadState}
+          loadError={analysisLoadError}
+          scoreZoom={scoreZoom / 100}
+          playbackBpm={playbackBpm}
+        />
+      )}
     </main>
   );
 }

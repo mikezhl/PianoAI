@@ -13,6 +13,7 @@
     "moduleResolution": "Bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "tsBuildInfoFile": ".cache/typescript/tsconfig.app.tsbuildinfo",
     "noEmit": true,
     "jsx": "react-jsx"
   },

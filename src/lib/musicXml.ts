@@ -153,6 +153,19 @@ function pitchInfoToMidi(pitch: Pick<PitchInfo, "step" | "alter" | "octave">): n
   return (pitch.octave + 1) * 12 + STEP_TO_SEMITONE[pitch.step] + pitch.alter;
 }
 
+function pitchInfoToWrittenName(pitch: PitchInfo): string {
+  const accidental = pitch.alter === 2
+    ? "##"
+    : pitch.alter === 1
+      ? "#"
+      : pitch.alter === -1
+        ? "b"
+        : pitch.alter === -2
+          ? "bb"
+          : "";
+  return `${pitch.step}${accidental}${pitch.octave}`;
+}
+
 function hasTieType(note: Element, type: "start" | "stop"): boolean {
   const notations = directChild(note, "notations");
   const notationTies = notations ? directChildren(notations, "tied") : [];
@@ -177,7 +190,15 @@ function getHand(note: Element, midi: number, hasExplicitStaff: boolean): Hand {
   return hasExplicitStaff ? "right" : midi < 60 ? "left" : "right";
 }
 
-function getMeasureDurationTicks(measure: Element, divisions: number, previous: number): number {
+interface MeasureTiming {
+  durationTicks: number;
+  timeSignature: {
+    beats: number;
+    beatType: number;
+  };
+}
+
+function getMeasureTiming(measure: Element, previous: MeasureTiming): MeasureTiming {
   const attributes = directChild(measure, "attributes");
   const time = attributes ? directChild(attributes, "time") : null;
   if (!time) {
@@ -186,7 +207,10 @@ function getMeasureDurationTicks(measure: Element, divisions: number, previous: 
 
   const beats = numberText(time, "beats", 4);
   const beatType = numberText(time, "beat-type", 4);
-  return Math.round(beats * (4 / beatType) * TICKS_PER_QUARTER);
+  return {
+    durationTicks: Math.round(beats * (4 / beatType) * TICKS_PER_QUARTER),
+    timeSignature: { beats, beatType },
+  };
 }
 
 function titleFromFileName(fileName: string): string {
@@ -480,12 +504,16 @@ export function parseMusicXml(xml: string, fileName: string): ScoreData {
   const notes: ParsedNote[] = [];
   const measureDurations: number[] = [];
   const measureStarts: number[] = [];
+  const measureTimeSignatures: ScoreData["measureTimeSignatures"] = [];
   let globalNoteIndex = 0;
   let explicitStaffCount = 0;
 
   for (const part of parts) {
     let divisions = 1;
-    let fallbackMeasureDuration = TICKS_PER_QUARTER * 4;
+    let fallbackTiming: MeasureTiming = {
+      durationTicks: TICKS_PER_QUARTER * 4,
+      timeSignature: { beats: 4, beatType: 4 },
+    };
     let partMeasureStart = 0;
     const activeTies = new Map<string, ActiveTie>();
 
@@ -495,8 +523,9 @@ export function parseMusicXml(xml: string, fileName: string): ScoreData {
         divisions = numberText(attributes, "divisions", divisions);
       }
 
-      fallbackMeasureDuration = getMeasureDurationTicks(measure, divisions, fallbackMeasureDuration);
+      fallbackTiming = getMeasureTiming(measure, fallbackTiming);
       measureStarts[measureIndex] = measureStarts[measureIndex] ?? partMeasureStart;
+      measureTimeSignatures[measureIndex] = measureTimeSignatures[measureIndex] ?? fallbackTiming.timeSignature;
 
       let cursor = 0;
       let lastStart = 0;
@@ -579,6 +608,7 @@ export function parseMusicXml(xml: string, fileName: string): ScoreData {
               id: `n-${globalNoteIndex}`,
               midi,
               name: midiToName(midi),
+              writtenName: pitchInfoToWrittenName(pitch),
               hand,
               staff,
               measureIndex,
@@ -611,7 +641,7 @@ export function parseMusicXml(xml: string, fileName: string): ScoreData {
         }
       }
 
-      const measureDuration = hasTimedContent ? durationToTicks(maxCursor, divisions) : fallbackMeasureDuration;
+      const measureDuration = hasTimedContent ? durationToTicks(maxCursor, divisions) : fallbackTiming.durationTicks;
       measureDurations[measureIndex] = Math.max(measureDurations[measureIndex] ?? 0, measureDuration);
       partMeasureStart += measureDuration;
     });
@@ -665,6 +695,7 @@ export function parseMusicXml(xml: string, fileName: string): ScoreData {
     noteGroups,
     measureStarts,
     measureDurations,
+    measureTimeSignatures,
     totalTicks,
     canSeparateHands: explicitStaffCount > 0 || (hasLeftHand && hasRightHand),
     hasLeftHand,
