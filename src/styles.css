@@ -62,7 +62,7 @@ button:focus-visible {
 .app-shell {
   --topbar-height: 64px;
   --keyboard-height: max(176px, 31vh);
-  --controls-gap: 14px;
+  --controls-gap: 24px;
   position: relative;
   display: grid;
   grid-template-rows: var(--topbar-height) minmax(0, 1fr) var(--keyboard-height);
@@ -549,7 +549,7 @@ button:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  min-height: 48px;
+  min-height: 56px;
   padding: 0;
   border: 0;
   background: none;
@@ -557,6 +557,7 @@ button:focus-visible {
 }
 
 .practice-play-button,
+.practice-step-button,
 .practice-hand-button {
   border: 2px solid #c5cbd3;
   border-radius: 8px;
@@ -569,7 +570,8 @@ button:focus-visible {
     color 150ms ease;
 }
 
-.practice-hand-button:hover {
+.practice-hand-button:hover,
+.practice-step-button:hover {
   border-color: #2563eb;
   background: #f6f7f9;
   color: #2563eb;
@@ -583,14 +585,33 @@ button:focus-visible {
 
 .practice-play-button {
   display: inline-flex;
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   align-items: center;
   justify-content: center;
   border-color: #2563eb;
   border-radius: 50%;
   background: #2563eb;
   color: #ffffff;
+}
+
+.practice-play-button svg {
+  width: 28px;
+  height: 28px;
+}
+
+.practice-step-button {
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: #68707c;
+}
+
+.practice-step-button svg {
+  stroke-width: 2.25;
 }
 
 .practice-hand-button {
@@ -619,6 +640,8 @@ button:focus-visible {
 
 .score-panel {
   position: relative;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) 20px;
   min-height: 0;
   overflow: hidden;
   background: #ffffff;
@@ -639,13 +662,14 @@ button:focus-visible {
 }
 
 .score-scroll {
+  grid-row: 1;
   width: 100%;
   height: 100%;
   overflow-x: auto;
   overflow-y: hidden;
   overscroll-behavior: contain;
   background: #ffffff;
-  border-bottom: 1px solid #e4e7ec;
+  border-bottom: 0;
   scrollbar-width: none;
   touch-action: pan-x;
 }
@@ -655,21 +679,58 @@ button:focus-visible {
 }
 
 .score-scroll-progress {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  position: relative;
+  grid-row: 2;
   z-index: 8;
-  height: 7px;
-  background: #ffffff;
-  pointer-events: none;
+  height: 20px;
+  margin: 0 8px;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.score-scroll-progress-bar {
-  width: 100%;
-  height: 100%;
+.score-scroll-progress-track {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 4px;
+  overflow: visible;
+  border-radius: 999px;
+  background: #bfdbfe;
+  transform: translateY(-50%);
+}
+
+.score-scroll-progress-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
   background: #2563eb;
-  transition: width 120ms ease;
+}
+
+.score-scroll-progress-thumb {
+  position: absolute;
+  top: 50%;
+  width: 13px;
+  height: 13px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.42);
+  transform: translate(-50%, -50%);
+  transition: border-color 120ms ease, transform 120ms ease;
+}
+
+.score-scroll-progress:hover .score-scroll-progress-thumb,
+.score-scroll-progress:focus-visible .score-scroll-progress-thumb {
+  background: #1d4ed8;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  transform: translate(-50%, -50%) scale(1.14);
+}
+
+.score-scroll-progress:focus-visible {
+  outline: none;
 }
 
 .score-surface {
@@ -862,6 +923,14 @@ button:focus-visible {
   background: #edf4ff;
   color: #1d4ed8;
   transform: translateX(-50%) scale(1.08);
+}
+
+.selection-action-button-align-right {
+  transform: translateX(-100%) scale(1);
+}
+
+.selection-action-button-align-right:hover {
+  transform: translateX(-100%) scale(1.08);
 }
 
 .selection-action-button:focus-visible {
@@ -1799,13 +1868,13 @@ button:focus-visible {
 .app-shell[data-size-class="compact"] {
   --topbar-height: 52px;
   --keyboard-height: clamp(96px, calc(var(--viewport-short-edge) * 0.26), 128px);
-  --controls-gap: 8px;
+  --controls-gap: 18px;
 }
 
 .app-shell[data-size-class="regular"] {
   --topbar-height: 56px;
   --keyboard-height: clamp(118px, calc(var(--viewport-short-edge) * 0.22), 168px);
-  --controls-gap: 10px;
+  --controls-gap: 22px;
 }
 
 .app-shell[data-size-class="compact"] .topbar,
@@ -1858,15 +1927,27 @@ button:focus-visible {
 
 .app-shell[data-size-class="compact"] .practice-controls,
 .app-shell[data-size-class="regular"] .practice-controls {
-  min-height: 44px;
+  min-height: 50px;
   gap: 8px;
   padding: 0;
 }
 
 .app-shell[data-size-class="compact"] .practice-play-button,
 .app-shell[data-size-class="regular"] .practice-play-button {
-  width: 44px;
-  height: 44px;
+  width: 50px;
+  height: 50px;
+}
+
+.app-shell[data-size-class="compact"] .practice-play-button svg,
+.app-shell[data-size-class="regular"] .practice-play-button svg {
+  width: 26px;
+  height: 26px;
+}
+
+.app-shell[data-size-class="compact"] .practice-step-button,
+.app-shell[data-size-class="regular"] .practice-step-button {
+  width: 38px;
+  height: 38px;
 }
 
 .app-shell[data-size-class="compact"] .practice-hand-button,

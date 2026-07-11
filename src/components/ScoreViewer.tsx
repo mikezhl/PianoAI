@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp, X } from "lucide-react";
 import type { GroupLayout, Hand, NoteGroup, ScoreData } from "../types";
 import { prepareMusicXmlForPracticeDisplay } from "../lib/displayXml";
 import { MAX_SCORE_ZOOM, MIN_SCORE_ZOOM } from "../lib/scoreZoom";
@@ -32,6 +32,7 @@ interface ScoreViewerProps {
   onShrinkSelectionToHand: (hand: Hand) => void;
   onResizeSelectionBoundary: (edge: SelectionResizeEdge, tick: number) => void;
   onClearSelection: () => void;
+  onDismissSelection: () => void;
 }
 
 type SelectionResizeEdge = "start" | "end";
@@ -56,7 +57,7 @@ const EMPTY_STAFF_GEOMETRY: ScoreStaffGeometry = { right: null, left: null };
 const HANDS: Hand[] = ["right", "left"];
 const POINTER_MOVE_THRESHOLD_MOUSE = 6;
 const POINTER_MOVE_THRESHOLD_TOUCH = 12;
-const SELECTION_ACTION_TOP_OFFSET = 48;
+const SELECTION_ACTION_TOP_OFFSET = 50;
 const SELECTION_ACTION_BOTTOM_OFFSET = 6;
 const SELECTION_ACTION_SIZE = 44;
 const SELECTION_ACTION_VIEWPORT_PAD = 8;
@@ -66,7 +67,8 @@ interface SelectionAction {
   x: number;
   y: number;
   label: string;
-  icon: "up" | "down";
+  icon: "up" | "down" | "clear";
+  align?: "center" | "right";
   onClick: () => void;
 }
 
@@ -235,11 +237,13 @@ export default function ScoreViewer({
   onShrinkSelectionToHand,
   onResizeSelectionBoundary,
   onClearSelection,
+  onDismissSelection,
 }: ScoreViewerProps) {
   const osmdHostRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const pointerRef = useRef<PointerSession | null>(null);
+  const scrollProgressPointerRef = useRef<number | null>(null);
   const scoreZoomRef = useRef(scoreZoom);
   const onScoreZoomLimitChangeRef = useRef(onScoreZoomLimitChange);
   const lastPublishedScoreZoomLimitRef = useRef<number | null>(null);
@@ -387,6 +391,31 @@ export default function ScoreViewer({
     selectedHands,
     selectedIdSet,
   ]);
+  const selectionControls = useMemo<SelectionAction[]>(() => {
+    if (selectedGroups.length <= 1 || !selectedResizeFrame) {
+      return selectionActions;
+    }
+
+    const maxActionY = Math.max(
+      SELECTION_ACTION_VIEWPORT_PAD,
+      scoreViewportHeight - SELECTION_ACTION_SIZE - SELECTION_ACTION_VIEWPORT_PAD,
+    );
+    const clearAction: SelectionAction = {
+      key: "clear-selection",
+      x: selectedResizeFrame.x + selectedResizeFrame.width,
+      y: clampNumber(
+        selectedResizeFrame.y - SELECTION_ACTION_TOP_OFFSET,
+        SELECTION_ACTION_VIEWPORT_PAD,
+        maxActionY,
+      ),
+      label: "清除多选",
+      icon: "clear",
+      align: "right",
+      onClick: onDismissSelection,
+    };
+
+    return [...selectionActions, clearAction];
+  }, [onDismissSelection, scoreViewportHeight, selectedGroups.length, selectedResizeFrame, selectionActions]);
 
   const progressX = useMemo(() => {
     return medianNumber(
@@ -666,6 +695,80 @@ export default function ScoreViewer({
       window.removeEventListener("resize", updateProgress);
     };
   }, [surfaceSize.width]);
+
+  function seekScrollProgress(progress: number) {
+    const scroll = scrollRef.current;
+    if (!scroll) {
+      return;
+    }
+
+    const nextProgress = clampNumber(progress, 0, 1);
+    const maxScrollLeft = Math.max(0, scroll.scrollWidth - scroll.clientWidth);
+    setScrollProgress(nextProgress);
+    scroll.scrollLeft = nextProgress * maxScrollLeft;
+  }
+
+  function seekScrollProgressAtPointer(element: HTMLDivElement, clientX: number, clientY: number) {
+    const appShell = element.closest<HTMLElement>(".app-shell");
+    let localX: number;
+
+    if (appShell?.dataset.layoutMode === "rotated-long-edge") {
+      const transform = window.getComputedStyle(appShell).transform;
+      if (transform && transform !== "none") {
+        const appPoint = new DOMPoint(clientX, clientY).matrixTransform(new DOMMatrixReadOnly(transform).inverse());
+        const elementOffset = getLayoutOffsetWithinAncestor(element, appShell);
+        localX = appPoint.x - elementOffset.x;
+      } else {
+        localX = clientX - element.getBoundingClientRect().left;
+      }
+    } else {
+      localX = clientX - element.getBoundingClientRect().left;
+    }
+
+    seekScrollProgress(localX / Math.max(1, element.offsetWidth));
+  }
+
+  function handleScrollProgressPointerDown(event: React.PointerEvent<HTMLDivElement>) {
+    event.preventDefault();
+    scrollProgressPointerRef.current = event.pointerId;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    seekScrollProgressAtPointer(event.currentTarget, event.clientX, event.clientY);
+  }
+
+  function handleScrollProgressPointerMove(event: React.PointerEvent<HTMLDivElement>) {
+    if (scrollProgressPointerRef.current !== event.pointerId) {
+      return;
+    }
+
+    seekScrollProgressAtPointer(event.currentTarget, event.clientX, event.clientY);
+  }
+
+  function handleScrollProgressPointerEnd(event: React.PointerEvent<HTMLDivElement>) {
+    if (scrollProgressPointerRef.current === event.pointerId) {
+      scrollProgressPointerRef.current = null;
+    }
+  }
+
+  function handleScrollProgressKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+    let nextProgress: number | null = null;
+    if (event.key === "ArrowLeft" || event.key === "ArrowDown") {
+      nextProgress = scrollProgress - 0.02;
+    } else if (event.key === "ArrowRight" || event.key === "ArrowUp") {
+      nextProgress = scrollProgress + 0.02;
+    } else if (event.key === "Home") {
+      nextProgress = 0;
+    } else if (event.key === "End") {
+      nextProgress = 1;
+    }
+
+    if (nextProgress == null) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    seekScrollProgress(nextProgress);
+  }
 
   useEffect(() => {
     for (const element of coloredElementsRef.current) {
@@ -1104,11 +1207,11 @@ export default function ScoreViewer({
               </>
             ) : null}
 
-            {!selectionBox && selectionActions.map((action) => (
+            {!selectionBox && selectionControls.map((action) => (
               <button
                 type="button"
                 key={action.key}
-                className="selection-action-button"
+                className={`selection-action-button ${action.align === "right" ? "selection-action-button-align-right" : ""}`}
                 style={{
                   left: action.x,
                   top: action.y,
@@ -1121,7 +1224,13 @@ export default function ScoreViewer({
                   action.onClick();
                 }}
               >
-                {action.icon === "up" ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                {action.icon === "up" ? (
+                  <ChevronUp size={18} aria-hidden="true" />
+                ) : action.icon === "down" ? (
+                  <ChevronDown size={18} aria-hidden="true" />
+                ) : (
+                  <X size={18} aria-hidden="true" />
+                )}
               </button>
             ))}
 
@@ -1161,8 +1270,26 @@ export default function ScoreViewer({
         </div>
       </div>
       {scoreLayoutReady ? (
-        <div className="score-scroll-progress" aria-hidden="true">
-          <div className="score-scroll-progress-bar" style={{ width: `${scrollProgress * 100}%` }} />
+        <div
+          className="score-scroll-progress"
+          role="slider"
+          tabIndex={0}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(scrollProgress * 100)}
+          aria-label="谱面位置"
+          aria-valuetext={`${Math.round(scrollProgress * 100)}%`}
+          title="点击或拖拽跳转谱面"
+          onPointerDown={handleScrollProgressPointerDown}
+          onPointerMove={handleScrollProgressPointerMove}
+          onPointerUp={handleScrollProgressPointerEnd}
+          onPointerCancel={handleScrollProgressPointerEnd}
+          onKeyDown={handleScrollProgressKeyDown}
+        >
+          <span className="score-scroll-progress-track" aria-hidden="true">
+            <span className="score-scroll-progress-fill" style={{ width: `${scrollProgress * 100}%` }} />
+            <span className="score-scroll-progress-thumb" style={{ left: `${scrollProgress * 100}%` }} />
+          </span>
         </div>
       ) : null}
     </section>

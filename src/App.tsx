@@ -178,6 +178,7 @@ export default function App() {
     [activeGroups, followLeft, followRight],
   );
   const selectedIds = useMemo(() => (score ? getSelectedIds(score, selection) : []), [score, selection]);
+  const hasMultiSelection = selectedIds.length > 1;
   const selectedGroups = useMemo(() => (score ? getSelectedGroups(score, selection) : []), [score, selection]);
   const loopSteps = useMemo(() => (score ? buildLoopSteps(score, selection) : []), [score, selection]);
   const selectedStartGroup = selectedGroups.length === 1 ? selectedGroups[0] : null;
@@ -328,13 +329,25 @@ export default function App() {
       }
 
       const group = score.noteGroups.find((candidate) => candidate.id === groupId);
-      setSelection((current) => selectGroup(score, current, groupId, extend));
+      if (!hasMultiSelection || extend) {
+        setSelection((current) => selectGroup(score, current, groupId, extend));
+      }
       if (group) {
         void playGroups([group], "4n", playbackBpm);
       }
     },
-    [playbackBpm, score],
+    [hasMultiSelection, playbackBpm, score],
   );
+
+  const handleClearSelection = useCallback(() => {
+    if (!hasMultiSelection) {
+      setSelection({ range: null, loopIndex: 0 });
+    }
+  }, [hasMultiSelection]);
+
+  const dismissSelection = useCallback(() => {
+    setSelection({ range: null, loopIndex: 0 });
+  }, []);
 
   const handleBoxSelect = useCallback(
     (groupIds: string[]) => {
@@ -794,14 +807,17 @@ export default function App() {
             onExpandSelectionToBothHands={expandSelectionToBothHands}
             onShrinkSelectionToHand={shrinkSelectionToHand}
             onResizeSelectionBoundary={resizeSelectionBoundary}
-            onClearSelection={() => setSelection({ range: null, loopIndex: 0 })}
+            onClearSelection={handleClearSelection}
+            onDismissSelection={dismissSelection}
           />
 
           <PracticeControls
             isPlaying={isPlaying}
             followLeft={followLeft}
             followRight={followRight}
+            onPrevious={() => moveSelection(-1)}
             onTogglePlay={togglePlay}
+            onNext={() => moveSelection(1)}
             onToggleHand={toggleHand}
           />
 
