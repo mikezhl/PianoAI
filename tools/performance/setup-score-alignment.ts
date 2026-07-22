@@ -20,10 +20,18 @@ function run(label: string, command: string, args: string[]): void {
 if (!existsSync(environmentPython)) {
   run("create Python environment", python, ["-m", "venv", environment]);
 }
+run("upgrade pip", environmentPython, ["-m", "pip", "install", "--upgrade", "pip"]);
 run("install pinned synchronization dependencies", environmentPython, [
   "-m",
   "pip",
   "install",
   "-r",
   path.join(root, "tools", "performance", "requirements-score-alignment.txt"),
+]);
+run("install pinned reference collection dependencies", environmentPython, [
+  "-m",
+  "pip",
+  "install",
+  "-r",
+  path.join(root, "tools", "performance", "requirements-reference-collection.txt"),
 ]);

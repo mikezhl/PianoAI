@@ -279,7 +279,12 @@ export default function TopBar({
           ) : null}
         </div>
 
-        <button type="button" className="flat-button import-button" onClick={onImportScore}>
+        <button
+          type="button"
+          className="flat-button import-button"
+          onClick={onImportScore}
+          aria-label="Import score"
+        >
           <Upload size={20} aria-hidden="true" />
           <span>导入谱子</span>
         </button>

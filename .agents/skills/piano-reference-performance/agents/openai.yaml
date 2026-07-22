@@ -1,0 +1,4 @@
+interface:
+  display_name: "Piano Reference Performance"
+  short_description: "Build normalized reference performance records"
+  default_prompt: "Use $piano-reference-performance to turn a reference recording link into validated PianoAI interpretation data."

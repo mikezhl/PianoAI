@@ -1,0 +1,4 @@
+interface:
+  display_name: "Piano Score Ingestion"
+  short_description: "Import and register canonical PianoAI scores"
+  default_prompt: "Use $piano-score-ingestion to add a MusicXML or MXL score to the PianoAI library."

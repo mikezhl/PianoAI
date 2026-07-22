@@ -18,6 +18,7 @@ import { defineConfig, loadEnv } from "vite";
 const MUSICXML_LIBRARY_MODULE_ID = "virtual:musicxml-library";
 const RESOLVED_MUSICXML_LIBRARY_MODULE_ID = `\0${MUSICXML_LIBRARY_MODULE_ID}`;
 const LOCAL_REFERENCE_AUDIO_PREFIX = "__reference_audio__";
+const DEFAULT_DEVELOPMENT_REFERENCE_AUDIO_BASE_URL = "https://assets.piano.2226.love/";
 const SCORE_ID_RE = /^[a-z0-9][a-z0-9-]*$/;
 const REFERENCE_AUDIO_EXTENSION_RE = /\.(?:m4a|mp3|wav|flac|ogg)$/i;
 
@@ -50,10 +51,16 @@ interface RuntimeAsset {
   sourcePath: string;
 }
 
-interface ReferencedAudioFile {
+export interface ReferencedAudioFile {
   fileName: string;
+  objectKey: string;
   sourcePath: string;
 }
+
+export type ReferenceAudioRequestSource =
+  | { kind: "local"; sourcePath: string }
+  | { kind: "remote"; url: string }
+  | null;
 
 function normalizeBase(base: string): string {
   const withLeadingSlash = base.startsWith("/") ? base : `/${base}`;
@@ -352,17 +359,33 @@ function readReferencedAudioFiles(root: string, validateHash: boolean): Referenc
     const sourcePath = path.join(directories.referenceAudioDirectory, fileName);
     if (!existsSync(sourcePath)) {
       if (validateHash) throw new Error(`参考录音文件不存在：${fileName}`);
-      continue;
-    }
-    if (validateHash && plainSha256(sourcePath) !== sha256) {
+    } else if (validateHash && plainSha256(sourcePath) !== sha256) {
       throw new Error(`参考录音校验失败：${fileName}`);
     }
-    files.set(fileName, { fileName, sourcePath });
+    files.set(fileName, { fileName, objectKey, sourcePath });
   }
   return [...files.values()].sort((left, right) => left.fileName.localeCompare(right.fileName));
 }
 
-function referenceAudioPlugin(localBuild: boolean): Plugin {
+export function resolveReferenceAudioRequest(
+  audio: ReferencedAudioFile,
+  remoteBaseUrl: string,
+  localFileExists: boolean,
+): ReferenceAudioRequestSource {
+  if (localFileExists) {
+    return { kind: "local", sourcePath: audio.sourcePath };
+  }
+  if (!remoteBaseUrl) {
+    return null;
+  }
+  const encodedObjectKey = audio.objectKey.split("/").map(encodeURIComponent).join("/");
+  return {
+    kind: "remote",
+    url: `${remoteBaseUrl.replace(/\/+$/, "")}/${encodedObjectKey}`,
+  };
+}
+
+function referenceAudioPlugin(localBuild: boolean, developmentRemoteBaseUrl: string): Plugin {
   let root = "";
   let base = "/";
   let outDirectory = "";
@@ -388,7 +411,21 @@ function referenceAudioPlugin(localBuild: boolean): Plugin {
         const audio = audioByFileName.get(fileName);
         if (!audio) return next();
 
-        const fileSize = statSync(audio.sourcePath).size;
+        const source = resolveReferenceAudioRequest(
+          audio,
+          developmentRemoteBaseUrl,
+          existsSync(audio.sourcePath),
+        );
+        if (!source) return next();
+        if (source.kind === "remote") {
+          res.statusCode = 307;
+          res.setHeader("Cache-Control", "no-cache");
+          res.setHeader("Location", source.url);
+          res.end();
+          return;
+        }
+
+        const fileSize = statSync(source.sourcePath).size;
         const rangeHeader = req.headers.range;
         res.setHeader("Accept-Ranges", "bytes");
         res.setHeader("Cache-Control", "no-cache");
@@ -405,12 +442,12 @@ function referenceAudioPlugin(localBuild: boolean): Plugin {
           res.setHeader("Content-Range", `bytes ${range.start}-${range.end}/${fileSize}`);
           res.setHeader("Content-Length", range.end - range.start + 1);
           if (req.method === "HEAD") return void res.end();
-          createReadStream(audio.sourcePath, range).on("error", next).pipe(res);
+          createReadStream(source.sourcePath, range).on("error", next).pipe(res);
           return;
         }
         res.setHeader("Content-Length", fileSize);
         if (req.method === "HEAD") return void res.end();
-        createReadStream(audio.sourcePath).on("error", next).pipe(res);
+        createReadStream(source.sourcePath).on("error", next).pipe(res);
       });
     },
     writeBundle() {
@@ -428,11 +465,16 @@ export default defineConfig(({ command, mode }) => {
   const localBuild = command === "build" && mode === "offline";
   const onlineBuild = command === "build" && !localBuild;
   const environment = loadEnv(mode, process.cwd(), "VITE_");
-  const referenceAudioBaseUrl = onlineBuild
-    ? environment.VITE_REFERENCE_AUDIO_BASE_URL?.trim() ?? ""
+  const configuredReferenceAudioBaseUrl = environment.VITE_REFERENCE_AUDIO_BASE_URL?.trim() ?? "";
+  const referenceAudioBaseUrl = onlineBuild ? configuredReferenceAudioBaseUrl : "";
+  const developmentReferenceAudioBaseUrl = command === "serve"
+    ? configuredReferenceAudioBaseUrl || DEFAULT_DEVELOPMENT_REFERENCE_AUDIO_BASE_URL
     : "";
   if (onlineBuild && !/^https:\/\/[^/]+(?:\/.*)?$/.test(referenceAudioBaseUrl)) {
     throw new Error("在线构建必须配置 HTTPS 的 VITE_REFERENCE_AUDIO_BASE_URL（Cloudflare R2 公共域名）");
+  }
+  if (developmentReferenceAudioBaseUrl && !/^https:\/\/[^/]+(?:\/.*)?$/.test(developmentReferenceAudioBaseUrl)) {
+    throw new Error("开发模式的 VITE_REFERENCE_AUDIO_BASE_URL 必须是 HTTPS URL");
   }
 
   return {
@@ -442,10 +484,12 @@ export default defineConfig(({ command, mode }) => {
       __REFERENCE_AUDIO_BASE_URL__: JSON.stringify(referenceAudioBaseUrl),
     },
     server: {
+      port: 5173,
+      strictPort: true,
       watch: {
         ignored: ["**/.cache/**", "**/.local/**", "**/assets/**"],
       },
     },
-    plugins: [runtimeDataPlugin(), referenceAudioPlugin(localBuild), react()],
+    plugins: [runtimeDataPlugin(), referenceAudioPlugin(localBuild, developmentReferenceAudioBaseUrl), react()],
   };
 });

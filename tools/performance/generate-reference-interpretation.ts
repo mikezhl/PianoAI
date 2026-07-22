@@ -1,4 +1,3 @@
-import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import {
@@ -23,6 +22,7 @@ import {
   type ScoreInformedEvaluationReport,
 } from "./automated-performance-validation";
 import { loadCanonicalScore } from "./canonical-score";
+import { canonicalTextSha256 } from "./content-hash";
 
 interface PianoTranscriptionPayload {
   notes: Array<{ onset_time: number; offset_time: number; midi_note: number; velocity: number }>;
@@ -396,10 +396,7 @@ async function main() {
     pedals,
     notatedGestureCount,
   });
-  const evaluationSha256 = `sha256:${createHash("sha256")
-    .update(readFileSync(evaluationPath))
-    .digest("hex")
-    .toUpperCase()}`;
+  const evaluationSha256 = canonicalTextSha256(evaluationPath);
   const output: ScoreInterpretation = {
     schemaVersion: "2.1.0",
     interpretationId: reference.interpretationId,

@@ -32,8 +32,8 @@ const generator = path.join(root, "tools", "performance", "generate-reference-pe
 const force = process.argv.includes("--all");
 const workersArgument = process.argv.indexOf("--workers");
 const workerCount = Math.max(1, Math.min(4, Number(
-  workersArgument >= 0 ? process.argv[workersArgument + 1] : 2,
-) || 2));
+  workersArgument >= 0 ? process.argv[workersArgument + 1] : 1,
+) || 1));
 
 const items: BatchItemStatus[] = plan.sources.map((source) => ({
   interpretationId: source.interpretationId,

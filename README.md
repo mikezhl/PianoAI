@@ -1,73 +1,83 @@
 # PianoAI
 
-PianoAI 是一个基于 MusicXML / MXL 的钢琴练习、乐谱分析和专业演绎对比应用。
+PianoAI 是一个在浏览器中使用的钢琴练习与谱面研究工具。它把可交互的乐谱、结构分析和专业录音对比放在同一个界面中，帮助使用者练习作品、理解写作结构，并观察不同演奏家的处理方式。
 
-## 产品功能
+当前曲库包含 7 首内置作品、7 份静态乐谱分析和 41 份专业录音演绎记录。
 
-- 练习：加载内置曲库或导入本地 MusicXML / MXL，选择左右手、逐音导航、框选范围、调整速度、使用 MIDI 输入并播放多采样钢琴音源。
-- 分析：显示内置曲目的曲式段落、动机家族和左手和弦或复调纹理，支持定位、选段与跟随播放。
-- 演绎：按同一谱面坐标比较专业录音的速度、力度、时值、和弦时差和踏板，并在原始录音与统一音源标准化播放之间切换。
+## 功能
 
-导入的外部谱面可以使用练习功能；静态分析和专业演绎只对 `data/catalog.json` 中的内置曲目开放。
+### 练习模式
 
-## 目录职责
+- 从内置曲库选择作品，或导入本地 `MusicXML`、`XML`、`MXL` 文件。
+- 左右手可分别设置跟弹，通过键盘或 MIDI 设备逐音、逐和弦导航。
+- 点选或框选乐谱设定练习区间，可以循环练习或播放。
 
-- `src/`：React 应用、领域逻辑和随应用发布的 Salamander 钢琴采样。
-- `data/`：受版本控制的产品数据。包含谱面、静态分析、演绎 catalog、演绎详情和自动评价。
-- `schemas/`：静态分析与专业演绎的数据契约。
-- `tools/`：谱面检查，以及参考录音采集、对齐、生成、校验和 R2 同步工具。
-- `assets/`：只保存本机参考源录音，整个目录不进入 Git。
-- `.agents/`：代理工作流、说明、模板和参考资料，不拥有项目运行程序。
-- `.local/`：本机长期模型与 Python 环境，不进入 Git。
-- `.cache/`：可随时删除并重新生成的 facts、转录、报告和构建缓存。
-- `dist/`：构建产物，不进入 Git。
+### 分析模式
 
-项目不再使用根 `public/` 或 `analysis/`。Vite 只发布 catalog 引用的运行时数据；`data/performances/evaluations/` 只参与构建校验，不进入浏览器产物。
+- 查看曲式分段、主题与动机，以及左手和弦和复调织体。
+- 在分析条目与乐谱之间双向定位，快速跳转到对应小节。
+- 选中分析范围后直接播放，结合听觉和谱面理解作品。
 
-## 开发与校验
+### 演绎模式
+
+- 在同一作品赏析对比不同钢琴家的演奏。
+- 在谱面上直观地查看速度、力度、时值、和弦时序、踏板和装饰音等演绎信息。
+- 在机械原谱、标准化演绎和原始录音之间随时切换，让你最直观地感受钢琴家的演绎。
+
+> 本地导入的谱面仅用于练习。谱面分析和专业演绎依赖预先校验的数据，因此目前只适用于内置曲目。
+
+## 快速开始
+
+需要 Node.js `^22.12.0` 或 `>=24.0.0`，以及 npm 10 或更高版本。
 
 ```powershell
-npm install
+npm ci
 npm run dev
 ```
 
+浏览器打开 `http://127.0.0.1:5173`。开发模式会优先读取本地参考音频；本地文件不存在时，再从已配置的 R2 地址加载。普通使用和前端开发不需要安装 Python、CUDA 或转录模型。
+
+## 技术栈
+
+- React 19、TypeScript 6 和 Vite 8 构建前端应用。
+- OpenSheetMusicDisplay 渲染 MusicXML，Tone.js 和 Web MIDI 提供播放与设备交互。
+- Vitest 和 jsdom 负责自动化测试，AJV 负责数据结构校验。
+- Python、FFmpeg、PyTorch、Piano Transcription Inference 和 Synctoolbox 用于离线生成演绎数据；Cloudflare R2 托管公开参考音频。
+
+## 开发与验证
+
+| 命令 | 用途 |
+| --- | --- |
+| `npm run check` | 运行全部数据校验、自动化测试和类型检查 |
+| `npm run build` | 构建使用 R2 参考音频的线上版本 |
+| `npm run build:local` | 构建只使用本地参考音频的版本 |
+| `npm run performance:setup` | 创建演绎处理所需的 Python 环境并安装依赖 |
+| `npm run performance:doctor` | 检查 Python、FFmpeg、模型和 GPU/CPU 运行环境 |
+
+线上构建需要显式提供参考音频地址：
+
 ```powershell
-npm run analysis:validate
-npm run performance:validate
-npm test
-```
-
-`npm run dev` 直接从 `assets/reference-audio/` 提供参考录音，并支持 HTTP Range 请求。
-
-## 构建目标
-
-本地完整构建会校验并复制 catalog 引用的参考录音：
-
-```powershell
-npm run build:local
-npm run preview
-```
-
-在线构建不读取、不校验也不复制 `assets/`。它要求配置 R2 公共 HTTPS 基址：
-
-```powershell
-$env:VITE_REFERENCE_AUDIO_BASE_URL = "https://assets.piano.2226.love/"
+$env:VITE_REFERENCE_AUDIO_BASE_URL = 'https://assets.piano.2226.love/'
 npm run build
 ```
 
-浏览器会把 catalog 中的内容寻址 `objectKey` 拼到该基址后。录音内容变化会产生新 key，因此 R2 对象可以使用一年 `immutable` 缓存。
+离线转录会优先使用 NVIDIA CUDA；没有可用 GPU 时自动回退到 CPU。CPU 可以完成处理，但大型录音耗时会明显增加。安装方式和故障排查见 [演绎工具说明](tools/performance/README.md)。
 
-## Cloudflare R2
+## 项目结构
 
-先校验本地 41 份录音，再同步到 R2：
+- `src/`：React 应用、乐谱交互、播放与分析界面。
+- `data/`：内置曲目目录、静态分析和专业演绎记录。
+- `assets/`：可选的本地参考音频。
+- `schemas/`：分析与演绎数据的 JSON Schema。
+- `tools/`：谱面提取、分析校验、演绎处理和部署工具。
+- `.agents/skills/`：可重复执行的数据导入、谱面分析和参考演绎工作流。
 
-```powershell
-$env:R2_BUCKET = "piano"
-npm run performance:r2:sync -- --dry-run
-npm run performance:r2:sync
-npx wrangler r2 bucket cors set $env:R2_BUCKET --file tools/performance/config/r2-cors.json --force
-```
+## 数据维护
 
-同步工具使用 Wrangler 上传 catalog 引用的对象，设置正确 MIME 和 `Cache-Control: public, max-age=31536000, immutable`。R2 的 CORS 模板位于 `tools/performance/config/r2-cors.json`，已限制来源为 `https://piano.2226.love`。Cloudflare Pages 只部署 `dist/`，`VITE_REFERENCE_AUDIO_BASE_URL` 配置为 R2 自定义域名 `https://assets.piano.2226.love/`。
+内置谱面遵循“导入标准谱面 → 提取确定性事实 → 编写并校验静态分析 → 注册曲库”的流程；参考演绎遵循“登记来源 → 转录 → 全曲对齐与评估 → 生成演绎记录 → 发布音频”的流程。这些任务都在离线工具中完成，不会增加浏览器运行负担。
 
-专业演绎生成环境、数据边界和命令见 `tools/performance/README.md`。
+具体规范见 [AGENTS.md](AGENTS.md)，可执行步骤见 [`piano-score-ingestion`](.agents/skills/piano-score-ingestion/SKILL.md)、[`piano-score-analysis`](.agents/skills/piano-score-analysis/SKILL.md) 和 [`piano-reference-performance`](.agents/skills/piano-reference-performance/SKILL.md)。
+
+## 许可
+
+项目代码与项目自制数据采用 [MIT License](LICENSE)。第三方乐谱与录音仍受各自来源条款约束；来源和版权信息记录在相关曲目及演绎元数据中。

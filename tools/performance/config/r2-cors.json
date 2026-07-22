@@ -2,7 +2,11 @@
   "rules": [
     {
       "allowed": {
-        "origins": ["https://piano.2226.love"],
+        "origins": [
+          "https://piano.2226.love",
+          "http://127.0.0.1:5173",
+          "http://localhost:5173"
+        ],
         "methods": ["GET", "HEAD"],
         "headers": ["Range"]
       },

@@ -1,4 +1,3 @@
-import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import Ajv2020 from "ajv/dist/2020.js";
@@ -22,6 +21,7 @@ import {
   type ScoreInformedEvaluationReport,
 } from "./automated-performance-validation";
 import { loadCanonicalScore } from "./canonical-score";
+import { canonicalTextSha256 } from "./content-hash";
 import {
   evaluationPath,
   interpretationPath,
@@ -46,10 +46,6 @@ const catalogSchema = JSON.parse(
 const ajv = new Ajv2020({ allErrors: true, strict: false });
 const validateInterpretation = ajv.compile(interpretationSchema);
 const validateCatalog = ajv.compile(catalogSchema);
-
-function sha256(filePath: string): string {
-  return `sha256:${createHash("sha256").update(readFileSync(filePath)).digest("hex").toUpperCase()}`;
-}
 
 if (!validateCatalog(catalog)) {
   throw new Error(`performance catalog schema mismatch: ${JSON.stringify(validateCatalog.errors)}`);
@@ -178,7 +174,7 @@ for (const reference of catalog.references) {
     throw new Error(`reference evaluation identity mismatch ${reference.interpretationId}`);
   }
   const reportPath = evaluationPath(detail.generation.evaluationId);
-  if (!existsSync(reportPath) || sha256(reportPath) !== detail.generation.evaluationSha256) {
+  if (!existsSync(reportPath) || canonicalTextSha256(reportPath) !== detail.generation.evaluationSha256) {
     throw new Error(`reference evaluation hash mismatch ${reference.interpretationId}`);
   }
   const report = JSON.parse(readFileSync(reportPath, "utf8")) as ScoreInformedEvaluationReport;

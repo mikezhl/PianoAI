@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 from pathlib import Path
 
 import numpy as np
@@ -19,6 +20,11 @@ def main():
     parser.add_argument("checkpoint")
     parser.add_argument("output_midi")
     parser.add_argument("output_json")
+    parser.add_argument(
+        "--device",
+        choices=("auto", "cuda", "cpu"),
+        default=os.environ.get("PIANOAI_TRANSCRIPTION_DEVICE", "auto"),
+    )
     args = parser.parse_args()
 
     output_midi = Path(args.output_midi)
@@ -27,13 +33,19 @@ def main():
     output_json.parent.mkdir(parents=True, exist_ok=True)
 
     audio, _ = load_audio(args.audio, sr=sample_rate, mono=True)
+    cuda_available = torch.cuda.is_available()
+    if args.device == "cuda" and not cuda_available:
+        raise RuntimeError("CUDA was requested but is unavailable in this PyTorch runtime")
+    device = torch.device("cuda" if args.device == "cuda" or (args.device == "auto" and cuda_available) else "cpu")
+    print(f"Piano transcription device: {device}")
     transcriptor = PianoTranscription(
-        device=torch.device("cpu"),
+        device=device,
         checkpoint_path=str(Path(args.checkpoint).resolve()),
     )
     result = transcriptor.transcribe(audio, str(output_midi))
     payload = {
         "backend": "piano-transcription-inference-0.0.6",
+        "device": str(device),
         "sampleRate": sample_rate,
         "notes": result["est_note_events"],
         "pedals": result["est_pedal_events"],

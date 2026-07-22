@@ -2,13 +2,30 @@
   "name": "piano-ai-practice",
   "private": true,
   "version": "0.1.0",
+  "description": "A local-first piano practice, score analysis, and reference performance research tool.",
+  "author": "Mike Zhl",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mikezhl/PianoAI.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mikezhl/PianoAI/issues"
+  },
+  "homepage": "https://github.com/mikezhl/PianoAI#readme",
   "type": "module",
+  "engines": {
+    "node": "^22.12.0 || >=24.0.0",
+    "npm": ">=10.0.0"
+  },
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "npm run analysis:validate && npm run performance:validate && tsc -b && vite build --mode online",
-    "build:local": "npm run analysis:validate && npm run performance:validate && tsc -b && vite build --mode offline",
+    "build": "npm run analysis:validate && npm run performance:validate && npm run typecheck && vite build --mode online",
+    "build:local": "npm run analysis:validate && npm run performance:validate && npm run typecheck && vite build --mode offline",
     "preview": "vite preview --host 127.0.0.1",
     "test": "vitest run --environment jsdom",
+    "typecheck": "tsc -b",
+    "check": "npm run analysis:validate && npm run performance:validate && npm test -- --run && npm run typecheck",
     "analysis:chords": "tsx tools/score-analysis/generate-left-hand-chords.ts",
     "analysis:inspect": "python tools/score-analysis/inspect_score.py",
     "analysis:validate": "python tools/score-analysis/validate_manifest.py --require-complete && npm run analysis:chords -- --check",
@@ -19,7 +36,10 @@
     "performance:index": "tsx tools/performance/generate-reference-source-index.ts",
     "performance:finalize": "npm run performance:validate && npm run performance:index && npm run performance:compare",
     "performance:collect": "tsx tools/performance/collect-reference-audio.ts --all",
+    "performance:setup": "npm run performance:setup:alignment && npm run performance:setup:transcription",
     "performance:setup:alignment": "tsx tools/performance/setup-score-alignment.ts",
+    "performance:setup:transcription": "tsx tools/performance/setup-piano-transcription.ts",
+    "performance:doctor": "tsx tools/performance/check-performance-environment.ts",
     "performance:validate": "tsx tools/performance/validate-performance-references.ts",
     "performance:r2:sync": "tsx tools/performance/sync-reference-audio-r2.ts"
   },

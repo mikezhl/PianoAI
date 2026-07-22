@@ -2670,6 +2670,11 @@ button:focus-visible {
   padding: 0 6px;
 }
 
+.app-shell[data-app-mode="performance"][data-size-class="compact"] .mode-switch button {
+  min-width: 36px;
+  padding: 0 4px;
+}
+
 .app-shell[data-app-mode="analysis"][data-size-class="compact"] .score-zoom-button-value,
 .app-shell[data-app-mode="performance"][data-size-class="compact"] .score-zoom-button-value,
 .app-shell[data-app-mode="analysis"][data-size-class="compact"] .score-zoom-button-chevron,

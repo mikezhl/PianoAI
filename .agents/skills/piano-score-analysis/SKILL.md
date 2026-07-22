@@ -7,6 +7,8 @@ description: Analyze, revise, and validate PianoAI built-in MusicXML or MXL scor
 
 Produce static, reviewable analysis for PianoAI. Treat the exact source score as the fact authority, deterministic scripts as evidence tools, and musical interpretation as a separate judgment layer. Generate results offline; never add runtime model analysis.
 
+When starting from an external or replacement source, use `$piano-score-ingestion` first to establish canonical MXL bytes, `scoreId`, provenance, and source hash. This skill begins only after that identity is stable.
+
 ## Required order
 
 1. Identify one exact library source file and choose a stable lowercase score ID.

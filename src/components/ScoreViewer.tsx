@@ -464,6 +464,7 @@ function ScoreViewer({
     }
     const hostElement = host;
 
+    lastPublishedScoreZoomLimitRef.current = null;
     hostElement.replaceChildren();
     svgTargetsByGroupRef.current = new Map();
     setLayouts([]);
@@ -650,6 +651,16 @@ function ScoreViewer({
               renderedMeasureIndex,
               ...progress.lastRenderedMeasure.map((measure) => measure.parentSourceMeasure.measureListIndex),
             );
+            const svg = hostElement.querySelector("svg") as SVGSVGElement | null;
+            if (svg) {
+              svg.setAttribute("preserveAspectRatio", "xMinYMin meet");
+              svg.style.display = "block";
+              withUntransformedApp(hostElement, () => {
+                const viewportWidth = scroll.clientWidth || hostElement.clientWidth;
+                const viewportHeight = scroll.clientHeight || hostElement.clientHeight;
+                applyDisplaySize(svg, viewportWidth, viewportHeight);
+              });
+            }
             scheduleMeasure();
           } catch {
             failCurrentRender();

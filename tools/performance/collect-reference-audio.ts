@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
 import {
+  localDirectory,
   performanceCatalogPath,
   projectRoot,
   referenceAudioDirectory,
@@ -55,6 +56,9 @@ const planPath = path.join(root, "tools", "performance", "config", "reference-so
 const catalogPath = performanceCatalogPath;
 const manifestPath = scoreCatalogPath;
 const audioDirectory = referenceAudioDirectory;
+const collectionPython = process.platform === "win32"
+  ? path.join(localDirectory, "score-alignment", "Scripts", "python.exe")
+  : path.join(localDirectory, "score-alignment", "bin", "python");
 
 const plan = JSON.parse(readFileSync(planPath, "utf8")) as {
   schemaVersion: string;
@@ -69,6 +73,13 @@ const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as {
 };
 
 if (plan.schemaVersion !== "1.0.0") throw new Error("Unsupported reference source plan");
+if (process.argv.includes("--help")) {
+  console.log("Usage: tsx tools/performance/collect-reference-audio.ts [--all | --reference <interpretation-id>]");
+  process.exit(0);
+}
+if (!existsSync(collectionPython)) {
+  throw new Error("Missing reference collection environment. Run npm run performance:setup first.");
+}
 
 function argumentsFor(name: string): string[] {
   return process.argv.flatMap((argument, index) =>
@@ -113,7 +124,7 @@ function download(source: SourcePlanItem, audioPath: string): void {
   const baseName = path.basename(source.audioFile, ".m4a");
   const outputTemplate = path.join(audioDirectory, `${baseName}.%(ext)s`);
   console.log(`[collect] ${source.interpretationId}`);
-  run("python", [
+  run(collectionPython, [
     "-m", "yt_dlp",
     "--no-playlist",
     "--extract-audio",
