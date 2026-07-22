@@ -51,7 +51,7 @@ npm run preview
 在线构建不读取、不校验也不复制 `assets/`。它要求配置 R2 公共 HTTPS 基址：
 
 ```powershell
-$env:VITE_REFERENCE_AUDIO_BASE_URL = "https://media.example.com/"
+$env:VITE_REFERENCE_AUDIO_BASE_URL = "https://assets.piano.2226.love/"
 npm run build
 ```
 
@@ -62,12 +62,12 @@ npm run build
 先校验本地 41 份录音，再同步到 R2：
 
 ```powershell
-$env:R2_BUCKET = "pianoai-media"
+$env:R2_BUCKET = "piano"
 npm run performance:r2:sync -- --dry-run
 npm run performance:r2:sync
 npx wrangler r2 bucket cors set $env:R2_BUCKET --file tools/performance/config/r2-cors.json --force
 ```
 
-同步工具使用 Wrangler 上传 catalog 引用的对象，设置正确 MIME 和 `Cache-Control: public, max-age=31536000, immutable`。R2 的 CORS 模板位于 `tools/performance/config/r2-cors.json`；生产环境应把 `AllowedOrigins` 从 `*` 收紧为正式站点域名。Cloudflare Pages 只部署 `dist/`，`VITE_REFERENCE_AUDIO_BASE_URL` 配置为 R2 自定义域名或公开访问域名。
+同步工具使用 Wrangler 上传 catalog 引用的对象，设置正确 MIME 和 `Cache-Control: public, max-age=31536000, immutable`。R2 的 CORS 模板位于 `tools/performance/config/r2-cors.json`，已限制来源为 `https://piano.2226.love`。Cloudflare Pages 只部署 `dist/`，`VITE_REFERENCE_AUDIO_BASE_URL` 配置为 R2 自定义域名 `https://assets.piano.2226.love/`。
 
 专业演绎生成环境、数据边界和命令见 `tools/performance/README.md`。
