@@ -30,6 +30,10 @@ coverage/
 playwright-report/
 test-results/
 
+# Local media and long-lived tool environments
+assets/
+.local/
+
 # Local scratch files
 *.local
 *.tmp
@@ -42,6 +46,3 @@ test-results/
 .vite/
 __pycache__/
 *.py[cod]
-
-# Docs
-docs/

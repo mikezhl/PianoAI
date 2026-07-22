@@ -1,0 +1,412 @@
+{
+  "schemaVersion": "1.0.0",
+  "sources": [
+    {
+      "interpretationId": "chopin-op9-no1-claudio-arrau-youtube-eklonpjnypi",
+      "scoreId": "chopin-nocturne-op9-no1",
+      "performerId": "claudio-arrau",
+      "performerName": "克劳迪奥·阿劳",
+      "audioFile": "chopin-op9-no1-claudio-arrau.m4a",
+      "source": {
+        "title": "Chopin: Nocturne No. 1 in B-Flat Minor, Op. 9 No. 1 — Claudio Arrau",
+        "url": "https://www.youtube.com/watch?v=EKlonPJnypI"
+      }
+    },
+    {
+      "interpretationId": "chopin-op9-no1-vladimir-ashkenazy-youtube-bro20nyegjo",
+      "scoreId": "chopin-nocturne-op9-no1",
+      "performerId": "vladimir-ashkenazy",
+      "performerName": "弗拉基米尔·阿什肯纳齐",
+      "audioFile": "chopin-op9-no1-vladimir-ashkenazy.m4a",
+      "source": {
+        "title": "Chopin: Nocturne No. 1 in B-Flat Minor, Op. 9 No. 1 — Vladimir Ashkenazy",
+        "url": "https://www.youtube.com/watch?v=bro20nYeGjo"
+      }
+    },
+    {
+      "interpretationId": "chopin-op9-no1-idil-biret-youtube-yg-jkznjyte",
+      "scoreId": "chopin-nocturne-op9-no1",
+      "performerId": "idil-biret",
+      "performerName": "伊迪尔·比芮特",
+      "audioFile": "chopin-op9-no1-idil-biret.m4a",
+      "source": {
+        "title": "Nocturne No. 1 in B-Flat Minor, Op. 9 No. 1 — İdil Biret",
+        "url": "https://www.youtube.com/watch?v=yG_jkZNJytE"
+      }
+    },
+    {
+      "interpretationId": "chopin-op9-no2-claudio-arrau-youtube-ughzbrdqniy",
+      "scoreId": "chopin-nocturne-op9-no2",
+      "performerId": "claudio-arrau",
+      "performerName": "克劳迪奥·阿劳",
+      "audioFile": "chopin-op9-no2-claudio-arrau.m4a",
+      "source": {
+        "title": "Chopin: Nocturne No. 2 in E-Flat Major, Op. 9 No. 2 (1978) — Claudio Arrau",
+        "url": "https://www.youtube.com/watch?v=UghzbRdqniY"
+      }
+    },
+    {
+      "interpretationId": "chopin-op9-no2-vladimir-ashkenazy-youtube-eldfgoolqi4",
+      "scoreId": "chopin-nocturne-op9-no2",
+      "performerId": "vladimir-ashkenazy",
+      "performerName": "弗拉基米尔·阿什肯纳齐",
+      "audioFile": "chopin-op9-no2-vladimir-ashkenazy.m4a",
+      "source": {
+        "title": "Chopin: Nocturne No. 2 in E-Flat Major, Op. 9 No. 2 — Vladimir Ashkenazy",
+        "url": "https://www.youtube.com/watch?v=eLDfGoolqI4"
+      }
+    },
+    {
+      "interpretationId": "chopin-op9-no2-idil-biret-youtube-q4qziqzpajy",
+      "scoreId": "chopin-nocturne-op9-no2",
+      "performerId": "idil-biret",
+      "performerName": "伊迪尔·比芮特",
+      "audioFile": "chopin-op9-no2-idil-biret.m4a",
+      "source": {
+        "title": "Nocturne No. 2 in E-Flat Major, Op. 9 No. 2 — İdil Biret",
+        "url": "https://www.youtube.com/watch?v=Q4QZIqzpajY"
+      }
+    },
+    {
+      "interpretationId": "chopin-op9-no2-arthur-rubinstein-youtube-zqyiamnhz9u",
+      "scoreId": "chopin-nocturne-op9-no2",
+      "performerId": "arthur-rubinstein",
+      "performerName": "阿图尔·鲁宾斯坦",
+      "audioFile": "chopin-op9-no2-arthur-rubinstein.m4a",
+      "source": {
+        "title": "Nocturne No. 2 in E-Flat Major, Op. 9 No. 2 — Arthur Rubinstein",
+        "url": "https://www.youtube.com/watch?v=zqyIamnHz9U"
+      }
+    },
+    {
+      "interpretationId": "chopin-waltz-a-minor-claudio-arrau-youtube-n-vozrgjuvc",
+      "scoreId": "chopin-waltz-a-minor",
+      "performerId": "claudio-arrau",
+      "performerName": "克劳迪奥·阿劳",
+      "audioFile": "chopin-waltz-a-minor-claudio-arrau.m4a",
+      "source": {
+        "title": "Chopin: Waltz No. 19 in A Minor, KK IVb/11 — Claudio Arrau",
+        "url": "https://www.youtube.com/watch?v=n-voZrgjUVc"
+      }
+    },
+    {
+      "interpretationId": "chopin-waltz-a-minor-vladimir-ashkenazy-youtube-b9wxd-tu26q",
+      "scoreId": "chopin-waltz-a-minor",
+      "performerId": "vladimir-ashkenazy",
+      "performerName": "弗拉基米尔·阿什肯纳齐",
+      "audioFile": "chopin-waltz-a-minor-vladimir-ashkenazy.m4a",
+      "source": {
+        "title": "Chopin: Waltz No. 19 in A Minor, KK IVb/11 — Vladimir Ashkenazy",
+        "url": "https://www.youtube.com/watch?v=B9wXD_tu26Q"
+      }
+    },
+    {
+      "interpretationId": "chopin-waltz-a-minor-idil-biret-youtube-hl-i15gsvu4",
+      "scoreId": "chopin-waltz-a-minor",
+      "performerId": "idil-biret",
+      "performerName": "伊迪尔·比芮特",
+      "audioFile": "chopin-waltz-a-minor-idil-biret.m4a",
+      "source": {
+        "title": "Waltz No. 19 in A Minor, Op. posth. — İdil Biret",
+        "url": "https://www.youtube.com/watch?v=Hl-i15GsVU4"
+      }
+    },
+    {
+      "interpretationId": "chopin-waltz-a-minor-cyprien-katsaris-youtube-n8p7plj6gsa",
+      "scoreId": "chopin-waltz-a-minor",
+      "performerId": "cyprien-katsaris",
+      "performerName": "西普里安·卡萨利斯",
+      "audioFile": "chopin-waltz-a-minor-cyprien-katsaris.m4a",
+      "source": {
+        "title": "Waltz No. 19 in A Minor — Cyprien Katsaris",
+        "url": "https://www.youtube.com/watch?v=n8p7PLJ6gsA"
+      }
+    },
+    {
+      "interpretationId": "chopin-waltz-a-minor-garrick-ohlsson-youtube-stsvbj4gcg0",
+      "scoreId": "chopin-waltz-a-minor",
+      "performerId": "garrick-ohlsson",
+      "performerName": "加里克·奥尔松",
+      "audioFile": "chopin-waltz-a-minor-garrick-ohlsson.m4a",
+      "source": {
+        "title": "Chopin: Waltz No. 19 in A Minor, KK IVb/11 — Garrick Ohlsson",
+        "url": "https://www.youtube.com/watch?v=sTsVBJ4gcg0"
+      }
+    },
+    {
+      "interpretationId": "chopin-waltz-a-minor-nikita-magaloff-youtube-knsvj8cinjy",
+      "scoreId": "chopin-waltz-a-minor",
+      "performerId": "nikita-magaloff",
+      "performerName": "尼基塔·马加洛夫",
+      "audioFile": "chopin-waltz-a-minor-nikita-magaloff.m4a",
+      "source": {
+        "title": "Chopin: Waltz No. 19 in A Minor, KK IVb/11 — Nikita Magaloff",
+        "url": "https://www.youtube.com/watch?v=KNsVj8cinjY"
+      }
+    },
+    {
+      "interpretationId": "chopin-waltz-c-sharp-minor-claudio-arrau-youtube-9zyxyjqvkgo",
+      "scoreId": "chopin-waltz-c-sharp-minor",
+      "performerId": "claudio-arrau",
+      "performerName": "克劳迪奥·阿劳",
+      "audioFile": "chopin-waltz-c-sharp-minor-claudio-arrau.m4a",
+      "source": {
+        "title": "Chopin: Waltz No. 7 in C-Sharp Minor, Op. 64 No. 2 — Claudio Arrau",
+        "url": "https://www.youtube.com/watch?v=9zYXyJqvkGo"
+      }
+    },
+    {
+      "interpretationId": "chopin-waltz-c-sharp-minor-vladimir-ashkenazy-youtube-drrybpmhu3c",
+      "scoreId": "chopin-waltz-c-sharp-minor",
+      "performerId": "vladimir-ashkenazy",
+      "performerName": "弗拉基米尔·阿什肯纳齐",
+      "audioFile": "chopin-waltz-c-sharp-minor-vladimir-ashkenazy.m4a",
+      "source": {
+        "title": "Chopin: Waltz No. 7 in C-Sharp Minor, Op. 64 No. 2 — Vladimir Ashkenazy",
+        "url": "https://www.youtube.com/watch?v=dRrYbpmHu3c"
+      }
+    },
+    {
+      "interpretationId": "chopin-waltz-c-sharp-minor-idil-biret-youtube-0tm6b6uptrc",
+      "scoreId": "chopin-waltz-c-sharp-minor",
+      "performerId": "idil-biret",
+      "performerName": "伊迪尔·比芮特",
+      "audioFile": "chopin-waltz-c-sharp-minor-idil-biret.m4a",
+      "source": {
+        "title": "Waltz No. 7 in C-Sharp Minor, Op. 64 No. 2 — İdil Biret",
+        "url": "https://www.youtube.com/watch?v=0tm6B6uPtRc"
+      }
+    },
+    {
+      "interpretationId": "chopin-waltz-c-sharp-minor-maria-joao-pires-youtube-6gzibqjj5io",
+      "scoreId": "chopin-waltz-c-sharp-minor",
+      "performerId": "maria-joao-pires",
+      "performerName": "玛利亚·若昂·皮尔斯",
+      "audioFile": "chopin-waltz-c-sharp-minor-maria-joao-pires.m4a",
+      "source": {
+        "title": "Chopin: Waltz No. 7 in C-Sharp Minor, Op. 64 No. 2 — Maria João Pires",
+        "url": "https://www.youtube.com/watch?v=6GzibQJJ5Io"
+      }
+    },
+    {
+      "interpretationId": "chopin-waltz-c-sharp-minor-arthur-rubinstein-youtube-775bu-imi7a",
+      "scoreId": "chopin-waltz-c-sharp-minor",
+      "performerId": "arthur-rubinstein",
+      "performerName": "阿图尔·鲁宾斯坦",
+      "audioFile": "chopin-waltz-c-sharp-minor-arthur-rubinstein.m4a",
+      "source": {
+        "title": "Waltz in C-Sharp Minor, Op. 64 No. 2 (Remastered) — Arthur Rubinstein",
+        "url": "https://www.youtube.com/watch?v=775BU_iMI7A"
+      }
+    },
+    {
+      "interpretationId": "chopin-waltz-c-sharp-minor-cyprien-katsaris-youtube-awhkj4efe8a",
+      "scoreId": "chopin-waltz-c-sharp-minor",
+      "performerId": "cyprien-katsaris",
+      "performerName": "西普里安·卡萨利斯",
+      "audioFile": "chopin-waltz-c-sharp-minor-cyprien-katsaris.m4a",
+      "source": {
+        "title": "Waltz No. 7 in C-Sharp Minor, Op. 64 No. 2 — Cyprien Katsaris",
+        "url": "https://www.youtube.com/watch?v=AwHkj4eFe8A"
+      }
+    },
+    {
+      "interpretationId": "schumann-traumerei-claudio-arrau-youtube-bohap1dqm8e",
+      "scoreId": "schumann-traumerei-op15-no7",
+      "performerId": "claudio-arrau",
+      "performerName": "克劳迪奥·阿劳",
+      "audioFile": "schumann-traumerei-claudio-arrau.m4a",
+      "source": {
+        "title": "Schumann: Kinderszenen, Op. 15: No. 7, Träumerei — Claudio Arrau",
+        "url": "https://www.youtube.com/watch?v=bohAP1DQm8E"
+      }
+    },
+    {
+      "interpretationId": "schumann-traumerei-vladimir-ashkenazy-youtube-ry1ls57bvxg",
+      "scoreId": "schumann-traumerei-op15-no7",
+      "performerId": "vladimir-ashkenazy",
+      "performerName": "弗拉基米尔·阿什肯纳齐",
+      "audioFile": "schumann-traumerei-vladimir-ashkenazy.m4a",
+      "source": {
+        "title": "Schumann: Kinderszenen, Op. 15: No. 7, Träumerei — Vladimir Ashkenazy",
+        "url": "https://www.youtube.com/watch?v=rY1lS57BVXg"
+      }
+    },
+    {
+      "interpretationId": "schumann-traumerei-idil-biret-youtube-whi5xsg3sc8",
+      "scoreId": "schumann-traumerei-op15-no7",
+      "performerId": "idil-biret",
+      "performerName": "伊迪尔·比芮特",
+      "audioFile": "schumann-traumerei-idil-biret.m4a",
+      "source": {
+        "title": "Kinderszenen, Op. 15: No. 7, Träumerei — İdil Biret",
+        "url": "https://www.youtube.com/watch?v=whI5XSG3sc8"
+      }
+    },
+    {
+      "interpretationId": "schumann-traumerei-maria-joao-pires-youtube-dzkyjvilrlc",
+      "scoreId": "schumann-traumerei-op15-no7",
+      "performerId": "maria-joao-pires",
+      "performerName": "玛利亚·若昂·皮尔斯",
+      "audioFile": "schumann-traumerei-maria-joao-pires.m4a",
+      "source": {
+        "title": "Kinderszenen, Op. 15: No. 7, Träumerei — Maria João Pires",
+        "url": "https://www.youtube.com/watch?v=dzKYJVIlrLc"
+      }
+    },
+    {
+      "interpretationId": "schumann-traumerei-arthur-rubinstein-youtube-itp2ofqpfd0",
+      "scoreId": "schumann-traumerei-op15-no7",
+      "performerId": "arthur-rubinstein",
+      "performerName": "阿图尔·鲁宾斯坦",
+      "audioFile": "schumann-traumerei-arthur-rubinstein.m4a",
+      "source": {
+        "title": "Kinderszenen, Op. 15: No. 7, Träumerei — Arthur Rubinstein",
+        "url": "https://www.youtube.com/watch?v=ItP2OfQpfD0"
+      }
+    },
+    {
+      "interpretationId": "schumann-traumerei-cyprien-katsaris-youtube-bdvjsb5lp94",
+      "scoreId": "schumann-traumerei-op15-no7",
+      "performerId": "cyprien-katsaris",
+      "performerName": "西普里安·卡萨利斯",
+      "audioFile": "schumann-traumerei-cyprien-katsaris.m4a",
+      "source": {
+        "title": "Kinderszenen, Op. 15: No. 7, Träumerei — Cyprien Katsaris",
+        "url": "https://www.youtube.com/watch?v=bdVJsb5lp94"
+      }
+    },
+    {
+      "interpretationId": "chopin-ballade-op23-no1-krystian-zimerman-youtube-mxx-wcjv5u8",
+      "scoreId": "chopin-ballade-op23-no1",
+      "performerId": "krystian-zimerman",
+      "performerName": "克里斯蒂安·齐默尔曼",
+      "audioFile": "chopin-ballade-op23-no1-krystian-zimerman.m4a",
+      "source": {
+        "title": "Chopin: Ballade No. 1 in G Minor, Op. 23 — Krystian Zimerman",
+        "url": "https://www.youtube.com/watch?v=mxx_WcjV5U8"
+      }
+    },
+    {
+      "interpretationId": "chopin-ballade-op23-no1-martha-argerich-youtube-payc4pktzqo",
+      "scoreId": "chopin-ballade-op23-no1",
+      "performerId": "martha-argerich",
+      "performerName": "玛塔·阿格里奇",
+      "audioFile": "chopin-ballade-op23-no1-martha-argerich.m4a",
+      "source": {
+        "title": "Chopin: Ballade No. 1 in G Minor, Op. 23 — Martha Argerich",
+        "url": "https://www.youtube.com/watch?v=payc4PKtzQo"
+      }
+    },
+    {
+      "interpretationId": "chopin-ballade-op23-no1-vladimir-horowitz-youtube-on1s8thwlze",
+      "scoreId": "chopin-ballade-op23-no1",
+      "performerId": "vladimir-horowitz",
+      "performerName": "弗拉基米尔·霍洛维茨",
+      "audioFile": "chopin-ballade-op23-no1-vladimir-horowitz-on1s8thwlze.m4a",
+      "source": {
+        "title": "Ballade No. 1 in G Minor, Op. 23 — Vladimir Horowitz",
+        "url": "https://www.youtube.com/watch?v=On1s8THWLZE"
+      }
+    },
+    {
+      "interpretationId": "chopin-ballade-op23-no1-arthur-rubinstein-youtube-jngf8ecjxes",
+      "scoreId": "chopin-ballade-op23-no1",
+      "performerId": "arthur-rubinstein",
+      "performerName": "阿图尔·鲁宾斯坦",
+      "audioFile": "chopin-ballade-op23-no1-arthur-rubinstein.m4a",
+      "source": {
+        "title": "Ballade No. 1 in G Minor, Op. 23 (2023.b Remastered, Studio 1959) — Arthur Rubinstein",
+        "url": "https://www.youtube.com/watch?v=jNgF8EcjXes"
+      }
+    },
+    {
+      "interpretationId": "chopin-ballade-op23-no1-maurizio-pollini-youtube-zfbbaxufti4",
+      "scoreId": "chopin-ballade-op23-no1",
+      "performerId": "maurizio-pollini",
+      "performerName": "毛里齐奥·波利尼",
+      "audioFile": "chopin-ballade-op23-no1-maurizio-pollini.m4a",
+      "source": {
+        "title": "Ballade No. 1 in G Minor, Op. 23 — Maurizio Pollini",
+        "url": "https://www.youtube.com/watch?v=zfbbAxUFti4"
+      }
+    },
+    {
+      "interpretationId": "chopin-ballade-op23-no1-vladimir-ashkenazy-youtube-ggn3q0ucd3o",
+      "scoreId": "chopin-ballade-op23-no1",
+      "performerId": "vladimir-ashkenazy",
+      "performerName": "弗拉基米尔·阿什肯纳齐",
+      "audioFile": "chopin-ballade-op23-no1-vladimir-ashkenazy.m4a",
+      "source": {
+        "title": "Chopin: Ballade No. 1 in G Minor, Op. 23 — Vladimir Ashkenazy",
+        "url": "https://www.youtube.com/watch?v=GGN3Q0uCD3o"
+      }
+    },
+    {
+      "interpretationId": "chopin-ballade-op52-no4-krystian-zimerman-youtube-a3wriv-qete",
+      "scoreId": "chopin-ballade-op52-no4",
+      "performerId": "krystian-zimerman",
+      "performerName": "克里斯蒂安·齐默尔曼",
+      "audioFile": "chopin-ballade-op52-no4-krystian-zimerman.m4a",
+      "source": {
+        "title": "Chopin: Ballade No. 4 in F Minor, Op. 52 — Krystian Zimerman",
+        "url": "https://www.youtube.com/watch?v=A3Wriv-QEtE"
+      }
+    },
+    {
+      "interpretationId": "chopin-ballade-op52-no4-martha-argerich-youtube-zxhnbylv7gm",
+      "scoreId": "chopin-ballade-op52-no4",
+      "performerId": "martha-argerich",
+      "performerName": "玛塔·阿格里奇",
+      "audioFile": "chopin-ballade-op52-no4-martha-argerich.m4a",
+      "source": {
+        "title": "Ballade No. 4 in F Minor, Op. 52 — Martha Argerich",
+        "url": "https://www.youtube.com/watch?v=Zxhnbylv7GM"
+      }
+    },
+    {
+      "interpretationId": "chopin-ballade-op52-no4-vladimir-horowitz-youtube-m0okrm9wz5m",
+      "scoreId": "chopin-ballade-op52-no4",
+      "performerId": "vladimir-horowitz",
+      "performerName": "弗拉基米尔·霍洛维茨",
+      "audioFile": "chopin-ballade-op52-no4-vladimir-horowitz.m4a",
+      "source": {
+        "title": "Ballade No. 4 in F Minor, Op. 52 (1952 Version) — Vladimir Horowitz",
+        "url": "https://www.youtube.com/watch?v=M0OKRm9WZ5M"
+      }
+    },
+    {
+      "interpretationId": "chopin-ballade-op52-no4-arthur-rubinstein-youtube-7tqm2yp8opq",
+      "scoreId": "chopin-ballade-op52-no4",
+      "performerId": "arthur-rubinstein",
+      "performerName": "阿图尔·鲁宾斯坦",
+      "audioFile": "chopin-ballade-op52-no4-arthur-rubinstein-7tqm2yp8opq.m4a",
+      "source": {
+        "title": "Ballade No. 4 in F Minor, Op. 52 (2023.b Remastered, Studio 1959) — Arthur Rubinstein",
+        "url": "https://www.youtube.com/watch?v=7TQM2Yp8OpQ"
+      }
+    },
+    {
+      "interpretationId": "chopin-ballade-op52-no4-maurizio-pollini-youtube-wtoq0wm8nve",
+      "scoreId": "chopin-ballade-op52-no4",
+      "performerId": "maurizio-pollini",
+      "performerName": "毛里齐奥·波利尼",
+      "audioFile": "chopin-ballade-op52-no4-maurizio-pollini.m4a",
+      "source": {
+        "title": "Chopin: Ballade No. 4 in F Minor, Op. 52 — Maurizio Pollini",
+        "url": "https://www.youtube.com/watch?v=wTOq0wm8nVE"
+      }
+    },
+    {
+      "interpretationId": "chopin-ballade-op52-no4-vladimir-ashkenazy-youtube-axksmcqetma",
+      "scoreId": "chopin-ballade-op52-no4",
+      "performerId": "vladimir-ashkenazy",
+      "performerName": "弗拉基米尔·阿什肯纳齐",
+      "audioFile": "chopin-ballade-op52-no4-vladimir-ashkenazy.m4a",
+      "source": {
+        "title": "Chopin: Ballade No. 4 in F Minor, Op. 52 — Vladimir Ashkenazy",
+        "url": "https://www.youtube.com/watch?v=aXKsMCqEtMA"
+      }
+    }
+  ]
+}

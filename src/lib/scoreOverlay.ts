@@ -27,6 +27,10 @@ export interface StaffGeometry {
   spacing: number;
   top: number;
   bottom: number;
+  noteTop: number;
+  noteBottom: number;
+  notationTop: number;
+  notationBottom: number;
 }
 
 export type ScoreStaffGeometry = Record<Hand, StaffGeometry | null>;
@@ -51,24 +55,30 @@ interface StaffMetrics {
   geometry: ScoreStaffGeometry;
 }
 
+interface VerticalBounds {
+  top: number;
+  bottom: number;
+}
+
+interface RenderedStaffLine {
+  element: Element;
+  measures: Element[];
+  firstMeasureStaffPathRects: DOMRect[];
+  top: number | null;
+}
+
 interface MatchedRenderGroup {
   bounds: GroupLayout | null;
-  centerX: number | null;
-  centerSamples: number;
   elements: Set<Element>;
 }
 
 interface GraphicalMeasureLike {
-  PositionAndShape: {
-    AbsolutePosition: { x: number };
-    Size: { width: number };
-  };
-  beginInstructionsWidth?: number;
-  parentSourceMeasure?: { measureListIndex?: number };
+  parentSourceMeasure?: { measureListIndex?: number; WasRendered?: boolean };
   staffEntries?: unknown[];
 }
 
 interface OsmdLike {
+  Zoom?: number;
   GraphicSheet: {
     MeasureList: Array<Array<GraphicalMeasureLike | null | undefined>>;
   };
@@ -100,6 +110,11 @@ export interface TrackSegment {
   width: number;
 }
 
+export interface ScoreHitIndex {
+  cellWidth: number;
+  cells: Map<number, ScoreGroupLayout[]>;
+}
+
 function isGraphicalMeasure(measure: GraphicalMeasureLike | null | undefined): measure is GraphicalMeasureLike {
   return measure != null;
 }
@@ -119,6 +134,9 @@ const FRAME_VERTICAL_PAD = 18;
 const STAFF_FRAME_PAD = 2.1;
 const BASS_FRAME_BOTTOM_PAD = 5.2;
 const MIN_TRACK_SEGMENT_WIDTH = 1;
+const STAFF_PATH_MIN_WIDTH = 20;
+const STAFF_PATH_MAX_HEIGHT = 2;
+const STAFF_TOP_TOLERANCE = 2;
 
 export function rectsIntersect(a: DOMRect | GroupLayout, b: GroupLayout): boolean {
   const ax1 = "left" in a ? a.left : a.x;
@@ -149,15 +167,6 @@ function boxContainsPoint(box: GroupLayout, x: number, y: number): boolean {
 
 function trackAnchorIntersectsBox(layout: ScoreGroupLayout, box: GroupLayout): boolean {
   return boxContainsPoint(box, layout.timeX, layout.y + layout.height * 0.5);
-}
-
-function parseSvgDimension(value: string | null): number {
-  if (!value) {
-    return 0;
-  }
-
-  const parsed = Number.parseFloat(value);
-  return Number.isFinite(parsed) ? parsed : 0;
 }
 
 function bandBottom(band: Band): number {
@@ -347,27 +356,149 @@ function mergeBounds(groupId: string, current: GroupLayout | null, next: GroupLa
   };
 }
 
-function getStaffLineYClusters(host: HTMLElement, overlayRect: DOMRect): number[] {
-  return clusterNumbers(
-    Array.from(host.querySelectorAll("svg path"))
-      .map((path) => path.getBoundingClientRect())
-      .filter((rect) => rect.width > 100 && rect.height <= 2)
-      .map((rect) => rect.top - overlayRect.top),
-    3,
-  );
+function directChildrenWithClass(element: Element, className: string): Element[] {
+  return Array.from(element.children).filter((child) => child.classList.contains(className));
+}
+
+function directPathRects(element: Element): DOMRect[] {
+  return Array.from(element.children)
+    .filter((child) => child.tagName.toLowerCase() === "path")
+    .map((path) => path.getBoundingClientRect());
+}
+
+function staffPathRects(measure: Element): DOMRect[] {
+  return directPathRects(measure)
+    .filter((rect) => rect.width > STAFF_PATH_MIN_WIDTH && rect.height <= STAFF_PATH_MAX_HEIGHT)
+    .sort((left, right) => left.top - right.top);
+}
+
+function collectRenderedStaffLines(host: HTMLElement, overlayRect: DOMRect): RenderedStaffLine[] {
+  return Array.from(host.querySelectorAll("svg .staffline")).map((element) => {
+    const measures = directChildrenWithClass(element, "vf-measure");
+    const firstMeasureStaffPathRects = measures[0] ? staffPathRects(measures[0]) : [];
+    const top = firstMeasureStaffPathRects[0]?.top;
+    return {
+      element,
+      measures,
+      firstMeasureStaffPathRects,
+      top: top == null ? null : top - overlayRect.top,
+    };
+  });
+}
+
+function getRenderedMeasureLayouts(
+  staffLines: RenderedStaffLine[],
+  overlayRect: DOMRect,
+  measureIndices: number[],
+): RawMeasureLayout[] {
+  const upperStaffTop = staffLines[0]?.top;
+  const measureElements = upperStaffTop == null
+    ? []
+    : staffLines
+        .filter((staffLine) => staffLine.top != null && Math.abs(staffLine.top - upperStaffTop) <= STAFF_TOP_TOLERANCE)
+        .flatMap((staffLine) => staffLine.measures);
+  const layouts: RawMeasureLayout[] = [];
+
+  measureIndices.forEach((measureIndex, renderedIndex) => {
+    const measureElement = measureElements[renderedIndex];
+    if (!measureElement) {
+      return;
+    }
+
+    const staffLineRect = staffPathRects(measureElement)
+      .sort((left, right) => right.width - left.width)[0];
+    if (!staffLineRect) {
+      return;
+    }
+
+    const x = staffLineRect.left - overlayRect.left;
+    layouts[measureIndex] = {
+      x,
+      right: staffLineRect.right - overlayRect.left,
+      begin: 0,
+    };
+  });
+
+  return layouts;
+}
+
+function getStaffLineYClusters(staffLines: RenderedStaffLine[], overlayRect: DOMRect): number[] {
+  return staffLines
+    .slice(0, 2)
+    .flatMap((staffLine) => {
+      if (staffLine.firstMeasureStaffPathRects.length === 0) {
+        return [];
+      }
+
+      return clusterNumbers(
+        staffLine.firstMeasureStaffPathRects
+          .map((rect) => rect.top - overlayRect.top),
+        STAFF_TOP_TOLERANCE,
+      ).slice(0, 5);
+    });
 }
 
 function getMeasureBarlineXClusters(host: HTMLElement, overlayRect: DOMRect): number[] {
   return clusterNumbers(
-    Array.from(host.querySelectorAll("svg rect"))
-      .map((rect) => rect.getBoundingClientRect())
-      .filter((rect) => rect.width > 0 && rect.width <= 4 && rect.height > 100)
+    Array.from(host.querySelectorAll("svg .staffline > .vf-connector > rect"))
+      .map((element) => element.getBoundingClientRect())
+      .filter((rect) => rect.width > 0 && rect.width <= 4 && rect.height > rect.width * 4)
       .map((rect) => rect.left - overlayRect.left),
     3,
   );
 }
 
-function makeStaffGeometry(hand: Hand, lines: number[], fallbackSpacing = 18): StaffGeometry {
+function getStaffLinesAtTop(
+  staffLines: RenderedStaffLine[],
+  staffTop: number,
+): RenderedStaffLine[] {
+  return staffLines.filter((staffLine) =>
+    staffLine.top != null && Math.abs(staffLine.top - staffTop) <= STAFF_TOP_TOLERANCE,
+  );
+}
+
+function boundsFromRects(rects: DOMRect[], overlayRect: DOMRect): VerticalBounds | null {
+  const renderedRects = rects.filter((rect) => rect.width > 0 && rect.height > 0);
+  if (renderedRects.length === 0) {
+    return null;
+  }
+
+  return {
+    top: Math.min(...renderedRects.map((rect) => rect.top - overlayRect.top)),
+    bottom: Math.max(...renderedRects.map((rect) => rect.bottom - overlayRect.top)),
+  };
+}
+
+function getStaffNoteBounds(
+  staffLines: RenderedStaffLine[],
+  overlayRect: DOMRect,
+  staffTop: number,
+): VerticalBounds | null {
+  const measureRects = getStaffLinesAtTop(staffLines, staffTop)
+    .flatMap((staffLine) => staffLine.measures)
+    .map((measure) => measure.getBoundingClientRect());
+  return boundsFromRects(measureRects, overlayRect);
+}
+
+function getStaffNotationBounds(
+  staffLines: RenderedStaffLine[],
+  overlayRect: DOMRect,
+  staffTop: number,
+): VerticalBounds | null {
+  const notationRects = getStaffLinesAtTop(staffLines, staffTop)
+    .flatMap((staffLine) => Array.from(staffLine.element.children))
+    .filter((element) => !element.classList.contains("vf-connector"))
+    .map((element) => element.getBoundingClientRect());
+  return boundsFromRects(notationRects, overlayRect);
+}
+
+function makeStaffGeometry(
+  hand: Hand,
+  lines: number[],
+  fallbackSpacing = 18,
+  noteBounds: VerticalBounds | null = null,
+  notationBounds: VerticalBounds | null = null,
+): StaffGeometry {
   const normalizedLines = lines.slice(0, 5);
   const spacing = median(normalizedLines.slice(1).map((line, index) => line - normalizedLines[index])) || fallbackSpacing;
 
@@ -377,6 +508,10 @@ function makeStaffGeometry(hand: Hand, lines: number[], fallbackSpacing = 18): S
     spacing,
     top: normalizedLines[0],
     bottom: normalizedLines[4],
+    noteTop: noteBounds?.top ?? normalizedLines[0],
+    noteBottom: noteBounds?.bottom ?? normalizedLines[4],
+    notationTop: notationBounds?.top ?? noteBounds?.top ?? normalizedLines[0],
+    notationBottom: notationBounds?.bottom ?? noteBounds?.bottom ?? normalizedLines[4],
   };
 }
 
@@ -384,8 +519,13 @@ function emptyStaffGeometry(): ScoreStaffGeometry {
   return { right: null, left: null };
 }
 
-function getStaffMetrics(host: HTMLElement, overlayRect: DOMRect, svgRect: DOMRect, viewportHeight: number): StaffMetrics {
-  const staffLines = getStaffLineYClusters(host, overlayRect);
+function getStaffMetrics(
+  renderedStaffLines: RenderedStaffLine[],
+  overlayRect: DOMRect,
+  svgRect: DOMRect,
+  viewportHeight: number,
+): StaffMetrics {
+  const staffLines = getStaffLineYClusters(renderedStaffLines, overlayRect);
   const svgTop = svgRect.top - overlayRect.top;
   const svgBottom = svgRect.bottom - overlayRect.top;
 
@@ -395,8 +535,22 @@ function getStaffMetrics(host: HTMLElement, overlayRect: DOMRect, svgRect: DOMRe
     const rightSpacing = median(rightLines.slice(1).map((line, index) => line - rightLines[index])) || 18;
     const leftSpacing = median(leftLines.slice(1).map((line, index) => line - leftLines[index])) || rightSpacing;
     const split = (rightLines[4] + leftLines[0]) / 2;
-    const rightGeometry = makeStaffGeometry("right", rightLines, rightSpacing);
-    const leftGeometry = makeStaffGeometry("left", leftLines, leftSpacing);
+    const rightGeometry = makeStaffGeometry(
+      "right",
+      rightLines,
+      rightSpacing,
+      getStaffNoteBounds(renderedStaffLines, overlayRect, rightLines[0]),
+      getStaffNotationBounds(renderedStaffLines, overlayRect, rightLines[0]),
+    );
+    const leftGeometry = makeStaffGeometry(
+      "left",
+      leftLines,
+      leftSpacing,
+      getStaffNoteBounds(renderedStaffLines, overlayRect, leftLines[0]),
+      getStaffNotationBounds(renderedStaffLines, overlayRect, leftLines[0]),
+    );
+    const rightNotePadding = rightSpacing * 0.6;
+    const leftNotePadding = leftSpacing * 0.6;
 
     return {
       bands: {
@@ -405,8 +559,26 @@ function getStaffMetrics(host: HTMLElement, overlayRect: DOMRect, svgRect: DOMRe
           left: makeBand(split, Math.min(viewportHeight, leftLines[4] + leftSpacing * 1.8)),
         },
         frame: {
-          right: makeBand(Math.max(0, rightLines[0] - rightSpacing * STAFF_FRAME_PAD), rightLines[4] + rightSpacing * STAFF_FRAME_PAD),
-          left: makeBand(leftLines[0] - leftSpacing * STAFF_FRAME_PAD, leftLines[4] + leftSpacing * BASS_FRAME_BOTTOM_PAD),
+          right: makeBand(
+            Math.max(0, Math.min(
+              rightLines[0] - rightSpacing * STAFF_FRAME_PAD,
+              rightGeometry.noteTop - rightNotePadding,
+            )),
+            Math.max(
+              rightLines[4] + rightSpacing * STAFF_FRAME_PAD,
+              rightGeometry.noteBottom + rightNotePadding,
+            ),
+          ),
+          left: makeBand(
+            Math.min(
+              leftLines[0] - leftSpacing * STAFF_FRAME_PAD,
+              leftGeometry.noteTop - leftNotePadding,
+            ),
+            Math.max(
+              leftLines[4] + leftSpacing * BASS_FRAME_BOTTOM_PAD,
+              leftGeometry.noteBottom + leftNotePadding,
+            ),
+          ),
         },
       },
       geometry: { right: rightGeometry, left: leftGeometry },
@@ -415,14 +587,28 @@ function getStaffMetrics(host: HTMLElement, overlayRect: DOMRect, svgRect: DOMRe
 
   if (staffLines.length >= 5) {
     const spacing = median(staffLines.slice(1).map((line, index) => line - staffLines[index])) || 18;
-    const band = makeBand(Math.max(0, staffLines[0] - spacing * 2.2), Math.min(viewportHeight, staffLines[4] + spacing * 2.2));
-    const rightGeometry = makeStaffGeometry("right", staffLines.slice(0, 5), spacing);
+    const hitBand = makeBand(
+      Math.max(0, staffLines[0] - spacing * 2.2),
+      Math.min(viewportHeight, staffLines[4] + spacing * 2.2),
+    );
+    const rightGeometry = makeStaffGeometry(
+      "right",
+      staffLines.slice(0, 5),
+      spacing,
+      getStaffNoteBounds(renderedStaffLines, overlayRect, staffLines[0]),
+      getStaffNotationBounds(renderedStaffLines, overlayRect, staffLines[0]),
+    );
+    const notePadding = spacing * 0.6;
+    const frameBand = makeBand(
+      Math.max(0, Math.min(hitBand.top, rightGeometry.noteTop - notePadding)),
+      Math.max(bandBottom(hitBand), rightGeometry.noteBottom + notePadding),
+    );
     const leftGeometry: StaffGeometry = { ...rightGeometry, hand: "left" };
 
     return {
       bands: {
-        hit: { right: band, left: band },
-        frame: { right: band, left: band },
+        hit: { right: hitBand, left: hitBand },
+        frame: { right: frameBand, left: frameBand },
       },
       geometry: { right: rightGeometry, left: leftGeometry },
     };
@@ -533,6 +719,32 @@ export function buildContiguousTrackSegments(inputs: TrackSegmentInput[]): Track
     x: boundaries[index],
     width: boundaries[index + 1] - boundaries[index],
   }));
+}
+
+export function buildScoreHitIndex(layouts: ScoreGroupLayout[], cellWidth = 256): ScoreHitIndex {
+  const normalizedCellWidth = Math.max(32, cellWidth);
+  const cells = new Map<number, ScoreGroupLayout[]>();
+
+  for (const layout of layouts) {
+    const firstCell = Math.floor(layout.x / normalizedCellWidth);
+    const lastCell = Math.floor((layout.x + Math.max(0, layout.width)) / normalizedCellWidth);
+    for (let cell = firstCell; cell <= lastCell; cell += 1) {
+      cells.set(cell, [...(cells.get(cell) ?? []), layout]);
+    }
+  }
+
+  return { cellWidth: normalizedCellWidth, cells };
+}
+
+export function getScoreGroupAtPoint(index: ScoreHitIndex, x: number, y: number): ScoreGroupLayout | null {
+  const candidates = index.cells.get(Math.floor(x / index.cellWidth)) ?? [];
+  return candidates
+    .filter((layout) => boxContainsPoint(layout, x, y))
+    .sort((left, right) => {
+      const leftDistance = Math.abs(left.glyphY + left.glyphHeight * 0.5 - y);
+      const rightDistance = Math.abs(right.glyphY + right.glyphHeight * 0.5 - y);
+      return leftDistance - rightDistance;
+    })[0] ?? null;
 }
 
 export function buildMeasureLayouts(
@@ -669,27 +881,31 @@ export function buildScoreOverlayLayout(
   osmd: OsmdLike,
   score: ScoreData,
   viewportHeight: number,
+  renderedMeasureIndex = Number.POSITIVE_INFINITY,
 ): ScoreOverlayLayout {
   const rect = svg.getBoundingClientRect();
   const hostRect = host.getBoundingClientRect();
   const overlayRect = overlay.getBoundingClientRect();
   const offsetLeft = rect.left - overlayRect.left;
-  const viewBoxWidth = svg.viewBox?.baseVal?.width || parseSvgDimension(svg.getAttribute("width"));
-  const rawMeasures = osmd.GraphicSheet.MeasureList.map((measureList) => measureList[0]).filter(isGraphicalMeasure);
-  const rawRight = rawMeasures.reduce((max, measure) => {
-    const shape = measure.PositionAndShape;
-    return Math.max(max, shape.AbsolutePosition.x + shape.Size.width);
-  }, 0);
-  const unitToCss = rawRight > 0 ? rect.width / rawRight : viewBoxWidth > 0 ? rect.width / viewBoxWidth : 10;
-
-  const rawMeasureLayouts = rawMeasures.map<RawMeasureLayout>((measure) => {
-    const shape = measure.PositionAndShape;
-    const x = offsetLeft + shape.AbsolutePosition.x * unitToCss;
-    const width = Math.max(40, shape.Size.width * unitToCss);
-    const begin = Math.max(0, (measure.beginInstructionsWidth ?? 0) * unitToCss);
-    return { x, right: x + width, begin };
+  const renderedStaffLines = collectRenderedStaffLines(host, overlayRect);
+  const renderedMeasureLists = osmd.GraphicSheet.MeasureList.map((measureList, fallbackMeasureIndex) =>
+    measureList.map((measure) => {
+      const measureIndex = measure?.parentSourceMeasure?.measureListIndex ?? fallbackMeasureIndex;
+      return measureIndex <= renderedMeasureIndex ? measure : null;
+    }),
+  );
+  const renderedMeasureIndices = renderedMeasureLists.flatMap((measureList, fallbackMeasureIndex) => {
+    const measure = measureList.find(isGraphicalMeasure);
+    return measure
+      ? [measure.parentSourceMeasure?.measureListIndex ?? fallbackMeasureIndex]
+      : [];
   });
-  const staffMetrics = getStaffMetrics(host, overlayRect, rect, viewportHeight);
+  const rawMeasureLayouts = getRenderedMeasureLayouts(
+    renderedStaffLines,
+    overlayRect,
+    renderedMeasureIndices,
+  );
+  const staffMetrics = getStaffMetrics(renderedStaffLines, overlayRect, rect, viewportHeight);
   const staffBands = staffMetrics.bands;
 
   const exactGroups = new Map<string, NoteGroup>();
@@ -704,7 +920,7 @@ export function buildScoreOverlayLayout(
   const tickTimeSamples = new Map<string, number[]>();
   const svgTargets = new Map<string, Element[]>();
 
-  osmd.GraphicSheet.MeasureList.forEach((measureList, fallbackMeasureIndex) => {
+  renderedMeasureLists.forEach((measureList, fallbackMeasureIndex) => {
     measureList.forEach((measure, staffIndex) => {
       if (!measure) {
         return;
@@ -718,7 +934,6 @@ export function buildScoreOverlayLayout(
           hasOnlyRests?: () => boolean;
           relInMeasureTimestamp?: unknown;
           sourceStaffEntry?: { Timestamp?: unknown };
-          getAbsoluteStartAndEnd?: () => [number, number];
         };
         if (maybeEntry.hasOnlyRests?.()) {
           continue;
@@ -740,14 +955,9 @@ export function buildScoreOverlayLayout(
 
         const elements = collectEntrySvgElements(entry);
         const bounds = getElementBounds(group.id, elements, overlayRect, hand, staffBands);
-        const absolute = maybeEntry.getAbsoluteStartAndEnd?.();
-        const centerX = absolute ? offsetLeft + ((absolute[0] + absolute[1]) / 2) * unitToCss : null;
-        const fallbackCenterX = bounds ? bounds.x + bounds.width * 0.5 : null;
-        const timeSampleX = centerX ?? fallbackCenterX;
+        const timeSampleX = bounds ? bounds.x + bounds.width * 0.5 : null;
         const previous = matchedGroups.get(group.id) ?? {
           bounds: null,
-          centerX: null,
-          centerSamples: 0,
           elements: new Set<Element>(),
         };
 
@@ -755,13 +965,6 @@ export function buildScoreOverlayLayout(
           previous.elements.add(element);
         }
         previous.bounds = mergeBounds(group.id, previous.bounds, bounds);
-        if (centerX != null && Number.isFinite(centerX)) {
-          previous.centerX =
-            previous.centerX == null
-              ? centerX
-              : (previous.centerX * previous.centerSamples + centerX) / (previous.centerSamples + 1);
-          previous.centerSamples += 1;
-        }
 
         if (timeSampleX != null && Number.isFinite(timeSampleX)) {
           const key = tickTimeKey(measureIndex, startTick);
@@ -805,14 +1008,15 @@ export function buildScoreOverlayLayout(
   const measureBarlineXs = getMeasureBarlineXClusters(host, overlayRect);
   const measureLayouts = buildMeasureLayouts(rawMeasureLayouts, firstGlyphLeftByMeasure, measureBarlineXs);
 
-  const baseLayouts = score.noteGroups.map<ScoreGroupLayout>((group) => {
+  const baseLayouts = score.noteGroups.flatMap<ScoreGroupLayout>((group) => {
     const measure = measureLayouts[group.measureIndex];
+    if (!measure) {
+      return [];
+    }
     const measureDuration = score.measureDurations[group.measureIndex] || 1;
-    const fallbackWidth = Math.max(2200, score.noteGroups.length * 54);
-    const fallbackX = 120 + (group.absoluteTick / Math.max(1, score.totalTicks)) * fallbackWidth;
-    const measureX = measure?.x ?? fallbackX;
-    const measureRight = measure?.right ?? measureX + 80;
-    const contentX = measure?.contentX ?? measureX + 12;
+    const measureX = measure.x;
+    const measureRight = measure.right;
+    const contentX = measure.contentX;
     const usableWidth = Math.max(30, measureRight - contentX - 10);
     const ratio = Math.max(0, Math.min(1, group.startTick / measureDuration));
     const matched = matchedGroups.get(group.id);
@@ -821,7 +1025,7 @@ export function buildScoreOverlayLayout(
     const rawCenterX =
       matched?.bounds != null
         ? matched.bounds.x + matched.bounds.width * 0.5
-        : matched?.centerX ?? timeX;
+        : timeX;
     const centerX = clamp(rawCenterX, measureX, measureRight);
     const hitBand = staffBands.hit[group.hand];
     const groupBounds = matched?.bounds;
@@ -832,11 +1036,12 @@ export function buildScoreOverlayLayout(
     const baseFrameBand = staffBands.frame[group.hand];
     const baseFrameTop = Math.min(baseFrameBand.top, hitBand.top);
     const baseFrameBottom = Math.max(bandBottom(baseFrameBand), bandBottom(hitBand));
+    const groupFrameTop = groupBounds ? groupBounds.y - FRAME_VERTICAL_PAD : baseFrameTop;
     const groupFrameBottom = groupBounds ? groupBounds.y + groupBounds.height + FRAME_VERTICAL_PAD : baseFrameBottom;
-    const frameTop = Math.max(0, baseFrameTop);
+    const frameTop = Math.max(0, Math.min(baseFrameTop, groupFrameTop));
     const frameBottom = Math.max(baseFrameBottom, groupFrameBottom);
 
-    return {
+    return [{
       groupId: group.id,
       hand: group.hand,
       measureIndex: group.measureIndex,
@@ -859,7 +1064,7 @@ export function buildScoreOverlayLayout(
       frameY: frameTop,
       frameWidth: 48,
       frameHeight: Math.max(56, frameBottom - frameTop),
-    };
+    }];
   });
 
   const layouts = applyHorizontalSegments(baseLayouts);
@@ -873,7 +1078,11 @@ export function buildScoreOverlayLayout(
       height: Math.max(180, frameBottom - frameTop),
     },
     surfaceSize: {
-      width: Math.max(hostRect.width, rect.width + offsetLeft + 60, ...layouts.map((layout) => layout.x + layout.width + 120)),
+      width: Math.max(
+        hostRect.width,
+        rect.width + offsetLeft + 60,
+        ...layouts.map((layout) => layout.x + layout.width + 120),
+      ),
       height: Math.max(
         viewportHeight,
         rect.bottom - overlayRect.top + 20,

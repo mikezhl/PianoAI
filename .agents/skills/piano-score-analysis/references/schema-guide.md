@@ -2,10 +2,11 @@
 
 ## Contract
 
-- Schema file: `analysis/schema/score-analysis.schema.json`
+- Schema file: `schemas/score-analysis.schema.json`
 - Current version: `2.1.0`
-- Analysis files: `public/analysis/<score-id>.analysis.json`
-- Library mapping: `public/analysis/manifest.json`
+- Analysis files: `data/analyses/<score-id>.json`
+- Source scores: `data/scores/<score-id>.mxl`
+- Library mapping: `data/catalog.json`
 
 Do not add fields that are not declared by the Schema. Propose a schema change only when the information cannot be represented by existing fields.
 

@@ -13,6 +13,15 @@ function group(id: string, tick: number, midis: number[]): NoteGroup {
     durationTicks: 240,
     notes: midis.map((midi, index) => ({
       id: `${id}-${index}`,
+      scoreRef: {
+        partId: "P1",
+        measureIndex: 0,
+        offsetQuarter: { numerator: tick, denominator: 480 },
+        staff: 2,
+        voice: "5",
+        writtenPitch: String(midi),
+        ordinalAtPosition: index,
+      },
       midi,
       name: String(midi),
       hand: "left",

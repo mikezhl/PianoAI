@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pianoai.local/schema/reference-interpretation-catalog-2.1.0.json",
+  "title": "PianoAI Reference Interpretation Catalog",
+  "type": "object",
+  "required": ["schemaVersion", "references"],
+  "properties": {
+    "schemaVersion": { "const": "2.1.0" },
+    "references": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/reference" }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "scoreIdentity": {
+      "type": "object",
+      "required": ["scoreId", "sourceHash", "identitySource"],
+      "properties": {
+        "scoreId": { "type": "string", "minLength": 1 },
+        "sourceHash": { "type": "string", "pattern": "^sha256:[0-9A-F]{64}$" },
+        "identitySource": { "enum": ["library-source", "canonical-xml"] }
+      },
+      "additionalProperties": false
+    },
+    "source": {
+      "type": "object",
+      "required": ["title", "url", "kind"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1 },
+        "url": { "type": "string", "pattern": "^https://" },
+        "kind": { "const": "original-recording" }
+      },
+      "additionalProperties": false
+    },
+    "audio": {
+      "type": "object",
+      "required": ["fileName", "objectKey", "sha256", "durationUs", "format", "sampleRate", "channels", "storage"],
+      "properties": {
+        "fileName": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9._-]+\\.(m4a|mp3|wav|flac|ogg)$"
+        },
+        "objectKey": {
+          "type": "string",
+          "pattern": "^reference-audio/[0-9a-f]{64}\\.(m4a|mp3|wav|flac|ogg)$"
+        },
+        "sha256": { "type": "string", "pattern": "^[0-9A-F]{64}$" },
+        "durationUs": { "type": "integer", "exclusiveMinimum": 0 },
+        "format": { "type": "string", "minLength": 1 },
+        "sampleRate": { "type": "integer", "exclusiveMinimum": 0 },
+        "channels": { "type": "integer", "minimum": 1 },
+        "storage": { "const": "cloudflare-r2" }
+      },
+      "additionalProperties": false
+    },
+    "reference": {
+      "type": "object",
+      "required": [
+        "interpretationId",
+        "score",
+        "performerId",
+        "performerName",
+        "evidenceId",
+        "source",
+        "audio"
+      ],
+      "properties": {
+        "interpretationId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "score": { "$ref": "#/$defs/scoreIdentity" },
+        "performerId": { "type": "string", "minLength": 1 },
+        "performerName": { "type": "string", "minLength": 1 },
+        "evidenceId": { "type": "string", "minLength": 1 },
+        "source": { "$ref": "#/$defs/source" },
+        "audio": { "$ref": "#/$defs/audio" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

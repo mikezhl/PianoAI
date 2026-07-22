@@ -1,0 +1,1787 @@
+{
+  "schemaVersion": "2.1.0",
+  "analysisVersion": "1",
+  "score": {
+    "id": "chopin-ballade-op52-no4",
+    "sourceFile": "chopin-ballade-op52-no4.mxl",
+    "sourceHash": "sha256:3B1823138833A90E191440CE34B566585B6DFE8FE39A4FC318831BBECBC17522",
+    "title": "Ballade No. 4 in F Minor, Op. 52",
+    "composer": "Frédéric Chopin",
+    "key": "F minor",
+    "meter": "6/8",
+    "measureCount": 242,
+    "internalMeasureCount": 242,
+    "pickupMeasureIndex": null,
+    "measureNumberByIndex": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28",
+      "29",
+      "30",
+      "31",
+      "32",
+      "33",
+      "34",
+      "35",
+      "36",
+      "37",
+      "38",
+      "39",
+      "40",
+      "41",
+      "42",
+      "43",
+      "44",
+      "45",
+      "46",
+      "47",
+      "48",
+      "49",
+      "50",
+      "51",
+      "52",
+      "53",
+      "54",
+      "55",
+      "56",
+      "57",
+      "58",
+      "59",
+      "60",
+      "61",
+      "62",
+      "63",
+      "64",
+      "65",
+      "66",
+      "67",
+      "68",
+      "69",
+      "70",
+      "71",
+      "72",
+      "73",
+      "74",
+      "75",
+      "76",
+      "77",
+      "78",
+      "79",
+      "80",
+      "81",
+      "82",
+      "83",
+      "84",
+      "85",
+      "86",
+      "87",
+      "88",
+      "89",
+      "90",
+      "91",
+      "92",
+      "93",
+      "94",
+      "95",
+      "96",
+      "97",
+      "98",
+      "99",
+      "100",
+      "101",
+      "102",
+      "103",
+      "104",
+      "105",
+      "106",
+      "107",
+      "108",
+      "109",
+      "110",
+      "111",
+      "112",
+      "113",
+      "114",
+      "115",
+      "116",
+      "117",
+      "118",
+      "119",
+      "120",
+      "121",
+      "122",
+      "123",
+      "124",
+      "125",
+      "126",
+      "127",
+      "128",
+      "129",
+      "130",
+      "131",
+      "132",
+      "133",
+      "134",
+      "135",
+      "136",
+      "137",
+      "138",
+      "139",
+      "140",
+      "141",
+      "142",
+      "143",
+      "144",
+      "145",
+      "146",
+      "147",
+      "148",
+      "149",
+      "150",
+      "151",
+      "152",
+      "153",
+      "154",
+      "155",
+      "156",
+      "157",
+      "158",
+      "159",
+      "160",
+      "161",
+      "162",
+      "163",
+      "164",
+      "165",
+      "166",
+      "167",
+      "168",
+      "169",
+      "170",
+      "171",
+      "172",
+      "173",
+      "174",
+      "175",
+      "176",
+      "177",
+      "178",
+      "179",
+      "180",
+      "181",
+      "182",
+      "183",
+      "184",
+      "185",
+      "186",
+      "187",
+      "188",
+      "189",
+      "190",
+      "191",
+      "192",
+      "193",
+      "194",
+      "195",
+      "196",
+      "197",
+      "198",
+      "199",
+      "200",
+      "201",
+      "202",
+      "203",
+      "204",
+      "205",
+      "206",
+      "207",
+      "208",
+      "209",
+      "210",
+      "211",
+      "212",
+      "213",
+      "214",
+      "215",
+      "216",
+      "217",
+      "218",
+      "219",
+      "220",
+      "221",
+      "222",
+      "223",
+      "224",
+      "225",
+      "226",
+      "227",
+      "228",
+      "229",
+      "230",
+      "231",
+      "232",
+      "233",
+      "234",
+      "235",
+      "236",
+      "237",
+      "238",
+      "239",
+      "240",
+      "241",
+      "242"
+    ]
+  },
+  "form": {
+    "label": "变奏性叙事结构：引子框架—主题变奏链—倒序回归—赞美诗间奏—尾声",
+    "summary": "七小节引子建立悬置框架，第一主题随后不是简单再现，而是在复述、加密、卡农和装饰中连续变形；B-flat major 第二主题在后半以 D-flat major 扩张回归。引子材料重现后，两个主题依次走向 f 小调，短暂赞美诗式间奏制造静止，最后由高密度尾声爆发收束。"
+  },
+  "sources": [
+    {
+      "id": "b4-source-score",
+      "title": "PianoAI 内置 MusicXML：Chopin Ballade No. 4",
+      "url": "pianoai://library/chopin-ballade-op52-no4",
+      "kind": "score",
+      "use": "作品内部小节坐标、音符、节奏、声部、拍号、速度变化、拼写和确定性重复的首要依据。"
+    },
+    {
+      "id": "b4-tonic-chord",
+      "title": "Chopin – Ballade No. 4 in F Minor, Op. 52 Analysis",
+      "url": "https://tonic-chord.com/chopin-ballade-no-4-in-f-minor-op-52-analysis/",
+      "kind": "secondary",
+      "use": "交叉核对引子、第一主题变奏、第二主题、卡农、赞美诗间奏与尾声的公开分段。",
+      "limitations": "网页页首错误显示 A-flat major；该全曲调性标签与作品身份、当前谱源调号和终止冲突，不能采用。"
+    },
+    {
+      "id": "b4-imslp",
+      "title": "Ballade No.4, Op.52 (Chopin, Frédéric)",
+      "url": "https://imslp.org/wiki/Ballade_No.4%2C_Op.52_(Chopin%2C_Fr%C3%A9d%C3%A9ric)",
+      "kind": "reference",
+      "use": "核对作品标题、作品号、作曲家与版本背景。"
+    }
+  ],
+  "crossValidation": [
+    {
+      "id": "b4-validation-identity-mode",
+      "claim": "开头四个降号应解释为 f 小调，而不是 A-flat major。",
+      "status": "confirmed",
+      "evidence": [
+        "MusicXML 开头调号为 -4，但未写 mode，不能只凭调号自动选择相对大调。",
+        "标题页和作品目录均明确写明 F Minor, Op. 52。",
+        "尾声与最终和弦以 F–A-flat–C 的 f 小调音响闭合。"
+      ],
+      "sourceIds": [
+        "b4-source-score",
+        "b4-imslp"
+      ],
+      "conclusion": "全曲主调采用 F minor；A-flat、B-flat、A major 和 D-flat 等区域按局部功能记录。"
+    },
+    {
+      "id": "b4-validation-online-key-error",
+      "claim": "在线分析页所写的 A-flat major 是全曲主调。",
+      "status": "rejected",
+      "evidence": [
+        "网页标题本身写明 Ballade No. 4 in F Minor, Op. 52，却在表格中误列 A-flat major。",
+        "当前谱源的作品标题、开头调号语境和终止均支持 f 小调。",
+        "A-flat major 只适合描述局部关系区域，不能取代作品主调。"
+      ],
+      "sourceIds": [
+        "b4-source-score",
+        "b4-tonic-chord",
+        "b4-imslp"
+      ],
+      "conclusion": "保留该网页的分段参考，但明确拒绝其 A-flat major 全曲调性标签。"
+    },
+    {
+      "id": "b4-validation-form",
+      "claim": "第一主题通过复述、加密、卡农与装饰形成连续变奏链，后半又与第二主题构成大尺度回归。",
+      "status": "confirmed",
+      "evidence": [
+        "m8–22 首次陈述第一主题，m23–37 立即复述，m58–79 的织体和密度显著增加。",
+        "m135–151 把第一主题拆成卡农声部，m152–168 再以装饰性写法延展。",
+        "m169 起第二主题在 D-flat major 回归，m195 后重新转向 f 小调。"
+      ],
+      "sourceIds": [
+        "b4-source-score",
+        "b4-tonic-chord"
+      ],
+      "conclusion": "采用“主题变奏链＋大尺度回归”的导航模型，不把每次装饰变化误分成互不相关的新主题。"
+    },
+    {
+      "id": "b4-validation-left-texture",
+      "claim": "左手可以稳定地按复合拍逐拍聚合为和弦。",
+      "status": "rejected",
+      "evidence": [
+        "引子下谱表包含独立低音、内声回旋和跨谱表音符，完整和声分布在双手。",
+        "m135–148 的卡农把主题性声部直接放入下谱表，线性关系明显高于垂直和弦切片。",
+        "m169–180 出现半音下行、长音踏板与高速音阶链，固定拍窗会产生大量不完整单音集。"
+      ],
+      "sourceIds": [
+        "b4-source-score"
+      ],
+      "conclusion": "采用 polyphonic-texture，记录低音路线、卡农声部、赞美诗踏板与最终收束。"
+    },
+    {
+      "id": "b4-validation-composer-metadata",
+      "claim": "事实提取中的 composer=Unknown 表示作曲家身份不确定。",
+      "status": "rejected",
+      "evidence": [
+        "当前 MXL 的 work/identification 元数据未填写 composer，所以自动事实层返回 Unknown。",
+        "同一 MXL 的标题页 credit 明确写有 Frédéric Chopin。",
+        "作品标题与 Op. 52 身份由外部作品目录一致确认。"
+      ],
+      "sourceIds": [
+        "b4-source-score",
+        "b4-imslp"
+      ],
+      "conclusion": "分析元数据采用 Frédéric Chopin；同时把自动提取 Unknown 解释为字段缺失，而不是身份歧义。"
+    }
+  ],
+  "sections": [
+    {
+      "id": "b4-section-introduction",
+      "label": "引子",
+      "range": {
+        "start": {
+          "measureIndex": 0,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        "end": {
+          "measureIndex": 7,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      },
+      "summary": "七小节以悬置的上声部和下谱表回旋线条建立不稳定框架；F minor 尚未立即落稳，结尾将听觉交给第一主题。",
+      "confidence": "high",
+      "sourceRefs": [
+        {
+          "sourceId": "b4-source-score",
+          "claim": "范围、音高、节奏、织体与速度按当前 MusicXML 核对。"
+        },
+        {
+          "sourceId": "b4-tonic-chord",
+          "claim": "公开分段仅作交叉核对；调性与坐标冲突处以当前谱源为准。"
+        }
+      ],
+      "layer": "structure",
+      "kind": "theme",
+      "displayNumber": 1,
+      "tonality": "F minor 的属功能与相邻色彩",
+      "understanding": "把引子记作一条逐步落地的声部路线；其核心功能是悬置与开启，不是完整主主题。",
+      "relatedMotifFamilyIds": [
+        "b4-motif-intro-frame"
+      ]
+    },
+    {
+      "id": "b4-section-first-theme",
+      "label": "第一主题",
+      "range": {
+        "start": {
+          "measureIndex": 7,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        "end": {
+          "measureIndex": 22,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      },
+      "summary": "第一主题在 f 小调中以柔韧旋律、内声倚音和分层低音出现，句法不断延迟真正终止。",
+      "confidence": "high",
+      "sourceRefs": [
+        {
+          "sourceId": "b4-source-score",
+          "claim": "范围、音高、节奏、织体与速度按当前 MusicXML 核对。"
+        },
+        {
+          "sourceId": "b4-tonic-chord",
+          "claim": "公开分段仅作交叉核对；调性与坐标冲突处以当前谱源为准。"
+        }
+      ],
+      "layer": "structure",
+      "kind": "theme",
+      "displayNumber": 2,
+      "tonality": "F minor",
+      "understanding": "优先抓旋律骨架、半小节低音更替和句尾延宕；复杂内声围绕这三层组织。",
+      "relatedMotifFamilyIds": [
+        "b4-motif-first-theme"
+      ]
+    },
+    {
+      "id": "b4-section-first-theme-restatement",
+      "label": "第一主题复述",
+      "range": {
+        "start": {
+          "measureIndex": 22,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        "end": {
+          "measureIndex": 37,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      },
+      "summary": "主题立即复述，开头局部近似，但内声拼写、音域和出口变化使它成为连续变奏，而非复制。",
+      "confidence": "high",
+      "sourceRefs": [
+        {
+          "sourceId": "b4-source-score",
+          "claim": "范围、音高、节奏、织体与速度按当前 MusicXML 核对。"
+        },
+        {
+          "sourceId": "b4-tonic-chord",
+          "claim": "公开分段仅作交叉核对；调性与坐标冲突处以当前谱源为准。"
+        }
+      ],
+      "layer": "structure",
+      "kind": "theme",
+      "displayNumber": 3,
+      "tonality": "F minor，向关系区域移动",
+      "understanding": "把相同入口与不同出口成对记忆，避免把两段混为逐音重复。",
+      "relatedMotifFamilyIds": [
+        "b4-motif-first-theme"
+      ]
+    },
+    {
+      "id": "b4-section-first-interlude",
+      "label": "第一次间奏",
+      "range": {
+        "start": {
+          "measureIndex": 37,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        "end": {
+          "measureIndex": 57,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      },
+      "summary": "新的流动音型和调性转向暂时拆开主题轮廓，密度与速度感逐步上升，为更厚重的主题变奏作准备。",
+      "confidence": "high",
+      "sourceRefs": [
+        {
+          "sourceId": "b4-source-score",
+          "claim": "范围、音高、节奏、织体与速度按当前 MusicXML 核对。"
+        },
+        {
+          "sourceId": "b4-tonic-chord",
+          "claim": "公开分段仅作交叉核对；调性与坐标冲突处以当前谱源为准。"
+        }
+      ],
+      "layer": "structure",
+      "kind": "contrast",
+      "displayNumber": 4,
+      "tonality": "多调性过渡",
+      "understanding": "把它当作变奏链中的连接桥：目的不是独立主题，而是改变第一主题再次出现时的能量。",
+      "relatedMotifFamilyIds": []
+    },
+    {
+      "id": "b4-section-dense-theme",
+      "label": "第一主题加密变奏",
+      "range": {
+        "start": {
+          "measureIndex": 57,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        "end": {
+          "measureIndex": 79,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      },
+      "summary": "第一主题回到更密集的伴奏与更高张力中，旋律骨架仍在，但装饰、声部和力度明显扩张。",
+      "confidence": "high",
+      "sourceRefs": [
+        {
+          "sourceId": "b4-source-score",
+          "claim": "范围、音高、节奏、织体与速度按当前 MusicXML 核对。"
+        },
+        {
+          "sourceId": "b4-tonic-chord",
+          "claim": "公开分段仅作交叉核对；调性与坐标冲突处以当前谱源为准。"
+        }
+      ],
+      "layer": "structure",
+      "kind": "theme",
+      "displayNumber": 5,
+      "tonality": "F minor 向 B-flat major",
+      "understanding": "比较 m8 与 m58 的旋律支点，听出同一主题如何从叙述变为推进。",
+      "relatedMotifFamilyIds": [
+        "b4-motif-first-theme"
+      ]
+    },
+    {
+      "id": "b4-section-second-theme",
+      "label": "第二主题",
+      "range": {
+        "start": {
+          "measureIndex": 79,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        "end": {
+          "measureIndex": 99,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      },
+      "summary": "B-flat major 第二主题以更宽广、较平稳的旋律出现，下方低音路线仍保持独立方向并逐步离开稳定区。",
+      "confidence": "high",
+      "sourceRefs": [
+        {
+          "sourceId": "b4-source-score",
+          "claim": "范围、音高、节奏、织体与速度按当前 MusicXML 核对。"
+        },
+        {
+          "sourceId": "b4-tonic-chord",
+          "claim": "公开分段仅作交叉核对；调性与坐标冲突处以当前谱源为准。"
+        }
+      ],
+      "layer": "structure",
+      "kind": "theme",
+      "displayNumber": 6,
+      "tonality": "B-flat major",
+      "understanding": "先建立和第一主题不同的宽阔呼吸，再听低音如何在表面平静下持续移动。",
+      "relatedMotifFamilyIds": [
+        "b4-motif-second-theme"
+      ]
+    },
+    {
+      "id": "b4-section-development",
+      "label": "发展性间奏",
+      "range": {
+        "start": {
+          "measureIndex": 99,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        "end": {
+          "measureIndex": 128,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      },
+      "summary": "主题碎片、序列与速度变化扩展音域和调性距离，逐步引出引子材料的异调回归。",
+      "confidence": "high",
+      "sourceRefs": [
+        {
+          "sourceId": "b4-source-score",
+          "claim": "范围、音高、节奏、织体与速度按当前 MusicXML 核对。"
+        },
+        {
+          "sourceId": "b4-tonic-chord",
+          "claim": "公开分段仅作交叉核对；调性与坐标冲突处以当前谱源为准。"
+        }
+      ],
+      "layer": "structure",
+      "kind": "contrast",
+      "displayNumber": 7,
+      "tonality": "多调性展开，趋向 A major",
+      "understanding": "以速度标记和织体转换建立中段坐标，不要把连续变化视作无边界段落。",
+      "relatedMotifFamilyIds": []
+    },
+    {
+      "id": "b4-section-intro-return",
+      "label": "引子材料回归",
+      "range": {
+        "start": {
+          "measureIndex": 128,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        "end": {
+          "measureIndex": 134,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      },
+      "summary": "引子框架在 A major 区域重现，低音与内声重新排列，像从远处回望开篇。",
+      "confidence": "high",
+      "sourceRefs": [
+        {
+          "sourceId": "b4-source-score",
+          "claim": "范围、音高、节奏、织体与速度按当前 MusicXML 核对。"
+        },
+        {
+          "sourceId": "b4-tonic-chord",
+          "claim": "公开分段仅作交叉核对；调性与坐标冲突处以当前谱源为准。"
+        }
+      ],
+      "layer": "structure",
+      "kind": "theme",
+      "displayNumber": 8,
+      "tonality": "A major",
+      "understanding": "辨认引子的悬置轮廓，同时明确它已经换调并承担再现前的门框功能。",
+      "relatedMotifFamilyIds": [
+        "b4-motif-intro-frame"
+      ]
+    },
+    {
+      "id": "b4-section-canon",
+      "label": "第一主题卡农",
+      "range": {
+        "start": {
+          "measureIndex": 134,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        "end": {
+          "measureIndex": 151,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      },
+      "summary": "第一主题被拆入上下声部的卡农，下谱表不再只是伴奏，而直接承担主题线条和模仿关系。",
+      "confidence": "high",
+      "sourceRefs": [
+        {
+          "sourceId": "b4-source-score",
+          "claim": "范围、音高、节奏、织体与速度按当前 MusicXML 核对。"
+        },
+        {
+          "sourceId": "b4-tonic-chord",
+          "claim": "公开分段仅作交叉核对；调性与坐标冲突处以当前谱源为准。"
+        }
+      ],
+      "layer": "structure",
+      "kind": "theme",
+      "displayNumber": 9,
+      "tonality": "A major 向 F minor",
+      "understanding": "分别练每条进入声部，再按进入顺序合并；垂直和弦不是这一段的主要记忆单位。",
+      "relatedMotifFamilyIds": [
+        "b4-motif-first-theme"
+      ]
+    },
+    {
+      "id": "b4-section-ornamented-theme",
+      "label": "第一主题装饰变奏",
+      "range": {
+        "start": {
+          "measureIndex": 151,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        "end": {
+          "measureIndex": 168,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      },
+      "summary": "卡农后的主题继续以更华丽的装饰、声部分配和音域扩张出现，逐步过渡到第二主题回归。",
+      "confidence": "high",
+      "sourceRefs": [
+        {
+          "sourceId": "b4-source-score",
+          "claim": "范围、音高、节奏、织体与速度按当前 MusicXML 核对。"
+        },
+        {
+          "sourceId": "b4-tonic-chord",
+          "claim": "公开分段仅作交叉核对；调性与坐标冲突处以当前谱源为准。"
+        }
+      ],
+      "layer": "structure",
+      "kind": "theme",
+      "displayNumber": 10,
+      "tonality": "F minor 向 D-flat major",
+      "understanding": "抓住主题支点不被装饰淹没，并把 m153–154 的精确复用作为局部锚点。",
+      "relatedMotifFamilyIds": [
+        "b4-motif-first-theme"
+      ]
+    },
+    {
+      "id": "b4-section-second-theme-return",
+      "label": "第二主题回归",
+      "range": {
+        "start": {
+          "measureIndex": 168,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        "end": {
+          "measureIndex": 194,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      },
+      "summary": "第二主题在 D-flat major 区域回归并显著扩张，半音下行、音阶链和更厚音响把抒情材料推向高潮。",
+      "confidence": "high",
+      "sourceRefs": [
+        {
+          "sourceId": "b4-source-score",
+          "claim": "范围、音高、节奏、织体与速度按当前 MusicXML 核对。"
+        },
+        {
+          "sourceId": "b4-tonic-chord",
+          "claim": "公开分段仅作交叉核对；调性与坐标冲突处以当前谱源为准。"
+        }
+      ],
+      "layer": "structure",
+      "kind": "theme",
+      "displayNumber": 11,
+      "tonality": "D-flat major",
+      "understanding": "与 B-flat major 原型比较旋律呼吸，同时单独记忆新的半音低音和长音阶链。",
+      "relatedMotifFamilyIds": [
+        "b4-motif-second-theme"
+      ]
+    },
+    {
+      "id": "b4-section-f-minor-return",
+      "label": "回到 f 小调",
+      "range": {
+        "start": {
+          "measureIndex": 194,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        "end": {
+          "measureIndex": 202,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      },
+      "summary": "高潮后材料重新收向 f 小调，密度和方向感集中，为突然静止的赞美诗间奏准备空间。",
+      "confidence": "high",
+      "sourceRefs": [
+        {
+          "sourceId": "b4-source-score",
+          "claim": "范围、音高、节奏、织体与速度按当前 MusicXML 核对。"
+        },
+        {
+          "sourceId": "b4-tonic-chord",
+          "claim": "公开分段仅作交叉核对；调性与坐标冲突处以当前谱源为准。"
+        }
+      ],
+      "layer": "structure",
+      "kind": "contrast",
+      "displayNumber": 12,
+      "tonality": "F minor",
+      "understanding": "把这一段当作从扩张回到主调的压缩通道，终点是静止而不是直接爆发。",
+      "relatedMotifFamilyIds": []
+    },
+    {
+      "id": "b4-section-chorale",
+      "label": "赞美诗式间奏",
+      "range": {
+        "start": {
+          "measureIndex": 202,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        "end": {
+          "measureIndex": 210,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      },
+      "summary": "低音先半音下行，随后 C 踏板上的长时值和弦逐步改变上声部，形成尾声前罕见的静止与屏息。",
+      "confidence": "high",
+      "sourceRefs": [
+        {
+          "sourceId": "b4-source-score",
+          "claim": "范围、音高、节奏、织体与速度按当前 MusicXML 核对。"
+        },
+        {
+          "sourceId": "b4-tonic-chord",
+          "claim": "公开分段仅作交叉核对；调性与坐标冲突处以当前谱源为准。"
+        }
+      ],
+      "layer": "structure",
+      "kind": "contrast",
+      "displayNumber": 13,
+      "tonality": "C dominant pedal，指向 F minor",
+      "understanding": "保持长和弦的声部变化和共同 C 支点；它的意义在时间悬停，而不是速度。",
+      "relatedMotifFamilyIds": []
+    },
+    {
+      "id": "b4-section-coda",
+      "label": "尾声",
+      "range": {
+        "start": {
+          "measureIndex": 210,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        "end": {
+          "measureIndex": 239,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      },
+      "summary": "连续 C 八度踏板后，双手高速音阶、和弦与反向运动突然爆发；尾声把此前的复调与变奏能量压缩为不可逆的终局。",
+      "confidence": "high",
+      "sourceRefs": [
+        {
+          "sourceId": "b4-source-score",
+          "claim": "范围、音高、节奏、织体与速度按当前 MusicXML 核对。"
+        },
+        {
+          "sourceId": "b4-tonic-chord",
+          "claim": "公开分段仅作交叉核对；调性与坐标冲突处以当前谱源为准。"
+        }
+      ],
+      "layer": "structure",
+      "kind": "coda",
+      "displayNumber": 14,
+      "tonality": "F minor",
+      "understanding": "先以重复 C 踏板定位入口，再按上行、下行、和弦块和最终下降划分高速模块。",
+      "relatedMotifFamilyIds": [
+        "b4-motif-coda-pedal"
+      ]
+    },
+    {
+      "id": "b4-section-final-close",
+      "label": "最终收束",
+      "range": {
+        "start": {
+          "measureIndex": 239,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        "end": {
+          "measureIndex": 242,
+          "offsetQuarter": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      },
+      "summary": "最后三小节由 F、D-flat、B-flat、C 与最终 F 的低音支点完成闭合，巨大音域收缩为 f 小调终止。",
+      "confidence": "high",
+      "sourceRefs": [
+        {
+          "sourceId": "b4-source-score",
+          "claim": "范围、音高、节奏、织体与速度按当前 MusicXML 核对。"
+        },
+        {
+          "sourceId": "b4-tonic-chord",
+          "claim": "公开分段仅作交叉核对；调性与坐标冲突处以当前谱源为准。"
+        }
+      ],
+      "layer": "structure",
+      "kind": "closure",
+      "displayNumber": 15,
+      "tonality": "F minor",
+      "understanding": "把三小节低音路线作为尾声的最后地图，最终 F 需要承接前面所有下行重量。",
+      "relatedMotifFamilyIds": []
+    }
+  ],
+  "motifFamilies": [
+    {
+      "id": "b4-motif-intro-frame",
+      "label": "引子悬置框架",
+      "role": "motif",
+      "summary": "短促上声部进入、内声回旋与延迟低音共同形成引子身份；中段在 A major 区域转置回归。",
+      "recognitionBasis": [
+        "开头先由悬置音进入，低音稍后落地",
+        "下谱表回旋内声围绕持续低音移动",
+        "七或六小节后把音乐交给主题入口"
+      ],
+      "understanding": "把两次出现比较为同一“门框”在不同调性中的回望，识别声部时序比逐音相同更可靠。",
+      "occurrences": [
+        {
+          "id": "b4-intro-frame-original",
+          "label": "开篇引子",
+          "range": {
+            "start": {
+              "measureIndex": 0,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 7,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "F minor 语境中的原始悬置框架。",
+          "confidence": "high",
+          "sourceRefs": [
+            {
+              "sourceId": "b4-source-score",
+              "claim": "音高、节奏、织体与确定性重复按当前谱面核对。"
+            }
+          ],
+          "relation": "representative",
+          "differences": []
+        },
+        {
+          "id": "b4-intro-frame-return",
+          "label": "A major 回望",
+          "range": {
+            "start": {
+              "measureIndex": 128,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 134,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "保留悬置与回旋机制，但整体转到 A major 区域并缩短。",
+          "confidence": "high",
+          "sourceRefs": [
+            {
+              "sourceId": "b4-source-score",
+              "claim": "音高、节奏、织体与确定性重复按当前谱面核对。"
+            }
+          ],
+          "relation": "transposed",
+          "differences": [
+            "调性转到 A major 区域",
+            "篇幅由七小节缩为六小节",
+            "出口直接进入卡农"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b4-motif-first-theme",
+      "label": "第一主题变奏家族",
+      "role": "theme",
+      "summary": "柔韧下行—回转旋律、延迟终止和内声倚音构成第一主题；全曲通过复述、加密、卡农和装饰不断重新照亮这一骨架。",
+      "recognitionBasis": [
+        "旋律在半小节低音支点上延展",
+        "倚音与半音内声延迟稳定音",
+        "句法多次推迟闭合并以新出口继续"
+      ],
+      "understanding": "把所有出现按共同旋律支点对齐，再分别标记复述、密度、卡农进入与装饰差异。",
+      "occurrences": [
+        {
+          "id": "b4-first-theme-original",
+          "label": "第一主题原型",
+          "range": {
+            "start": {
+              "measureIndex": 7,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 22,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "最清楚地建立旋律骨架和分层低音。",
+          "confidence": "high",
+          "sourceRefs": [
+            {
+              "sourceId": "b4-source-score",
+              "claim": "音高、节奏、织体与确定性重复按当前谱面核对。"
+            }
+          ],
+          "relation": "representative",
+          "differences": []
+        },
+        {
+          "id": "b4-first-theme-restatement",
+          "label": "第一次复述",
+          "range": {
+            "start": {
+              "measureIndex": 22,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 37,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "入口近似原型，但内声、音域和出口发生改写。",
+          "confidence": "high",
+          "sourceRefs": [
+            {
+              "sourceId": "b4-source-score",
+              "claim": "音高、节奏、织体与确定性重复按当前谱面核对。"
+            }
+          ],
+          "relation": "near-exact",
+          "differences": [
+            "不是 full-score 精确重复",
+            "内声拼写变化",
+            "出口转向第一次间奏"
+          ]
+        },
+        {
+          "id": "b4-first-theme-dense",
+          "label": "加密变奏",
+          "range": {
+            "start": {
+              "measureIndex": 57,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 79,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "同一旋律骨架置于更密集、更强的伴奏和声部中。",
+          "confidence": "high",
+          "sourceRefs": [
+            {
+              "sourceId": "b4-source-score",
+              "claim": "音高、节奏、织体与确定性重复按当前谱面核对。"
+            }
+          ],
+          "relation": "intensified",
+          "differences": [
+            "伴奏密度提高",
+            "音域扩大",
+            "句尾直接导向第二主题"
+          ]
+        },
+        {
+          "id": "b4-first-theme-canon",
+          "label": "卡农变奏",
+          "range": {
+            "start": {
+              "measureIndex": 134,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 151,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "主题被分配给多个依次进入的声部，下谱表也承担模仿线条。",
+          "confidence": "high",
+          "sourceRefs": [
+            {
+              "sourceId": "b4-source-score",
+              "claim": "音高、节奏、织体与确定性重复按当前谱面核对。"
+            }
+          ],
+          "relation": "other",
+          "differences": [
+            "由单一主旋律改为卡农",
+            "主题入口分布在双手与多声部",
+            "调性从 A major 区域逐步转回"
+          ]
+        },
+        {
+          "id": "b4-first-theme-ornamented",
+          "label": "装饰变奏",
+          "range": {
+            "start": {
+              "measureIndex": 151,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 168,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "卡农后保留主题支点，但用更华丽的装饰和重新配器延展。",
+          "confidence": "high",
+          "sourceRefs": [
+            {
+              "sourceId": "b4-source-score",
+              "claim": "音高、节奏、织体与确定性重复按当前谱面核对。"
+            }
+          ],
+          "relation": "ornamented",
+          "differences": [
+            "表层音符显著增加",
+            "声部分配改变",
+            "出口转入 D-flat major 第二主题回归"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b4-motif-second-theme",
+      "label": "第二主题宽广歌唱线",
+      "role": "theme",
+      "summary": "较宽阔的旋律和更稳定的长呼吸构成第二主题；它先在 B-flat major 出现，后在 D-flat major 回归并扩张为高潮。",
+      "recognitionBasis": [
+        "长线旋律比第一主题更少碎裂",
+        "低音在持续音与级进路线间切换",
+        "大调色彩中仍保留延迟终止"
+      ],
+      "understanding": "比较两次出现的调性、低音路线和高潮规模，避免把回归误认为完全不同的新主题。",
+      "occurrences": [
+        {
+          "id": "b4-second-theme-bflat",
+          "label": "B-flat major 原型",
+          "range": {
+            "start": {
+              "measureIndex": 79,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 99,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "第二主题的首次完整陈述。",
+          "confidence": "high",
+          "sourceRefs": [
+            {
+              "sourceId": "b4-source-score",
+              "claim": "音高、节奏、织体与确定性重复按当前谱面核对。"
+            }
+          ],
+          "relation": "representative",
+          "differences": []
+        },
+        {
+          "id": "b4-second-theme-dflat",
+          "label": "D-flat major 扩张回归",
+          "range": {
+            "start": {
+              "measureIndex": 168,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 194,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "主题转到 D-flat major，并加入半音下降、音阶链和更大高潮。",
+          "confidence": "high",
+          "sourceRefs": [
+            {
+              "sourceId": "b4-source-score",
+              "claim": "音高、节奏、织体与确定性重复按当前谱面核对。"
+            }
+          ],
+          "relation": "intensified",
+          "differences": [
+            "调性由 B-flat major 转向 D-flat major",
+            "下谱表半音与音阶运动更突出",
+            "篇幅和动态规模扩大"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b4-motif-coda-pedal",
+      "label": "尾声 C 踏板重复单元",
+      "role": "coda",
+      "summary": "赞美诗间奏末端的 C 八度踏板连续保持，内部两小节窗口出现重叠式全谱精确重复，成为高速尾声入口的固定轴。",
+      "recognitionBasis": [
+        "事实提取确认 full-score exact repeat：index 209 → 210，长度 2",
+        "下谱表持续 C2–C3 八度",
+        "上方静止逐渐让位于爆发性快速音型"
+      ],
+      "understanding": "用连续 C 踏板锁定尾声入口；重叠重复说明 m210–212 可视作三次相同小节链。",
+      "occurrences": [
+        {
+          "id": "b4-coda-pedal-first",
+          "label": "第一次两小节窗口",
+          "range": {
+            "start": {
+              "measureIndex": 209,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 211,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "C 八度踏板上的代表两小节。",
+          "confidence": "high",
+          "sourceRefs": [
+            {
+              "sourceId": "b4-source-score",
+              "claim": "音高、节奏、织体与确定性重复按当前谱面核对。"
+            }
+          ],
+          "relation": "representative",
+          "differences": []
+        },
+        {
+          "id": "b4-coda-pedal-overlap",
+          "label": "重叠式精确重复",
+          "range": {
+            "start": {
+              "measureIndex": 210,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 212,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "从下一小节开始的两小节全谱签名与代表窗口完全相同。",
+          "confidence": "high",
+          "sourceRefs": [
+            {
+              "sourceId": "b4-source-score",
+              "claim": "音高、节奏、织体与确定性重复按当前谱面核对。"
+            }
+          ],
+          "relation": "exact",
+          "differences": []
+        }
+      ]
+    }
+  ],
+  "leftHandAnalysisMode": "polyphonic-texture",
+  "leftHandChordGrouping": null,
+  "leftHandChordFamilies": [],
+  "leftHandTextureFamilies": [
+    {
+      "id": "b4-texture-intro-route",
+      "label": "引子低音与回旋内声路线",
+      "summary": "F、G、C 低音支点上方，G–B–F–E 与 C–A–D 等内声回旋跨越多个拍点；完整方向覆盖六小节。",
+      "role": "voice-leading",
+      "recognitionBasis": [
+        "低音只在结构位置进入，内声以四分之一拍和半拍连续移动",
+        "m3、m5、m6 共享相近回旋机制但不是逐拍和弦复制",
+        "上谱表与下谱表共同完成和声"
+      ],
+      "understanding": "分开练低音支点和回旋内声，再按六小节方向连接；不要为每个短音强行命名和弦。",
+      "occurrences": [
+        {
+          "id": "b4-texture-intro-route-opening",
+          "label": "开篇六小节路线",
+          "range": {
+            "start": {
+              "measureIndex": 1,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 7,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "从 F2、G2、C2 的低音支点出发，内声围绕 G3、B3、F3、E3、C4、A3 盘旋并收向主题。",
+          "noteNames": [
+            "F2",
+            "D3",
+            "G2",
+            "G3",
+            "B3",
+            "F3",
+            "E3",
+            "C3",
+            "C4",
+            "A3",
+            "C2"
+          ],
+          "relation": "representative",
+          "differences": []
+        }
+      ]
+    },
+    {
+      "id": "b4-texture-first-theme-chain",
+      "label": "第一主题四小节低音—内声链",
+      "summary": "F 低音和半小节更替上方叠加 D-flat、E、G、B-flat 等内声倚音；该四小节左手链在卡农后精确回归。",
+      "role": "voice-leading",
+      "recognitionBasis": [
+        "事实提取确认 left-hand exact repeat：index 18 → 150，长度 4",
+        "每半小节低音支点与上方三音组交错",
+        "四小节整体含有完整的张力—释放路径"
+      ],
+      "understanding": "先掌握四小节低音位置和内声换位，m151 的回归可直接复用同一声部与平衡方案。",
+      "occurrences": [
+        {
+          "id": "b4-texture-first-theme-chain-original",
+          "label": "原段四小节链",
+          "range": {
+            "start": {
+              "measureIndex": 18,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 22,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "F2 支点上方 D♭–E–G、B♭–D♭–E 与 A–C–F 等内声依次变化。",
+          "noteNames": [
+            "F3",
+            "D♭4",
+            "E4",
+            "G4",
+            "B♭3",
+            "F2",
+            "A4",
+            "C4",
+            "F4",
+            "E♭4",
+            "G♭4",
+            "B♭2",
+            "C3"
+          ],
+          "relation": "representative",
+          "differences": []
+        },
+        {
+          "id": "b4-texture-first-theme-chain-return",
+          "label": "卡农后精确回归",
+          "range": {
+            "start": {
+              "measureIndex": 150,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 154,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "左手音高、节奏、声部与四小节长度完全相同。",
+          "noteNames": [
+            "F3",
+            "D♭4",
+            "E4",
+            "G4",
+            "B♭3",
+            "F2",
+            "A4",
+            "C4",
+            "F4",
+            "E♭4",
+            "G♭4",
+            "B♭2",
+            "C3"
+          ],
+          "relation": "exact",
+          "differences": []
+        }
+      ]
+    },
+    {
+      "id": "b4-texture-canon-lower-voice",
+      "label": "卡农下声部链",
+      "summary": "m135 起下谱表先以稀疏 E–A–C-sharp 入口出现，随后发展成半拍与级进模仿，主题性线条跨越整个下谱表。",
+      "role": "voice-leading",
+      "recognitionBasis": [
+        "下谱表直接陈述可辨认的主题轮廓，不是伴奏残片",
+        "声部从稀疏进入逐渐加密并与上谱表错位模仿",
+        "Db–C–B-flat–A 与后续半音链承担方向"
+      ],
+      "understanding": "把下谱表当作独立旋律声部学习：先唱出入口和级进方向，再与上声部按卡农距离合并。",
+      "occurrences": [
+        {
+          "id": "b4-texture-canon-lower-voice-main",
+          "label": "卡农下声部完整路线",
+          "range": {
+            "start": {
+              "measureIndex": 134,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 148,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "由 E3–A3–C♯4 的稀疏入口发展到 D♭4–C4–B♭3–A3 及 E♭、F♭、G♭ 半音链。",
+          "noteNames": [
+            "E3",
+            "A3",
+            "C♯4",
+            "A2",
+            "D4",
+            "C♯4",
+            "B♭3",
+            "D♭4",
+            "C4",
+            "A3",
+            "D3",
+            "G3",
+            "F2",
+            "D♭3",
+            "E♭3",
+            "F♭3",
+            "G♭4"
+          ],
+          "relation": "representative",
+          "differences": []
+        }
+      ]
+    },
+    {
+      "id": "b4-texture-second-theme-bass",
+      "label": "第二主题低音路线",
+      "summary": "第二主题原型的 E-flat–D–C–B-flat 级进低音与 B-flat/F 支点，在回归时扩展为 D-flat 踏板、半音下降和长音阶链。",
+      "role": "bass-framework",
+      "recognitionBasis": [
+        "两次出现都以长线歌唱主题覆盖独立低音路线",
+        "原型包含 E♭3–D3–C3–B♭2 的清晰级进",
+        "回归以 D♭2 为轴加入更长的半音和音阶运动"
+      ],
+      "understanding": "比较两次低音地图：第一次以级进和支点为主，第二次把同一抒情功能扩张为持续踏板与大范围链条。",
+      "occurrences": [
+        {
+          "id": "b4-texture-second-theme-bass-original",
+          "label": "B-flat major 低音路线",
+          "range": {
+            "start": {
+              "measureIndex": 79,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 88,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "E♭3–D3–C3–B♭2 下行后，B♭、F、A、G 等支点承载长线旋律。",
+          "noteNames": [
+            "E♭3",
+            "D3",
+            "C3",
+            "B♭2",
+            "F2",
+            "B♭3",
+            "F3",
+            "A2",
+            "E2",
+            "D2",
+            "G2",
+            "C2",
+            "B♭1"
+          ],
+          "relation": "representative",
+          "differences": []
+        },
+        {
+          "id": "b4-texture-second-theme-bass-return",
+          "label": "D-flat major 扩张路线",
+          "range": {
+            "start": {
+              "measureIndex": 168,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 180,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "先以 F2 与半音下行进入，再围绕 D♭2–A♭2 展开连续音阶和踏板。",
+          "noteNames": [
+            "F2",
+            "C3",
+            "E♭3",
+            "G3",
+            "G♭3",
+            "F♭3",
+            "D♭3",
+            "C♭3",
+            "B♭2",
+            "A2",
+            "A♭2",
+            "D♭2",
+            "E♭2"
+          ],
+          "relation": "varied",
+          "differences": [
+            "调性转到 D-flat major 区域",
+            "加入连续半音下行",
+            "D-flat 踏板与音阶链显著延长"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b4-texture-chorale-c-pedal",
+      "label": "赞美诗 C 踏板与上声部递降",
+      "summary": "C 低音持续不动，上方长音由 E–G、D–G、C–G 到 B-flat–G 逐步下降，随后缩减为纯 C 八度并延续到尾声入口。",
+      "role": "sustained-interval",
+      "recognitionBasis": [
+        "m206–209 下谱表 C3 持续整小节，上方声部每小节只改变一次",
+        "m210–213 保留 C2–C3 八度而逐步清空上方音",
+        "这是一次连续踏板状态，不应按每拍重复计数"
+      ],
+      "understanding": "保持 C 踏板的音色与时值，同时让 E–D–C–B-flat 上声部清楚递降；进入尾声后仍把 C 当作固定轴。",
+      "occurrences": [
+        {
+          "id": "b4-texture-chorale-c-pedal-voiced",
+          "label": "带递降上声部的 C 踏板",
+          "range": {
+            "start": {
+              "measureIndex": 205,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 209,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "C3 支点上方依次出现 E4–G3、D4–G3、C4–G3 与 B♭3–G3。",
+          "noteNames": [
+            "C3",
+            "E4",
+            "G3",
+            "D4",
+            "C4",
+            "B♭3"
+          ],
+          "relation": "representative",
+          "differences": []
+        },
+        {
+          "id": "b4-texture-chorale-c-pedal-octaves",
+          "label": "缩减为 C 八度",
+          "range": {
+            "start": {
+              "measureIndex": 209,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 213,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "上方递降结束，只保留 C2–C3 八度持续四小节。",
+          "noteNames": [
+            "C2",
+            "C3"
+          ],
+          "relation": "varied",
+          "differences": [
+            "省去 G 与递降内声",
+            "音区下移为 C2–C3 八度",
+            "直接连接高速尾声"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b4-texture-final-descent",
+      "label": "尾声最终低音收束",
+      "summary": "高速音阶后，低音由 F 扩展到 D-flat、B-flat 和 C，再落回最终 F；三小节把巨大音域压缩为主音闭合。",
+      "role": "closing-gesture",
+      "recognitionBasis": [
+        "m240 以 F1/F2 与 D♭2/D♭3 分层",
+        "m241 由 B♭1/B♭2 转向 C2/C3",
+        "m242 只保留最终 F1/F2"
+      ],
+      "understanding": "把最后三小节按 F–D-flat、B-flat–C、F 三个低音阶段记忆，确保高速尾声后仍有清楚的终止方向。",
+      "occurrences": [
+        {
+          "id": "b4-texture-final-descent-close",
+          "label": "最终三小节低音路线",
+          "range": {
+            "start": {
+              "measureIndex": 239,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            },
+            "end": {
+              "measureIndex": 242,
+              "offsetQuarter": {
+                "numerator": 0,
+                "denominator": 1
+              }
+            }
+          },
+          "summary": "F1/F2 经过 D♭、B♭ 与 C 支点，最终回到 F1/F2。",
+          "noteNames": [
+            "F1",
+            "F2",
+            "D♭2",
+            "D♭3",
+            "B♭1",
+            "B♭2",
+            "C2",
+            "C3"
+          ],
+          "relation": "representative",
+          "differences": []
+        }
+      ]
+    }
+  ]
+}

@@ -4,6 +4,7 @@ import {
   MAX_PLAYBACK_BPM,
   MIN_PLAYBACK_BPM,
   clampPlaybackBpm,
+  formatPlaybackTime,
   ticksToMilliseconds,
 } from "./playbackTiming";
 import { TICKS_PER_QUARTER } from "../types";
@@ -19,5 +20,10 @@ describe("playbackTiming", () => {
     expect(clampPlaybackBpm(0)).toBe(MIN_PLAYBACK_BPM);
     expect(clampPlaybackBpm(300)).toBe(MAX_PLAYBACK_BPM);
     expect(clampPlaybackBpm(Number.NaN)).toBe(DEFAULT_PLAYBACK_BPM);
+  });
+
+  it("formats playback position consistently across practice and performance modes", () => {
+    expect(formatPlaybackTime(0)).toBe("0:00");
+    expect(formatPlaybackTime(65_000)).toBe("1:05");
   });
 });

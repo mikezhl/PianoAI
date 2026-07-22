@@ -2,13 +2,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { AnalysisTab, AnalysisViewItem, ScoreAnalysis } from "../../analysis/types";
 import { buildAnalysisItems } from "../../analysis/viewModel";
 import { cancelScheduledPlayback, playScoreRange } from "../../lib/audio";
-import { formatScoreRange, scoreRangeToTickBounds } from "../../lib/analysis/coordinates";
 import { analysisPlaybackGroups } from "../../lib/analysis/playback";
 import { ticksToMilliseconds } from "../../lib/playbackTiming";
+import { scoreRangeToTickBounds } from "../../lib/scoreIdentity";
 import type { ScoreData } from "../../types";
 import AnalysisDetailPanel from "./AnalysisDetailPanel";
 import AnalysisNavigator from "./AnalysisNavigator";
-import AnalysisPlaybackBar from "./AnalysisPlaybackBar";
 import AnalysisScoreViewer from "./AnalysisScoreViewer";
 
 export type AnalysisLoadState = "idle" | "loading" | "ready" | "missing" | "error";
@@ -20,6 +19,12 @@ interface AnalysisWorkspaceProps {
   loadError: string | null;
   scoreZoom: number;
   playbackBpm: number;
+}
+
+interface PendingPlayback {
+  rangeKey: string;
+  itemId: string;
+  rangeIndex: number;
 }
 
 export default function AnalysisWorkspace({
@@ -39,12 +44,18 @@ export default function AnalysisWorkspace({
   const [isPlaying, setIsPlaying] = useState(false);
   const [playingItemId, setPlayingItemId] = useState<string | null>(null);
   const [playbackTick, setPlaybackTick] = useState<number | null>(null);
+  const [renderReadyKey, setRenderReadyKey] = useState<string | null>(null);
+  const [pendingPlayback, setPendingPlayback] = useState<PendingPlayback | null>(null);
+  const initialSectionId = analysis?.sections[0]?.id ?? null;
   const items = useMemo(() => analysis ? buildAnalysisItems(analysis, tab) : [], [analysis, tab]);
   const selectedItem = useMemo(
     () => items.find((item) => item.id === selectedId) ?? items[0] ?? null,
     [items, selectedId],
   );
   const selectedRange = selectedItem?.ranges[selectedRangeIndex] ?? selectedItem?.ranges[0] ?? null;
+  const rangeKey = analysis && selectedItem && selectedRange
+    ? `${analysis.score.id}:${tab}:${selectedItem.id}:${selectedRangeIndex}`
+    : null;
   const overlayItems = useMemo<AnalysisViewItem[]>(() => {
     if (!analysis) {
       return [];
@@ -54,12 +65,6 @@ export default function AnalysisWorkspace({
     }
     return selectedItem ? [selectedItem] : [];
   }, [analysis, items, selectedItem, tab]);
-  const baseRangeLabel = analysis && selectedRange ? formatScoreRange(analysis.score, selectedRange) : "";
-  const rangeLabel = selectedItem?.kind === "chord"
-    ? `${baseRangeLabel} · 第 ${(selectedItem.entity.occurrences[selectedRangeIndex]?.beatIndex ?? 0) + 1} 组`
-    : selectedItem?.kind === "texture"
-      ? `${baseRangeLabel} · ${selectedItem.entity.occurrences[selectedRangeIndex]?.label ?? selectedItem.label}`
-      : baseRangeLabel;
 
   function stopPlayback() {
     playbackSessionRef.current += 1;
@@ -71,15 +76,16 @@ export default function AnalysisWorkspace({
     setIsPlaying(false);
     setPlayingItemId(null);
     setPlaybackTick(null);
+    setPendingPlayback(null);
   }
 
   useEffect(() => {
     setTab("structure");
-    setSelectedId(analysis?.sections[0]?.id ?? null);
+    setSelectedId(initialSectionId);
     setSelectedRangeIndex(0);
     setMobileDetailOpen(false);
     stopPlayback();
-  }, [score, analysis?.score.id]);
+  }, [analysis?.score.id, initialSectionId, score]);
 
   useEffect(() => () => stopPlayback(), []);
 
@@ -151,31 +157,48 @@ export default function AnalysisWorkspace({
     });
   }
 
-  function handleTogglePlay() {
-    if (!selectedItem) {
-      return;
-    }
-    if (isPlaying) {
-      stopPlayback();
-      return;
-    }
-    startPlayback(selectedItem, selectedRangeIndex);
-  }
-
   function handleToggleItemPlay(id: string) {
     const item = items.find((candidate) => candidate.id === id);
     if (!item) {
       return;
     }
-    if (isPlaying && playingItemId === id) {
+    const rangeIndex = selectedItem?.id === id ? selectedRangeIndex : 0;
+    const targetRange = item.ranges[rangeIndex] ?? item.ranges[0];
+    const targetRangeKey = analysis && targetRange
+      ? `${analysis.score.id}:${tab}:${item.id}:${rangeIndex}`
+      : null;
+    if (
+      (isPlaying && playingItemId === id)
+      || (pendingPlayback?.itemId === id && pendingPlayback.rangeIndex === rangeIndex)
+    ) {
       stopPlayback();
       return;
     }
-    const rangeIndex = selectedItem?.id === id ? selectedRangeIndex : 0;
+
+    stopPlayback();
     setSelectedId(id);
     setSelectedRangeIndex(rangeIndex);
-    startPlayback(item, rangeIndex);
+    if (!targetRangeKey) {
+      return;
+    }
+    if (renderReadyKey === targetRangeKey) {
+      startPlayback(item, rangeIndex);
+    } else {
+      setPendingPlayback({ rangeKey: targetRangeKey, itemId: id, rangeIndex });
+    }
   }
+
+  useEffect(() => {
+    if (!pendingPlayback || pendingPlayback.rangeKey !== renderReadyKey) {
+      return;
+    }
+    const item = items.find((candidate) => candidate.id === pendingPlayback.itemId);
+    if (!item || selectedItem?.id !== item.id || selectedRangeIndex !== pendingPlayback.rangeIndex) {
+      setPendingPlayback(null);
+      return;
+    }
+    startPlayback(item, pendingPlayback.rangeIndex);
+  }, [items, pendingPlayback, renderReadyKey, selectedItem?.id, selectedRangeIndex]);
 
   const statusMessage = loadState === "loading"
     ? "正在加载分析结果"
@@ -207,8 +230,12 @@ export default function AnalysisWorkspace({
           overlayItems={overlayItems}
           selectedId={selectedItem?.id ?? null}
           selectedRangeIndex={selectedRangeIndex}
+          renderRange={selectedRange}
+          rangeKey={rangeKey}
+          isPlaying={isPlaying}
           playbackTick={playbackTick}
           onSelect={handleSelect}
+          onRenderReady={setRenderReadyKey}
         />
       </div>
 
@@ -225,12 +252,6 @@ export default function AnalysisWorkspace({
         }}
       />
 
-      <AnalysisPlaybackBar
-        rangeLabel={rangeLabel}
-        canUseRange={score != null && selectedRange != null}
-        isPlaying={isPlaying}
-        onTogglePlay={handleTogglePlay}
-      />
     </section>
   );
 }

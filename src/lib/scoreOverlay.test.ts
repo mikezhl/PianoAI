@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
-import type { Hand } from "../types";
+import type { Hand, ScoreData } from "../types";
 import {
   buildContiguousTrackSegments,
+  buildScoreHitIndex,
   getBoxSelectedGroupIds,
+  getScoreGroupAtPoint,
   buildMeasureLayouts,
+  buildScoreOverlayLayout,
   buildSelectedFrames,
   type ScoreGroupLayout,
 } from "./scoreOverlay";
@@ -52,6 +55,50 @@ function layout(
     frameWidth: width,
     frameHeight: 80,
   };
+}
+
+function mockRect(
+  element: Element,
+  { left, top, width, height }: { left: number; top: number; width: number; height: number },
+) {
+  Object.defineProperty(element, "getBoundingClientRect", {
+    value: () => ({
+      left,
+      top,
+      right: left + width,
+      bottom: top + height,
+      width,
+      height,
+    }),
+  });
+}
+
+function appendStaff(
+  svg: SVGSVGElement,
+  lineYs: number[],
+  measureLeft: number,
+  measureWidth: number,
+  notationTop = lineYs[0],
+  notationBottom = lineYs.at(-1)!,
+) {
+  const staffLine = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  staffLine.classList.add("staffline");
+  const measure = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  measure.classList.add("vf-measure");
+  mockRect(measure, {
+    left: measureLeft,
+    top: notationTop,
+    width: measureWidth,
+    height: notationBottom - notationTop,
+  });
+  lineYs.forEach((top) => {
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    mockRect(path, { left: measureLeft, top, width: measureWidth, height: 0 });
+    measure.appendChild(path);
+  });
+  staffLine.appendChild(measure);
+  svg.appendChild(staffLine);
+  return measure;
 }
 
 describe("buildContiguousTrackSegments", () => {
@@ -197,6 +244,36 @@ describe("getBoxSelectedGroupIds", () => {
   });
 });
 
+describe("score hit index", () => {
+  it("finds a group without creating a DOM hit target for every note group", () => {
+    const layouts = [
+      layout("right", "right", 0, 0, 100),
+      layout("left", "left", 0, 0, 100),
+      layout("next", "right", 1, 100, 100),
+    ];
+    const index = buildScoreHitIndex(layouts, 64);
+
+    expect(getScoreGroupAtPoint(index, 50, 40)?.groupId).toBe("right");
+    expect(getScoreGroupAtPoint(index, 50, 160)?.groupId).toBe("left");
+    expect(getScoreGroupAtPoint(index, 150, 40)?.groupId).toBe("next");
+    expect(getScoreGroupAtPoint(index, 250, 40)).toBeNull();
+  });
+
+  it("chooses the glyph nearest to the pointer when hand bands overlap", () => {
+    const upper = layout("upper", "right", 0, 0, 100);
+    const lower = layout("lower", "left", 0, 0, 100);
+    upper.y = 20;
+    upper.height = 180;
+    lower.y = 20;
+    lower.height = 180;
+    upper.glyphY = 50;
+    lower.glyphY = 150;
+    const index = buildScoreHitIndex([upper, lower]);
+
+    expect(getScoreGroupAtPoint(index, 50, 155)?.groupId).toBe("lower");
+  });
+});
+
 describe("buildMeasureLayouts", () => {
   it("uses the first rendered glyph as the shared boundary when no barline is matched", () => {
     const layouts = buildMeasureLayouts(
@@ -240,5 +317,203 @@ describe("buildMeasureLayouts", () => {
     expect(layouts[0]).toMatchObject({ x: 100, right: 194 });
     expect(layouts[1]).toMatchObject({ x: 194, right: 320 });
     expect(layouts[0].right).toBe(layouts[1].x);
+  });
+});
+
+describe("buildScoreOverlayLayout incremental boundary", () => {
+  it("uses final SVG noteheads and staff lines instead of OSMD internal bounding boxes", () => {
+    const host = document.createElement("div");
+    const overlay = document.createElement("div");
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    host.appendChild(svg);
+    mockRect(host, { left: 10, top: 20, width: 500, height: 500 });
+    mockRect(overlay, { left: 10, top: 20, width: 500, height: 500 });
+    mockRect(svg, { left: 10, top: 20, width: 300, height: 400 });
+
+    const rightMeasure = appendStaff(svg, [220, 230, 240, 250, 260], 60, 200, 180, 280);
+    const leftMeasure = appendStaff(svg, [340, 350, 360, 370, 380], 60, 200, 300, 440);
+    const direction = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    direction.classList.add("vf-text");
+    mockRect(direction, { left: 60, top: 150, width: 80, height: 20 });
+    rightMeasure.parentElement!.appendChild(direction);
+    const pedalMark = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    pedalMark.classList.add("vf-text");
+    mockRect(pedalMark, { left: 60, top: 450, width: 80, height: 10 });
+    leftMeasure.parentElement!.appendChild(pedalMark);
+    const note = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    const notehead = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    notehead.classList.add("vf-notehead");
+    const noteheadPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    mockRect(noteheadPath, { left: 130, top: 245, width: 12, height: 10 });
+    notehead.appendChild(noteheadPath);
+    note.appendChild(notehead);
+    rightMeasure.appendChild(note);
+
+    const score: ScoreData = {
+      title: "svg coordinates",
+      xml: "",
+      noteGroups: [
+        { id: "right", hand: "right", measureIndex: 0, startTick: 0, absoluteTick: 0, durationTicks: 480, notes: [], playbackEvents: [] },
+      ],
+      measureStarts: [0],
+      measureDurations: [480],
+      measureTimeSignatures: [{ beats: 4, beatType: 4 }],
+      totalTicks: 480,
+      canSeparateHands: true,
+      hasLeftHand: true,
+      hasRightHand: true,
+    };
+    const deliberatelyWrongShape = {
+      AbsolutePosition: { x: 900, y: 900 },
+      Size: { width: 90, height: 90 },
+    };
+    const entry = {
+      PositionAndShape: deliberatelyWrongShape,
+      relInMeasureTimestamp: { RealValue: 0 },
+      graphicalVoiceEntries: [{
+        notes: [{
+          PositionAndShape: deliberatelyWrongShape,
+          getVFNoteSVG: () => note,
+        }],
+      }],
+    };
+    const graphicalMeasure = (staffEntries: unknown[]) => ({
+      PositionAndShape: deliberatelyWrongShape,
+      parentSourceMeasure: { measureListIndex: 0, WasRendered: true },
+      ParentStaffLine: { StaffHeight: 90 },
+      staffEntries,
+    });
+
+    const result = buildScoreOverlayLayout(host, overlay, svg, {
+      Zoom: 7,
+      GraphicSheet: { MeasureList: [[graphicalMeasure([entry]), graphicalMeasure([])]] },
+    }, score, 500, 0);
+    const rendered = result.layouts[0];
+
+    expect(rendered).toMatchObject({
+      glyphX: 120,
+      glyphY: 225,
+      glyphWidth: 12,
+      glyphHeight: 10,
+      measureX: 50,
+      measureRight: 250,
+      frameY: 154,
+      frameHeight: 126,
+    });
+    expect(result.staffGeometry.right?.lines).toEqual([200, 210, 220, 230, 240]);
+    expect(result.staffGeometry.left?.lines).toEqual([320, 330, 340, 350, 360]);
+    expect(result.staffGeometry.right).toMatchObject({
+      noteTop: 160,
+      noteBottom: 260,
+      notationTop: 130,
+      notationBottom: 260,
+    });
+    expect(result.staffGeometry.left).toMatchObject({
+      noteTop: 280,
+      noteBottom: 420,
+      notationTop: 280,
+      notationBottom: 440,
+    });
+    expect(result.scoreFrame).toEqual({ top: 154, height: 272 });
+  });
+
+  it("maps measures from every incrementally appended staff-line batch", () => {
+    const host = document.createElement("div");
+    const overlay = document.createElement("div");
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    host.appendChild(svg);
+    mockRect(host, { left: 0, top: 0, width: 500, height: 300 });
+    mockRect(overlay, { left: 0, top: 0, width: 500, height: 300 });
+    mockRect(svg, { left: 0, top: 0, width: 220, height: 220 });
+    appendStaff(svg, [40, 50, 60, 70, 80], 0, 100);
+    appendStaff(svg, [140, 150, 160, 170, 180], 0, 100);
+    appendStaff(svg, [40, 50, 60, 70, 80], 100, 120);
+    appendStaff(svg, [140, 150, 160, 170, 180], 100, 120);
+
+    const score: ScoreData = {
+      title: "multiple batches",
+      xml: "",
+      noteGroups: [
+        { id: "first", hand: "right", measureIndex: 0, startTick: 0, absoluteTick: 0, durationTicks: 480, notes: [], playbackEvents: [] },
+        { id: "second", hand: "right", measureIndex: 1, startTick: 0, absoluteTick: 480, durationTicks: 480, notes: [], playbackEvents: [] },
+      ],
+      measureStarts: [0, 480],
+      measureDurations: [480, 480],
+      measureTimeSignatures: [{ beats: 4, beatType: 4 }, { beats: 4, beatType: 4 }],
+      totalTicks: 960,
+      canSeparateHands: true,
+      hasLeftHand: true,
+      hasRightHand: true,
+    };
+    const graphicalMeasure = (measureIndex: number) => ({
+      parentSourceMeasure: { measureListIndex: measureIndex, WasRendered: true },
+      staffEntries: [],
+    });
+
+    const result = buildScoreOverlayLayout(host, overlay, svg, {
+      GraphicSheet: {
+        MeasureList: [
+          [graphicalMeasure(0), graphicalMeasure(0)],
+          [graphicalMeasure(1), graphicalMeasure(1)],
+        ],
+      },
+    }, score, 300, 1);
+
+    expect(result.layouts.map((item) => item.groupId)).toEqual(["first", "second"]);
+    expect(result.layouts[0]).toMatchObject({ measureX: 0, measureRight: 100 });
+    expect(result.layouts[1]).toMatchObject({ measureX: 100, measureRight: 220 });
+  });
+
+  it("excludes measures and groups that OSMD has not drawn yet", () => {
+    const host = document.createElement("div");
+    const overlay = document.createElement("div");
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    host.appendChild(svg);
+    svg.setAttribute("width", "100");
+    Object.defineProperty(host, "getBoundingClientRect", { value: () => ({ left: 0, top: 0, width: 500, height: 300 }) });
+    Object.defineProperty(overlay, "getBoundingClientRect", { value: () => ({ left: 0, top: 0, width: 500, height: 300 }) });
+    Object.defineProperty(svg, "getBoundingClientRect", { value: () => ({ left: 0, top: 0, right: 100, bottom: 100, width: 100, height: 100 }) });
+    appendStaff(svg, [40, 50, 60, 70, 80], 0, 100);
+    appendStaff(svg, [140, 150, 160, 170, 180], 0, 100);
+
+    const shape = (x: number, y: number) => ({
+      AbsolutePosition: { x, y },
+      Size: { width: 10, height: 4 },
+    });
+    const graphicalMeasure = (measureIndex: number, rendered: boolean, y: number) => ({
+      PositionAndShape: shape(measureIndex * 10, y),
+      parentSourceMeasure: { measureListIndex: measureIndex, WasRendered: rendered },
+      ParentStaffLine: { StaffHeight: 4 },
+      staffEntries: [],
+    });
+    const score: ScoreData = {
+      title: "incremental",
+      xml: "",
+      noteGroups: [
+        { id: "drawn", hand: "right", measureIndex: 0, startTick: 0, absoluteTick: 0, durationTicks: 480, notes: [], playbackEvents: [] },
+        { id: "pending", hand: "right", measureIndex: 1, startTick: 0, absoluteTick: 480, durationTicks: 480, notes: [], playbackEvents: [] },
+      ],
+      measureStarts: [0, 480],
+      measureDurations: [480, 480],
+      measureTimeSignatures: [{ beats: 4, beatType: 4 }, { beats: 4, beatType: 4 }],
+      totalTicks: 960,
+      canSeparateHands: true,
+      hasLeftHand: true,
+      hasRightHand: true,
+    };
+
+    const result = buildScoreOverlayLayout(host, overlay, svg, {
+      Zoom: 1,
+      GraphicSheet: {
+        MeasureList: [
+          [graphicalMeasure(0, true, 5), graphicalMeasure(0, true, 15)],
+          [graphicalMeasure(1, false, 5), graphicalMeasure(1, false, 15)],
+        ],
+      },
+    }, score, 300, 0);
+
+    expect(result.layouts.map((item) => item.groupId)).toEqual(["drawn"]);
+    expect(result.surfaceSize.width).toBe(500);
+    expect(result.svgTargets.has("pending")).toBe(false);
   });
 });

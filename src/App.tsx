@@ -4,9 +4,16 @@ import PianoKeyboard from "./components/PianoKeyboard";
 import PracticeControls from "./components/PracticeControls";
 import ScoreViewer from "./components/ScoreViewer";
 import TopBar from "./components/TopBar";
+import PerformanceWorkspace from "./components/performance/PerformanceWorkspace";
 import AnalysisWorkspace, { type AnalysisLoadState } from "./components/analysis/AnalysisWorkspace";
 import type { AppMode, ScoreAnalysis } from "./analysis/types";
-import { cancelScheduledPlayback, playGroups, playMidiNotes } from "./lib/audio";
+import {
+  cancelScheduledPlayback,
+  handleMidiMonitorEvent,
+  playGroups,
+  playMidiNotes,
+  resetMidiMonitor,
+} from "./lib/audio";
 import { loadAnalysis } from "./lib/analysis/loadAnalysis";
 import { readScoreXmlFromFile, readScoreXmlFromUrl } from "./lib/fileImport";
 import {
@@ -16,21 +23,22 @@ import {
   parseMusicXml,
 } from "./lib/musicXml";
 import { useMidi } from "./lib/midi";
+import { sha256Text } from "./lib/scoreIdentity";
 import {
   buildLoopSteps,
   getGroupMidis,
-  getSelectedGroups,
-  getSelectedIds,
   handEnabled,
-  moveSelectedGroup,
-  selectBoxGroups,
-  selectGroup,
-  setSelectionBoundary,
-  setSelectionHands,
 } from "./lib/practice";
-import { clampPlaybackBpm, DEFAULT_PLAYBACK_BPM, ticksToMilliseconds } from "./lib/playbackTiming";
+import {
+  clampPlaybackBpm,
+  DEFAULT_PLAYBACK_BPM,
+  formatPlaybackTime,
+  ticksToMilliseconds,
+} from "./lib/playbackTiming";
 import { clampScoreZoom, floorScoreZoomToStep, MAX_SCORE_ZOOM, MIN_SCORE_ZOOM } from "./lib/scoreZoom";
 import { Hand, ScoreData, SelectionState } from "./types";
+import type { ScoreIdentity } from "./performance/types";
+import useScoreInteraction from "./hooks/useScoreInteraction";
 import { MUSICXML_LIBRARY, type MusicXmlLibraryItem } from "virtual:musicxml-library";
 
 function playbackDelayMs(durationTicks: number, playbackBpm: number): number {
@@ -114,16 +122,17 @@ export default function App() {
   const libraryControlRef = useRef<HTMLDivElement | null>(null);
   const midiControlRef = useRef<HTMLDivElement | null>(null);
   const lastConsumedInputEventRef = useRef(0);
-  const lastAudibleMidiNotesRef = useRef<number[]>([]);
   const pointerPressedNotesRef = useRef<Set<number>>(new Set());
   const scoreLoadSessionRef = useRef(0);
   const [score, setScore] = useState<ScoreData | null>(null);
+  const [scoreIdentity, setScoreIdentity] = useState<ScoreIdentity | null>(null);
   const [appMode, setAppMode] = useState<AppMode>("practice");
   const [analysis, setAnalysis] = useState<ScoreAnalysis | null>(null);
   const [analysisLoadState, setAnalysisLoadState] = useState<AnalysisLoadState>("idle");
   const [analysisLoadError, setAnalysisLoadError] = useState<string | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [scorePlaybackSeeked, setScorePlaybackSeeked] = useState(false);
   const [followLeft, setFollowLeft] = useState(false);
   const [followRight, setFollowRight] = useState(false);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
@@ -144,7 +153,8 @@ export default function App() {
     () => MUSICXML_LIBRARY.find((item) => item.id === selectedLibraryItemId) ?? null,
     [selectedLibraryItemId],
   );
-  const { midi, selectedInputName, requestAccess, selectInput } = useMidi();
+  const { midi, selectedInputName, requestAccess, selectInput, subscribeRawMessages } = useMidi();
+
   const appShellStyle = useMemo(
     () => ({
       "--viewport-long-edge": `${viewportProfile.longEdge}px`,
@@ -152,7 +162,7 @@ export default function App() {
     }) as CSSProperties,
     [viewportProfile.longEdge, viewportProfile.shortEdge],
   );
-  const effectiveLayoutMode = appMode === "analysis" ? "natural-long-edge" : viewportProfile.layoutMode;
+  const effectiveLayoutMode = appMode === "practice" ? viewportProfile.layoutMode : "natural-long-edge";
 
   const loadScoreXml = useCallback((xml: string, fileName: string) => {
     const parsed = parseMusicXml(xml, fileName);
@@ -160,6 +170,7 @@ export default function App() {
     setScore(parsed);
     setImportError(null);
     setIsPlaying(false);
+    setScorePlaybackSeeked(false);
     setCurrentStepIndex(0);
     setSelection({ range: null, loopIndex: 0 });
     setHoveredGroupId(null);
@@ -167,8 +178,28 @@ export default function App() {
   }, []);
 
   const stepTicks = useMemo(() => getStepTicks(score), [score]);
-  const activeTick = stepTicks[currentStepIndex] ?? 0;
+  const activeTick = stepTicks[currentStepIndex]
+    ?? (currentStepIndex >= stepTicks.length ? score?.totalTicks ?? 0 : 0);
   const activeGroups = useMemo(() => getGroupsAtTick(score, activeTick), [score, activeTick]);
+  const {
+    selectedIds,
+    selectedGroups,
+    handleGroupSelect,
+    handleClearSelection,
+    dismissSelection,
+    handleBoxSelect,
+    expandSelectionToBothHands,
+    shrinkSelectionToHand,
+    resizeSelectionBoundary,
+    moveSelection,
+  } = useScoreInteraction({
+    score,
+    selection,
+    setSelection,
+    navigationFallbackGroup: activeGroups[0] ?? null,
+    playbackBpm,
+    keyboardEnabled: appMode === "practice" || appMode === "performance",
+  });
   const waitingGroups = useMemo(
     () => activeGroups.filter((group) => handEnabled(group, followLeft, followRight)),
     [activeGroups, followLeft, followRight],
@@ -177,9 +208,6 @@ export default function App() {
     () => activeGroups.filter((group) => !handEnabled(group, followLeft, followRight)),
     [activeGroups, followLeft, followRight],
   );
-  const selectedIds = useMemo(() => (score ? getSelectedIds(score, selection) : []), [score, selection]);
-  const hasMultiSelection = selectedIds.length > 1;
-  const selectedGroups = useMemo(() => (score ? getSelectedGroups(score, selection) : []), [score, selection]);
   const loopSteps = useMemo(() => (score ? buildLoopSteps(score, selection) : []), [score, selection]);
   const selectedStartGroup = selectedGroups.length === 1 ? selectedGroups[0] : null;
   const loopTargetStep =
@@ -195,9 +223,72 @@ export default function App() {
     [followLeft, followRight, loopTargetGroups],
   );
   const hoveredGroup = score?.noteGroups.find((group) => group.id === hoveredGroupId) ?? null;
+  const practicePositionTick = loopTargetStep?.tick
+    ?? (!isPlaying && selectedStartGroup && !scorePlaybackSeeked
+      ? selectedStartGroup.absoluteTick
+      : activeTick);
+  const scorePlaybackStartTick = selectedGroups.length > 1 && loopSteps.length > 0
+    ? loopSteps[0].tick
+    : 0;
+  const scorePlaybackEndTick = selectedGroups.length > 1 && loopSteps.length > 0
+    ? Math.min(
+      score?.totalTicks ?? 0,
+      loopSteps[loopSteps.length - 1].tick
+        + Math.max(1, ...loopSteps[loopSteps.length - 1].groups.map((group) => group.durationTicks)),
+    )
+    : score?.totalTicks ?? 0;
+  const scorePlaybackPositionMs = ticksToMilliseconds(
+    Math.max(0, practicePositionTick - scorePlaybackStartTick),
+    playbackBpm,
+  );
+  const scorePlaybackDurationMs = ticksToMilliseconds(
+    Math.max(0, scorePlaybackEndTick - scorePlaybackStartTick),
+    playbackBpm,
+  );
+  const practiceCurrentTime = formatPlaybackTime(ticksToMilliseconds(practicePositionTick, playbackBpm));
+  const practiceTotalTime = formatPlaybackTime(ticksToMilliseconds(score?.totalTicks ?? 0, playbackBpm));
   const [scoreZoom, setScoreZoom] = useState(100);
   const [scoreZoomMax, setScoreZoomMax] = useState(MAX_SCORE_ZOOM);
   const [scoreZoomPanelOpen, setScoreZoomPanelOpen] = useState(false);
+
+  useEffect(() => {
+    setScorePlaybackSeeked(false);
+  }, [selection.range?.endTick, selection.range?.hands, selection.range?.startTick]);
+
+  useEffect(() => {
+    let disposed = false;
+    if (!score) {
+      setScoreIdentity(null);
+      return () => {
+        disposed = true;
+      };
+    }
+
+    if (selectedLibraryItem?.scoreId && selectedLibraryItem.sourceHash) {
+      setScoreIdentity({
+        scoreId: selectedLibraryItem.scoreId,
+        sourceHash: selectedLibraryItem.sourceHash,
+        identitySource: "library-source",
+      });
+      return () => {
+        disposed = true;
+      };
+    }
+
+    setScoreIdentity(null);
+    void sha256Text(score.xml).then((sourceHash) => {
+      if (!disposed) {
+        setScoreIdentity({
+          scoreId: `local-${sourceHash.slice(7, 23).toLowerCase()}`,
+          sourceHash,
+          identitySource: "canonical-xml",
+        });
+      }
+    });
+    return () => {
+      disposed = true;
+    };
+  }, [score, selectedLibraryItem]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -250,8 +341,6 @@ export default function App() {
 
     return waitingGroups;
   }, [
-    followLeft,
-    followRight,
     hoveredGroup,
     isPlaying,
     loopTargetGroups,
@@ -289,12 +378,63 @@ export default function App() {
     setCurrentStepIndex((current) => {
       if (current >= stepTicks.length - 1) {
         setIsPlaying(false);
-        return current;
+        return stepTicks.length;
       }
 
       return current + 1;
     });
   }, [score, stepTicks.length]);
+
+  const setScorePlaybackPosition = useCallback((positionMs: number, startPlayback: boolean) => {
+    if (!score || scorePlaybackDurationMs <= 0) return;
+    cancelScheduledPlayback();
+    const requestedRatio = Math.max(0, Math.min(1, positionMs / scorePlaybackDurationMs));
+    const ratio = startPlayback && requestedRatio >= 1 ? 0 : requestedRatio;
+    const targetTick = scorePlaybackStartTick + ratio * (scorePlaybackEndTick - scorePlaybackStartTick);
+
+    if (selectedGroups.length > 1 && loopSteps.length > 0) {
+      const loopIndex = loopSteps.reduce((nearestIndex, step, index) =>
+        Math.abs(step.tick - targetTick) < Math.abs(loopSteps[nearestIndex].tick - targetTick)
+          ? index
+          : nearestIndex, 0);
+      setSelection((current) => ({ ...current, loopIndex }));
+      setIsPlaying(startPlayback);
+      return;
+    }
+
+    let low = 0;
+    let high = stepTicks.length;
+    while (low < high) {
+      const middle = (low + high) >>> 1;
+      if (stepTicks[middle] <= targetTick) low = middle + 1;
+      else high = middle;
+    }
+    const nextIndex = ratio >= 1 ? stepTicks.length : Math.max(0, low - 1);
+    setCurrentStepIndex(nextIndex);
+    setScorePlaybackSeeked(ratio < 1);
+    setIsPlaying(startPlayback);
+  }, [
+    loopSteps,
+    score,
+    scorePlaybackDurationMs,
+    scorePlaybackEndTick,
+    scorePlaybackStartTick,
+    selectedGroups.length,
+    stepTicks,
+  ]);
+
+  const seekScorePlayback = useCallback((positionMs: number) => {
+    setScorePlaybackPosition(positionMs, false);
+  }, [setScorePlaybackPosition]);
+
+  const startScorePlaybackAt = useCallback((positionMs: number) => {
+    if (!score) {
+      fileInputRef.current?.click();
+      return;
+    }
+    if (midi.status === "idle") void requestAccess();
+    setScorePlaybackPosition(positionMs, true);
+  }, [midi.status, requestAccess, score, setScorePlaybackPosition]);
 
   const handleFileChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -305,12 +445,14 @@ export default function App() {
     const session = scoreLoadSessionRef.current + 1;
     scoreLoadSessionRef.current = session;
     void readScoreXmlFromFile(file)
-      .then((xml) => {
+      .then(async (xml) => ({ xml, canonicalHash: await sha256Text(xml) }))
+      .then(({ xml, canonicalHash }) => {
         if (scoreLoadSessionRef.current !== session) {
           return;
         }
         loadScoreXml(xml, file.name);
-        setSelectedLibraryItemId(null);
+        const matchingLibraryItem = MUSICXML_LIBRARY.find((item) => item.canonicalHash === canonicalHash);
+        setSelectedLibraryItemId(matchingLibraryItem?.id ?? null);
       })
       .catch((error) => {
         if (scoreLoadSessionRef.current !== session) {
@@ -321,119 +463,6 @@ export default function App() {
 
     event.target.value = "";
   }, [loadScoreXml]);
-
-  const handleGroupSelect = useCallback(
-    (groupId: string, extend: boolean) => {
-      if (!score) {
-        return;
-      }
-
-      const group = score.noteGroups.find((candidate) => candidate.id === groupId);
-      if (!hasMultiSelection || extend) {
-        setSelection((current) => selectGroup(score, current, groupId, extend));
-      }
-      if (group) {
-        void playGroups([group], "4n", playbackBpm);
-      }
-    },
-    [hasMultiSelection, playbackBpm, score],
-  );
-
-  const handleClearSelection = useCallback(() => {
-    if (!hasMultiSelection) {
-      setSelection({ range: null, loopIndex: 0 });
-    }
-  }, [hasMultiSelection]);
-
-  const dismissSelection = useCallback(() => {
-    setSelection({ range: null, loopIndex: 0 });
-  }, []);
-
-  const handleBoxSelect = useCallback(
-    (groupIds: string[]) => {
-      if (!score) {
-        return;
-      }
-
-      setSelection(groupIds.length > 0 ? selectBoxGroups(score, groupIds) : { range: null, loopIndex: 0 });
-    },
-    [score],
-  );
-
-  const expandSelectionToBothHands = useCallback(() => {
-    if (!score) {
-      return;
-    }
-
-    setSelection((current) => setSelectionHands(score, current, ["right", "left"]));
-  }, [score]);
-
-  const shrinkSelectionToHand = useCallback(
-    (hand: Hand) => {
-      if (!score) {
-        return;
-      }
-
-      setSelection((current) => setSelectionHands(score, current, [hand]));
-    },
-    [score],
-  );
-
-  const resizeSelectionBoundary = useCallback(
-    (edge: "start" | "end", tick: number) => {
-      if (!score) {
-        return;
-      }
-
-      setSelection((current) => setSelectionBoundary(score, current, edge, tick));
-    },
-    [score],
-  );
-
-  const moveSelection = useCallback(
-    (direction: -1 | 1) => {
-      if (!score || score.noteGroups.length === 0) {
-        return;
-      }
-
-      const nextSelection = moveSelectedGroup(score, selection, direction, activeGroups[0] ?? score.noteGroups[0]);
-      const nextSelectedIds = getSelectedIds(score, nextSelection);
-      const nextGroup = score.noteGroups.find((group) => group.id === nextSelectedIds[0]);
-      const moved = nextSelectedIds.length !== selectedIds.length
-        || nextSelectedIds.some((id, index) => id !== selectedIds[index]);
-
-      setSelection(nextSelection);
-      if (nextGroup && moved) {
-        void playGroups([nextGroup], "4n", playbackBpm);
-      }
-    },
-    [activeGroups, playbackBpm, score, selectedIds, selection],
-  );
-
-  useEffect(() => {
-    function handleKeyDown(event: KeyboardEvent) {
-      if (appMode !== "practice") {
-        return;
-      }
-      const target = event.target as HTMLElement | null;
-      if (target?.tagName === "INPUT" || target?.tagName === "TEXTAREA" || target?.tagName === "SELECT") {
-        return;
-      }
-
-      if (event.key === "ArrowLeft") {
-        event.preventDefault();
-        moveSelection(-1);
-      }
-
-      if (event.key === "ArrowRight") {
-        event.preventDefault();
-        moveSelection(1);
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [appMode, moveSelection]);
 
   useEffect(() => {
     if (!scoreZoomPanelOpen && !tempoPanelOpen && !libraryPanelOpen && !midiPanelOpen) {
@@ -491,17 +520,17 @@ export default function App() {
 
   useEffect(() => {
     if (appMode !== "practice") {
-      lastAudibleMidiNotesRef.current = midi.pressedNotes;
+      resetMidiMonitor();
       return;
     }
-    const previous = new Set(lastAudibleMidiNotesRef.current);
-    const justPressed = midi.pressedNotes.filter((midiNote) => !previous.has(midiNote));
-    lastAudibleMidiNotesRef.current = midi.pressedNotes;
-
-    if (justPressed.length > 0) {
-      void playMidiNotes(justPressed, "8n");
-    }
-  }, [appMode, midi.pressedNotes]);
+    const unsubscribe = subscribeRawMessages((event) => {
+      void handleMidiMonitorEvent(event);
+    });
+    return () => {
+      unsubscribe();
+      resetMidiMonitor();
+    };
+  }, [appMode, subscribeRawMessages]);
 
   useEffect(() => {
     if (!isPlaying || inputEventId === lastConsumedInputEventRef.current) {
@@ -641,10 +670,13 @@ export default function App() {
       void requestAccess();
     }
 
-    if (!isPlaying && selectedStartGroup) {
+    if (currentStepIndex >= stepTicks.length) {
+      setCurrentStepIndex(0);
+    } else if (!scorePlaybackSeeked && selectedStartGroup) {
       setCurrentStepIndex(stepTicks.findIndex((tick) => tick === selectedStartGroup.absoluteTick));
     }
 
+    setScorePlaybackSeeked(false);
     setIsPlaying(true);
   }
 
@@ -793,6 +825,8 @@ export default function App() {
           <ScoreViewer
             score={score}
             scoreZoom={scoreZoom / 100}
+            progressCurrentTime={practiceCurrentTime}
+            progressTotalTime={practiceTotalTime}
             onScoreZoomLimitChange={handleScoreZoomLimitChange}
             allowBoxSelect={viewportProfile.allowBoxSelect}
             activeGroups={scoreActiveGroups}
@@ -828,7 +862,7 @@ export default function App() {
             onKeyRelease={handlePianoKeyRelease}
           />
         </>
-      ) : (
+      ) : appMode === "analysis" ? (
         <AnalysisWorkspace
           score={score}
           analysis={analysis}
@@ -836,6 +870,31 @@ export default function App() {
           loadError={analysisLoadError}
           scoreZoom={scoreZoom / 100}
           playbackBpm={playbackBpm}
+        />
+      ) : (
+        <PerformanceWorkspace
+          score={score}
+          scoreIdentity={scoreIdentity}
+          analysis={analysis}
+          scoreZoom={scoreZoom / 100}
+          allowBoxSelect={viewportProfile.allowBoxSelect}
+          selectedIds={selectedIds}
+          selection={selection}
+          scorePlaybackActive={isPlaying}
+          scorePlaybackGroups={scoreActiveGroups}
+          scorePlaybackPositionMs={scorePlaybackPositionMs}
+          scorePlaybackDurationMs={scorePlaybackDurationMs}
+          onToggleScorePlayback={togglePlay}
+          onSeekScorePlayback={seekScorePlayback}
+          onStartScorePlaybackAt={startScorePlaybackAt}
+          onScoreZoomLimitChange={handleScoreZoomLimitChange}
+          onGroupSelect={handleGroupSelect}
+          onBoxSelect={handleBoxSelect}
+          onExpandSelectionToBothHands={expandSelectionToBothHands}
+          onShrinkSelectionToHand={shrinkSelectionToHand}
+          onResizeSelectionBoundary={resizeSelectionBoundary}
+          onClearSelection={handleClearSelection}
+          onDismissSelection={dismissSelection}
         />
       )}
     </main>

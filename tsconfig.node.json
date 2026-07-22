@@ -9,6 +9,8 @@
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
     "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "skipLibCheck": true,
     "noEmit": true,
     "tsBuildInfoFile": ".cache/typescript/tsconfig.node.tsbuildinfo"

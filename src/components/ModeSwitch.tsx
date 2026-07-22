@@ -26,6 +26,15 @@ export default function ModeSwitch({ mode, onChange }: ModeSwitchProps) {
       >
         <span>分析</span>
       </button>
+      <button
+        type="button"
+        className={mode === "performance" ? "active" : ""}
+        onClick={() => onChange("performance")}
+        aria-pressed={mode === "performance"}
+        title="演绎模式"
+      >
+        <span>演绎</span>
+      </button>
     </div>
   );
 }

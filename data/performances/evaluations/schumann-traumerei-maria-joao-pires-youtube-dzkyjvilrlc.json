@@ -1,0 +1,2746 @@
+{
+  "schemaVersion": "2.0.0",
+  "scoreId": "schumann-traumerei-op15-no7",
+  "audioSha256": "D53D172D3ED717FEC8EE01B0FEC1957183C823F5A3904EF9B0B2068771BBBE1C",
+  "algorithm": "synctoolbox-mrmsdtw-score-informed-1",
+  "effectiveRangeSeconds": [
+    0.079544,
+    191.720001
+  ],
+  "timeMap": [
+    {
+      "scorePosition": {
+        "measureIndex": 0,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 79544,
+      "confidence": 0.9271
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 1,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 1576888,
+      "confidence": 0.9083
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 1,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 3582357,
+      "confidence": 0.9036
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 1,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 6460248,
+      "confidence": 0.7742
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 1,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 7068919,
+      "confidence": 0.7982
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 1,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 7577591,
+      "confidence": 0.8328
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 2,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 8146263,
+      "confidence": 0.87
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 2,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 8874935,
+      "confidence": 0.7809
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 2,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 9563607,
+      "confidence": 0.8524
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 2,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 13097044,
+      "confidence": 0.8536
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 2,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 13806966,
+      "confidence": 0.806
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 3,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 14415638,
+      "confidence": 0.8439
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 3,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 15004310,
+      "confidence": 0.9111
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 3,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 15492982,
+      "confidence": 0.75
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 3,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 15961654,
+      "confidence": 0.933
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 3,
+        "offsetQuarter": {
+          "numerator": 2,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 16490326,
+      "confidence": 0.7925
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 3,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 16998998,
+      "confidence": 0.7669
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 3,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 17587669,
+      "confidence": 0.7497
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 3,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 18116341,
+      "confidence": 0.8392
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 4,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 18725013,
+      "confidence": 0.8568
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 4,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 19338812,
+      "confidence": 0.8911
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 4,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 20182357,
+      "confidence": 0.9036
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 4,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 20831029,
+      "confidence": 0.8937
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 4,
+        "offsetQuarter": {
+          "numerator": 2,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 21319701,
+      "confidence": 0.9129
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 4,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 21788373,
+      "confidence": 0.9038
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 4,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 22457044,
+      "confidence": 0.8168
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 4,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 23085716,
+      "confidence": 0.8598
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 5,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 24198919,
+      "confidence": 0.8344
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 5,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 26111732,
+      "confidence": 0.9156
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 5,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 28921576,
+      "confidence": 0.7742
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 5,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 29446419,
+      "confidence": 0.7788
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 5,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 29915091,
+      "confidence": 0.8271
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 6,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 30463763,
+      "confidence": 0.87
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 6,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 31172435,
+      "confidence": 0.87
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 6,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 31861107,
+      "confidence": 0.77
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 6,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 35327123,
+      "confidence": 0.8058
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 6,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 35895794,
+      "confidence": 0.8176
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 6,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 36384466,
+      "confidence": 0.7614
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 7,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 37033138,
+      "confidence": 0.7617
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 7,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 37541810,
+      "confidence": 0.87
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 7,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 38005013,
+      "confidence": 0.9093
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 7,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 38439154,
+      "confidence": 0.8244
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 7,
+        "offsetQuarter": {
+          "numerator": 2,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 38927826,
+      "confidence": 0.8517
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 7,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 39356498,
+      "confidence": 0.8782
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 7,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 39805169,
+      "confidence": 0.8244
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 7,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 40253841,
+      "confidence": 0.8119
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 8,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 40782513,
+      "confidence": 0.8419
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 8,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 41331185,
+      "confidence": 0.8792
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 8,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 41779857,
+      "confidence": 0.8119
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 8,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 42369206,
+      "confidence": 0.8733
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 8,
+        "offsetQuarter": {
+          "numerator": 2,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 43057201,
+      "confidence": 0.9349
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 8,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 43805873,
+      "confidence": 0.936
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 8,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 44414544,
+      "confidence": 0.8873
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 8,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 45323216,
+      "confidence": 0.8958
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 1,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 46531888,
+      "confidence": 0.9271
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 1,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 48389232,
+      "confidence": 0.9139
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 1,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 51106341,
+      "confidence": 0.6903
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 1,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 51783919,
+      "confidence": 0.7982
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 1,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 52252591,
+      "confidence": 0.8328
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 2,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 52761263,
+      "confidence": 0.87
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 2,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 53389935,
+      "confidence": 0.7558
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 2,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 53918607,
+      "confidence": 0.8204
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 2,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 57173294,
+      "confidence": 0.8793
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 2,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 57861966,
+      "confidence": 0.857
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 3,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 58470638,
+      "confidence": 0.8458
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 3,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 58979310,
+      "confidence": 0.9368
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 3,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 59487982,
+      "confidence": 0.83
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 3,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 2
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 59956654,
+      "confidence": 0.9065
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 3,
+        "offsetQuarter": {
+          "numerator": 2,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 60465326,
+      "confidence": 0.8293
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 3,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 61033998,
+      "confidence": 0.75
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 3,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 61562669,
+      "confidence": 0.7497
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 3,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 62091341,
+      "confidence": 0.8392
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 4,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 62620013,
+      "confidence": 0.7943
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 4,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 63188685,
+      "confidence": 0.8343
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 4,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 63937357,
+      "confidence": 0.8793
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 4,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 2
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 64586029,
+      "confidence": 0.9206
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 4,
+        "offsetQuarter": {
+          "numerator": 2,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 65114701,
+      "confidence": 0.8845
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 4,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 65583373,
+      "confidence": 0.8911
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 4,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 66332044,
+      "confidence": 0.8742
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 4,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 66980716,
+      "confidence": 0.8598
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 5,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 68129388,
+      "confidence": 0.8
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 5,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 70126732,
+      "confidence": 0.9222
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 5,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 73052748,
+      "confidence": 0.7662
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 5,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 73641419,
+      "confidence": 0.7982
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 5,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 74130091,
+      "confidence": 0.8351
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 6,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 74638763,
+      "confidence": 0.8826
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 6,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 75367435,
+      "confidence": 0.8604
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 6,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 76116107,
+      "confidence": 0.7012
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 6,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 79662123,
+      "confidence": 0.55
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 6,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 80250794,
+      "confidence": 0.7246
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 6,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 80719466,
+      "confidence": 0.7902
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 7,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 81248138,
+      "confidence": 0.7518
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 7,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 81736810,
+      "confidence": 0.857
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 7,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 82165482,
+      "confidence": 0.9118
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 7,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 2
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 82614154,
+      "confidence": 0.7827
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 7,
+        "offsetQuarter": {
+          "numerator": 2,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 83082826,
+      "confidence": 0.8162
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 7,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 83511498,
+      "confidence": 0.9275
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 7,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 83920169,
+      "confidence": 0.8244
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 7,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 84388841,
+      "confidence": 0.8413
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 8,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 84977513,
+      "confidence": 0.8002
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 8,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 85586185,
+      "confidence": 0.8742
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 8,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 86054857,
+      "confidence": 0.8276
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 8,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 2
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 86583529,
+      "confidence": 0.8836
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 8,
+        "offsetQuarter": {
+          "numerator": 2,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 87332201,
+      "confidence": 0.9224
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 8,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 88080873,
+      "confidence": 0.9343
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 8,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 88769544,
+      "confidence": 0.8271
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 8,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 1
+      },
+      "timeUs": 89718216,
+      "confidence": 0.9063
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 9,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 91006888,
+      "confidence": 0.9381
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 9,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 92924232,
+      "confidence": 0.8586
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 9,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 95950248,
+      "confidence": 0.7638
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 9,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 96518919,
+      "confidence": 0.8381
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 9,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 96987591,
+      "confidence": 0.8244
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 10,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 97496263,
+      "confidence": 0.9203
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 10,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 98244935,
+      "confidence": 0.75
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 10,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 99153607,
+      "confidence": 0.75
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 10,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 99782279,
+      "confidence": 0.8818
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 10,
+        "offsetQuarter": {
+          "numerator": 2,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 100330951,
+      "confidence": 0.9222
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 10,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 100779623,
+      "confidence": 0.7829
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 10,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 101268294,
+      "confidence": 0.8826
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 10,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 101656966,
+      "confidence": 0.8139
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 11,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 102185638,
+      "confidence": 0.8301
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 11,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 102714310,
+      "confidence": 0.8604
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 11,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 103162982,
+      "confidence": 0.8517
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 11,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 103591654,
+      "confidence": 0.8485
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 11,
+        "offsetQuarter": {
+          "numerator": 2,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 104040326,
+      "confidence": 0.8126
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 11,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 104488998,
+      "confidence": 0.9242
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 11,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 104821810,
+      "confidence": 0.9242
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 11,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 105406341,
+      "confidence": 0.8534
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 12,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 105935013,
+      "confidence": 0.8285
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 12,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 106483685,
+      "confidence": 0.879
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 12,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 106972357,
+      "confidence": 0.9295
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 12,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 107541029,
+      "confidence": 0.9007
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 12,
+        "offsetQuarter": {
+          "numerator": 2,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 108149701,
+      "confidence": 0.8093
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 12,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 108958373,
+      "confidence": 0.9093
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 12,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 109627044,
+      "confidence": 0.9342
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 12,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 110815716,
+      "confidence": 0.9028
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 13,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 112084388,
+      "confidence": 0.8793
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 13,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 113581732,
+      "confidence": 0.9078
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 13,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 116867748,
+      "confidence": 0.8233
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 13,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 117416419,
+      "confidence": 0.8354
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 13,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 117945091,
+      "confidence": 0.8058
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 14,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 118493763,
+      "confidence": 0.857
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 14,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 119222435,
+      "confidence": 0.7809
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 14,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 120071107,
+      "confidence": 0.75
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 14,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 120739779,
+      "confidence": 0.8244
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 14,
+        "offsetQuarter": {
+          "numerator": 2,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 121168451,
+      "confidence": 0.8603
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 14,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 121617123,
+      "confidence": 0.7617
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 14,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 122105794,
+      "confidence": 0.87
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 14,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 122594466,
+      "confidence": 0.7809
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 15,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 123043138,
+      "confidence": 0.8285
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 15,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 123511810,
+      "confidence": 0.79
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 15,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 123940482,
+      "confidence": 0.9341
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 15,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 124349154,
+      "confidence": 0.7655
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 15,
+        "offsetQuarter": {
+          "numerator": 2,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 124817826,
+      "confidence": 0.8087
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 15,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 125306498,
+      "confidence": 0.8661
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 15,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 125695169,
+      "confidence": 0.8244
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 15,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 126163841,
+      "confidence": 0.802
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 16,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 126732513,
+      "confidence": 0.8733
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 16,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 127201185,
+      "confidence": 0.9242
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 16,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 127689857,
+      "confidence": 0.9187
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 16,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 128318529,
+      "confidence": 0.9196
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 16,
+        "offsetQuarter": {
+          "numerator": 2,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 128947201,
+      "confidence": 0.8034
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 16,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 129575873,
+      "confidence": 0.841
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 16,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 130564544,
+      "confidence": 0.8895
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 16,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 131813216,
+      "confidence": 0.8943
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 17,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 133521888,
+      "confidence": 0.8328
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 17,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 135939232,
+      "confidence": 0.8917
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 17,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 138965248,
+      "confidence": 0.7617
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 17,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 139513919,
+      "confidence": 0.7944
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 17,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 140002591,
+      "confidence": 0.8343
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 18,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 140551263,
+      "confidence": 0.8604
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 18,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 141319935,
+      "confidence": 0.7646
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 18,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 142128607,
+      "confidence": 0.822
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 18,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 146103294,
+      "confidence": 0.7996
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 18,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 146831966,
+      "confidence": 0.8195
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 19,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 147460638,
+      "confidence": 0.791
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 19,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 148069310,
+      "confidence": 0.933
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 19,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 148637982,
+      "confidence": 0.7769
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 19,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 149106654,
+      "confidence": 0.9065
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 19,
+        "offsetQuarter": {
+          "numerator": 2,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 149615326,
+      "confidence": 0.8485
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 19,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 150143998,
+      "confidence": 0.817
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 19,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 150712669,
+      "confidence": 0.8244
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 19,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 151261341,
+      "confidence": 0.8478
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 20,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 151810013,
+      "confidence": 0.8947
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 20,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 152438685,
+      "confidence": 0.8932
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 20,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 153247357,
+      "confidence": 0.9036
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 20,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 153987787,
+      "confidence": 0.9322
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 20,
+        "offsetQuarter": {
+          "numerator": 2,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 154624701,
+      "confidence": 0.8559
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 20,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 155113373,
+      "confidence": 0.8239
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 20,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 155882044,
+      "confidence": 0.8428
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 20,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 156530716,
+      "confidence": 0.8964
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 21,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 157759388,
+      "confidence": 0.8274
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 21,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 159856732,
+      "confidence": 0.9036
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 21,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 163182748,
+      "confidence": 0.7534
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 21,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 163791419,
+      "confidence": 0.7982
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 21,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 164380091,
+      "confidence": 0.8515
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 22,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 165088763,
+      "confidence": 0.8604
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 22,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 166097435,
+      "confidence": 0.8293
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 22,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 167092669,
+      "confidence": 0.8516
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 22,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 171592123,
+      "confidence": 0.8458
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 22,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 172240794,
+      "confidence": 0.7655
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 22,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 172809466,
+      "confidence": 0.6937
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 23,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 173358138,
+      "confidence": 0.8103
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 23,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 173966810,
+      "confidence": 0.8382
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 23,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 174495482,
+      "confidence": 0.7842
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 23,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 175024154,
+      "confidence": 0.8812
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 23,
+        "offsetQuarter": {
+          "numerator": 2,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 175632826,
+      "confidence": 0.7944
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 23,
+        "offsetQuarter": {
+          "numerator": 5,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 176341498,
+      "confidence": 0.7194
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 23,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 176990169,
+      "confidence": 0.8661
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 23,
+        "offsetQuarter": {
+          "numerator": 7,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 177638841,
+      "confidence": 0.9012
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 24,
+        "offsetQuarter": {
+          "numerator": 0,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 178447513,
+      "confidence": 0.8741
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 24,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 179436185,
+      "confidence": 0.893
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 24,
+        "offsetQuarter": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 180984857,
+      "confidence": 0.8843
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 24,
+        "offsetQuarter": {
+          "numerator": 3,
+          "denominator": 2
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 182453529,
+      "confidence": 0.7012
+    },
+    {
+      "scorePosition": {
+        "measureIndex": 24,
+        "offsetQuarter": {
+          "numerator": 2,
+          "denominator": 1
+        },
+        "playbackOccurrence": 0
+      },
+      "timeUs": 185702201,
+      "confidence": 0.8793
+    }
+  ],
+  "scoreAlignment": {
+    "featureRate": 50,
+    "tuningOffsetCents": 11,
+    "audioFrames": 9584,
+    "scoreFrames": 9583,
+    "warpingPathFrames": 7999,
+    "anchorCount": 215,
+    "medianChromaSimilarity": 0.7396,
+    "p10ChromaSimilarity": 0.5353,
+    "p90ChromaSimilarity": 0.9251
+  },
+  "models": {
+    "pianoTranscriptionInference": {
+      "version": "piano-transcription-inference-0.0.6",
+      "noteCount": 478,
+      "pedalEventCount": 87
+    }
+  },
+  "pianoAlignment": {
+    "overall": {
+      "matchedNotes": 419,
+      "substitutedNotes": 1,
+      "ornamentNotes": 3,
+      "omittedNotes": 19,
+      "extraNotes": 50,
+      "uncertainNotes": 2,
+      "scoreCoverage": 0.9527,
+      "performanceCoverage": 0.8912,
+      "confidence": 0.9192,
+      "onsetResidualMs": {
+        "median": 18.71,
+        "p90": 51.65,
+        "p95": 77.03
+      }
+    },
+    "sections": {
+      "section-pickup": {
+        "matchedNotes": 1,
+        "substitutedNotes": 0,
+        "ornamentNotes": 0,
+        "omittedNotes": 0,
+        "extraNotes": 2,
+        "uncertainNotes": 0,
+        "scoreCoverage": 1,
+        "performanceCoverage": 0.3333,
+        "confidence": 0.5774,
+        "onsetResidualMs": {
+          "median": 0,
+          "p90": 0,
+          "p95": 0
+        }
+      },
+      "section-a-antecedent": {
+        "matchedNotes": 103,
+        "substitutedNotes": 0,
+        "ornamentNotes": 0,
+        "omittedNotes": 5,
+        "extraNotes": 21,
+        "uncertainNotes": 0,
+        "scoreCoverage": 0.9537,
+        "performanceCoverage": 0.8306,
+        "confidence": 0.8901,
+        "onsetResidualMs": {
+          "median": 19.12,
+          "p90": 58.35,
+          "p95": 71.56
+        }
+      },
+      "section-a-consequent": {
+        "matchedNotes": 92,
+        "substitutedNotes": 0,
+        "ornamentNotes": 2,
+        "omittedNotes": 10,
+        "extraNotes": 18,
+        "uncertainNotes": 2,
+        "scoreCoverage": 0.8868,
+        "performanceCoverage": 0.8276,
+        "confidence": 0.8549,
+        "onsetResidualMs": {
+          "median": 17.34,
+          "p90": 46.45,
+          "p95": 55.27
+        }
+      },
+      "section-b-opening": {
+        "matchedNotes": 54,
+        "substitutedNotes": 1,
+        "ornamentNotes": 0,
+        "omittedNotes": 0,
+        "extraNotes": 8,
+        "uncertainNotes": 0,
+        "scoreCoverage": 1,
+        "performanceCoverage": 0.873,
+        "confidence": 0.9268,
+        "onsetResidualMs": {
+          "median": 17.74,
+          "p90": 43.61,
+          "p95": 61.65
+        }
+      },
+      "section-b-intensification": {
+        "matchedNotes": 58,
+        "substitutedNotes": 0,
+        "ornamentNotes": 0,
+        "omittedNotes": 0,
+        "extraNotes": 5,
+        "uncertainNotes": 0,
+        "scoreCoverage": 1,
+        "performanceCoverage": 0.9206,
+        "confidence": 0.9595,
+        "onsetResidualMs": {
+          "median": 19.16,
+          "p90": 58.14,
+          "p95": 647.12
+        }
+      },
+      "section-a-return": {
+        "matchedNotes": 53,
+        "substitutedNotes": 0,
+        "ornamentNotes": 1,
+        "omittedNotes": 2,
+        "extraNotes": 10,
+        "uncertainNotes": 0,
+        "scoreCoverage": 0.9643,
+        "performanceCoverage": 0.8462,
+        "confidence": 0.8969,
+        "onsetResidualMs": {
+          "median": 19.92,
+          "p90": 46.14,
+          "p95": 416.82
+        }
+      },
+      "section-closing": {
+        "matchedNotes": 58,
+        "substitutedNotes": 0,
+        "ornamentNotes": 0,
+        "omittedNotes": 2,
+        "extraNotes": 3,
+        "uncertainNotes": 0,
+        "scoreCoverage": 0.9667,
+        "performanceCoverage": 0.9508,
+        "confidence": 0.9587,
+        "onsetResidualMs": {
+          "median": 15.18,
+          "p90": 60,
+          "p95": 1073.06
+        }
+      }
+    }
+  },
+  "limitations": [
+    "The global time map is derived from score chroma and onset features, while note release, velocity, and pedal remain estimates of the piano transcription model.",
+    "Commercial recording mastering and sustained pedal resonance can bias acoustic velocity and release estimates."
+  ]
+}

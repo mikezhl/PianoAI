@@ -12,6 +12,15 @@ import {
 function note(id: string, midi: number, hand: Hand, tick: number): ParsedNote {
   return {
     id,
+    scoreRef: {
+      partId: "P1",
+      measureIndex: 0,
+      offsetQuarter: { numerator: tick, denominator: 480 },
+      staff: hand === "left" ? 2 : 1,
+      voice: hand === "left" ? "5" : "1",
+      writtenPitch: `${midi}`,
+      ordinalAtPosition: 0,
+    },
     midi,
     name: `${midi}`,
     hand,

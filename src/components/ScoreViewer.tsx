@@ -1,31 +1,46 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp, X } from "lucide-react";
 import type { GroupLayout, Hand, NoteGroup, ScoreData } from "../types";
 import { prepareMusicXmlForPracticeDisplay } from "../lib/displayXml";
+import { installHorizontalPedalLayoutFix } from "../lib/osmdHorizontalPedals";
 import { MAX_SCORE_ZOOM, MIN_SCORE_ZOOM } from "../lib/scoreZoom";
 import {
-  HIT_GAP,
+  buildScoreHitIndex,
   buildScoreOverlayLayout,
   buildSelectedFrames,
   frameFromLayouts,
   getBoxSelectedGroupIds,
-  rectsIntersect,
+  getScoreGroupAtPoint,
 } from "../lib/scoreOverlay";
 import { buildMidiScoreMarkers } from "../lib/staffNotation";
-import type { ScoreGroupLayout, ScoreStaffGeometry } from "../lib/scoreOverlay";
+import type { ScoreGroupLayout, ScoreHitIndex, ScoreStaffGeometry } from "../lib/scoreOverlay";
+import {
+  HORIZONTAL_LAYOUT_ZOOM,
+  HORIZONTAL_RENDER_BATCH_MEASURES,
+  HORIZONTAL_SVG_WIDTH_BUDGET,
+  calculateHorizontalDisplayGeometry,
+} from "../lib/scoreRender";
+import PerformanceScoreOverlay, {
+  type PerformanceScoreOverlayConfig,
+} from "./performance/PerformanceScoreOverlay";
 
 interface ScoreViewerProps {
   score: ScoreData | null;
   scoreZoom: number;
+  showScrollProgress?: boolean;
+  progressCurrentTime?: string;
+  progressTotalTime?: string;
   onScoreZoomLimitChange: (maxZoom: number) => void;
   allowBoxSelect: boolean;
   activeGroups: NoteGroup[];
   followActive: boolean;
+  showActiveCursor?: boolean;
+  performanceOverlay?: PerformanceScoreOverlayConfig | null;
   selectedIds: string[];
-  hoveredId: string | null;
+  hoveredId?: string | null;
   loopGroupIds: string[];
   pressedNotes: number[];
-  onGroupHover: (groupId: string | null) => void;
+  onGroupHover?: (groupId: string | null) => void;
   onGroupSelect: (groupId: string, extend: boolean) => void;
   onBoxSelect: (groupIds: string[]) => void;
   onExpandSelectionToBothHands: () => void;
@@ -75,11 +90,6 @@ interface SelectionAction {
 interface SelectionResizeTarget {
   tick: number;
   x: number;
-}
-
-interface HighlightTarget {
-  frame: GroupLayout;
-  layouts: ScoreGroupLayout[];
 }
 
 function boundsFromLayouts(layouts: ScoreGroupLayout[]): GroupLayout | null {
@@ -165,12 +175,6 @@ function getLayoutOffsetWithinAncestor(element: HTMLElement, ancestor: HTMLEleme
   return { x, y };
 }
 
-function svgChildBelongsToLayout(child: Element, layout: ScoreGroupLayout, overlayRect: DOMRect): boolean {
-  const rect = child.getBoundingClientRect();
-  const centerY = rect.top - overlayRect.top + rect.height * 0.5;
-  return layout.hand === "right" ? centerY < layout.y + layout.height : centerY >= layout.y;
-}
-
 function renderableSvgElements(element: Element): Element[] {
   const children = Array.from(element.querySelectorAll("path, rect, text"));
   return element.matches("path, rect, text") ? [element, ...children] : children;
@@ -196,38 +200,20 @@ function resetSvgHighlight(element: Element) {
   }
 }
 
-function elementIntersectsFrame(element: Element, frame: GroupLayout, overlayRect: DOMRect): boolean {
-  const rect = element.getBoundingClientRect();
-  const elementBox = {
-    groupId: "svg-element",
-    x: rect.left - overlayRect.left,
-    y: rect.top - overlayRect.top,
-    width: rect.width,
-    height: rect.height,
-  };
-
-  return rectsIntersect(elementBox, frame);
-}
-
-function layoutFrame(layout: ScoreGroupLayout): GroupLayout {
-  return {
-    groupId: layout.groupId,
-    x: layout.frameX,
-    y: layout.frameY,
-    width: layout.frameWidth,
-    height: layout.frameHeight,
-  };
-}
-
-export default function ScoreViewer({
+function ScoreViewer({
   score,
   scoreZoom,
+  showScrollProgress = true,
+  progressCurrentTime = "0:00",
+  progressTotalTime = "0:00",
   onScoreZoomLimitChange,
   allowBoxSelect,
   activeGroups,
   followActive,
+  showActiveCursor = followActive,
+  performanceOverlay = null,
   selectedIds,
-  hoveredId,
+  hoveredId = null,
   loopGroupIds,
   pressedNotes,
   onGroupHover,
@@ -248,6 +234,10 @@ export default function ScoreViewer({
   const onScoreZoomLimitChangeRef = useRef(onScoreZoomLimitChange);
   const lastPublishedScoreZoomLimitRef = useRef<number | null>(null);
   const scheduleMeasureRef = useRef<(() => void) | null>(null);
+  const ensureMeasureRenderedRef = useRef<(measureIndex: number) => void>(() => undefined);
+  const seekScoreTickRef = useRef<(tick: number) => void>(() => undefined);
+  const followedMeasureRef = useRef<number | null>(null);
+  const hoveredHitGroupRef = useRef<string | null>(null);
   const svgTargetsByGroupRef = useRef<Map<string, Element[]>>(new Map());
   const coloredElementsRef = useRef<Set<Element>>(new Set());
   const [layouts, setLayouts] = useState<ScoreGroupLayout[]>([]);
@@ -260,6 +250,7 @@ export default function ScoreViewer({
   const [renderError, setRenderError] = useState<string | null>(null);
   const [activeResizeEdge, setActiveResizeEdge] = useState<SelectionResizeEdge | null>(null);
   const layoutById = useMemo(() => new Map(layouts.map((layout) => [layout.groupId, layout])), [layouts]);
+  const hitIndex = useMemo<ScoreHitIndex>(() => buildScoreHitIndex(layouts), [layouts]);
   const groupById = useMemo(
     () => new Map((score?.noteGroups ?? []).map((group) => [group.id, group])),
     [score],
@@ -424,6 +415,19 @@ export default function ScoreViewer({
         .filter((x): x is number => x != null),
     );
   }, [activeGroups, layoutById]);
+  const activeMeasureIndex = activeGroups[0]?.measureIndex ?? null;
+  const activeMeasureX = useMemo(() => {
+    if (activeMeasureIndex == null) {
+      return null;
+    }
+
+    return medianNumber(
+      activeGroups
+        .filter((group) => group.measureIndex === activeMeasureIndex)
+        .map((group) => layoutById.get(group.id)?.measureX)
+        .filter((x): x is number => x != null),
+    );
+  }, [activeGroups, activeMeasureIndex, layoutById]);
 
   function publishScoreZoomLimit(maxZoom: number) {
     const normalized = Math.max(MIN_SCORE_ZOOM, Math.min(MAX_SCORE_ZOOM, maxZoom));
@@ -450,8 +454,10 @@ export default function ScoreViewer({
   useEffect(() => {
     let disposed = false;
     let animationFrameId: number | null = null;
+    let renderFrameId: number | null = null;
     let resizeObserver: ResizeObserver | null = null;
     let handleViewportChange: (() => void) | null = null;
+    let handleScrollRender: (() => void) | null = null;
     const host = osmdHostRef.current;
     if (!host) {
       return;
@@ -465,7 +471,7 @@ export default function ScoreViewer({
     setScoreViewportHeight(360);
     setScoreFrame({ top: 0, height: 260 });
     setStaffGeometry(EMPTY_STAFF_GEOMETRY);
-    setScrollProgress(1);
+    setScrollProgress(0);
     setRenderError(null);
 
     if (!score) {
@@ -487,7 +493,8 @@ export default function ScoreViewer({
     };
 
     void import("opensheetmusicdisplay")
-      .then(async ({ OpenSheetMusicDisplay }) => {
+      .then(async ({ OpenSheetMusicDisplay, VexFlowMusicSheetCalculator }) => {
+        installHorizontalPedalLayoutFix(VexFlowMusicSheetCalculator);
         const osmd = new OpenSheetMusicDisplay(hostElement, {
           backend: "svg",
           autoResize: false,
@@ -518,20 +525,17 @@ export default function ScoreViewer({
           return;
         }
 
-        const getViewportHeight = () => scrollRef.current?.clientHeight ?? hostElement.getBoundingClientRect().height;
-        const getBaseZoom = () => {
-          const viewportHeight = getViewportHeight();
-          if (viewportHeight < 260) {
-            return 0.78;
-          }
-          if (viewportHeight < 340) {
-            return 0.9;
-          }
-          return 1.05;
-        };
-
-        osmd.Zoom = getBaseZoom() * scoreZoomRef.current;
-        osmd.render();
+        osmd.EngravingRules.SheetMaximumWidth = HORIZONTAL_SVG_WIDTH_BUDGET;
+        osmd.Zoom = HORIZONTAL_LAYOUT_ZOOM;
+        const initialProgress = osmd.renderNext({ measures: HORIZONTAL_RENDER_BATCH_MEASURES });
+        let incrementalComplete = initialProgress.done;
+        let renderedMeasureIndex = Math.max(
+          -1,
+          ...initialProgress.lastRenderedMeasure.map((measure) => measure.parentSourceMeasure.measureListIndex),
+        );
+        let pendingMeasureIndex = -1;
+        let pendingScrollTick: number | null = null;
+        let renderingBatch = false;
 
         function scheduleMeasure() {
           if (disposed) {
@@ -544,45 +548,23 @@ export default function ScoreViewer({
           animationFrameId = requestAnimationFrame(measureAndPlace);
         }
 
-        function applyTargetZoom(svg: SVGSVGElement, hostRect: DOMRect, viewportHeight: number): boolean {
-          const rect = svg.getBoundingClientRect();
-          const currentZoom = osmd.Zoom || 1;
-          const unscaledWidth = rect.width / currentZoom;
-          const unscaledHeight = rect.height / currentZoom;
-          if (unscaledWidth <= 0 || unscaledHeight <= 0) {
+        function applyDisplaySize(svg: SVGSVGElement, viewportWidth: number, viewportHeight: number): boolean {
+          const nativeWidth = Number.parseFloat(svg.getAttribute("width") ?? "");
+          const nativeHeight = Number.parseFloat(svg.getAttribute("height") ?? "");
+          const geometry = calculateHorizontalDisplayGeometry({
+            nativeWidth,
+            nativeHeight,
+            viewportWidth,
+            viewportHeight,
+            requestedUserZoom: scoreZoomRef.current,
+          });
+          if (!geometry) {
             return false;
           }
 
-          const verticalSafeArea = viewportHeight < 260 ? 22 : 28;
-          const maxScoreHeight = Math.max(150, viewportHeight - verticalSafeArea * 2);
-          const heightFitZoom = maxScoreHeight / unscaledHeight;
-          const maxBaseZoom = 2.3;
-          const desiredWidth = hostRect.width * (viewportHeight < 260 ? 0.52 : 0.68);
-          let baseZoom = getBaseZoom();
-
-          if (unscaledHeight * baseZoom > maxScoreHeight) {
-            baseZoom = heightFitZoom;
-          }
-
-          if (unscaledHeight * baseZoom < maxScoreHeight - 2 && unscaledWidth * baseZoom < desiredWidth) {
-            baseZoom = Math.min(maxBaseZoom, desiredWidth / unscaledWidth, heightFitZoom);
-          }
-
-          const maxUserZoom = Math.min(
-            MAX_SCORE_ZOOM / 100,
-            (maxBaseZoom * 1.5) / baseZoom,
-            heightFitZoom / baseZoom,
-          );
-          publishScoreZoomLimit(maxUserZoom * 100);
-
-          const requestedZoom = baseZoom * scoreZoomRef.current;
-          const targetZoom = Math.min(maxBaseZoom * 1.5, requestedZoom, heightFitZoom);
-          if (Math.abs(targetZoom - currentZoom) < 0.003) {
-            return false;
-          }
-
-          osmd.Zoom = targetZoom;
-          osmd.render();
+          publishScoreZoomLimit(geometry.maxUserZoomPercent);
+          svg.style.width = `${geometry.width}px`;
+          svg.style.height = `${geometry.height}px`;
           return true;
         }
 
@@ -602,37 +584,134 @@ export default function ScoreViewer({
             svg.setAttribute("preserveAspectRatio", "xMinYMin meet");
             svg.style.display = "block";
 
-            let shouldRemeasure = false;
             withUntransformedApp(hostElement, () => {
-              const hostRect = hostElement.getBoundingClientRect();
-              const viewportHeight = getViewportHeight();
+              const viewport = scrollRef.current;
+              const viewportWidth = viewport?.clientWidth ?? hostElement.clientWidth;
+              const viewportHeight = viewport?.clientHeight ?? hostElement.clientHeight;
               setScoreViewportHeight(viewportHeight);
-              if (applyTargetZoom(svg, hostRect, viewportHeight)) {
-                shouldRemeasure = true;
+              if (!applyDisplaySize(svg, viewportWidth, viewportHeight)) {
                 return;
               }
 
-              const overlayLayout = buildScoreOverlayLayout(hostElement, overlay, svg, osmd, scoreData, viewportHeight);
+              const overlayLayout = buildScoreOverlayLayout(
+                hostElement,
+                overlay,
+                svg,
+                osmd,
+                scoreData,
+                viewportHeight,
+                renderedMeasureIndex,
+              );
               svgTargetsByGroupRef.current = overlayLayout.svgTargets;
               setLayouts(overlayLayout.layouts);
               setScoreFrame(overlayLayout.scoreFrame);
               setStaffGeometry(overlayLayout.staffGeometry);
               setSurfaceSize(overlayLayout.surfaceSize);
+
+              if (pendingScrollTick != null) {
+                const targetGroup = scoreData.noteGroups.reduce<NoteGroup | null>((nearest, group) => {
+                  if (!nearest) return group;
+                  return Math.abs(group.absoluteTick - pendingScrollTick!)
+                    < Math.abs(nearest.absoluteTick - pendingScrollTick!) ? group : nearest;
+                }, null);
+                const targetLayout = targetGroup
+                  ? overlayLayout.layouts.find((layout) => layout.groupId === targetGroup.id)
+                  : null;
+                if (targetLayout && scrollRef.current) {
+                  scrollRef.current.scrollLeft = Math.max(0, targetLayout.timeX - 24);
+                  pendingScrollTick = null;
+                }
+              }
             });
 
-            if (shouldRemeasure) {
-              scheduleMeasure();
+            if (!incrementalComplete && pendingMeasureIndex > renderedMeasureIndex) {
+              scheduleRenderBatch();
+            } else if (pendingMeasureIndex <= renderedMeasureIndex) {
+              pendingMeasureIndex = -1;
             }
+            maybeRenderMore();
           } catch {
             failCurrentRender();
           }
         }
 
+        function renderNextBatch() {
+          renderFrameId = null;
+          const scroll = scrollRef.current;
+          if (disposed || incrementalComplete || renderingBatch || !scroll) {
+            return;
+          }
+
+          renderingBatch = true;
+          try {
+            const progress = osmd.renderNext({ measures: HORIZONTAL_RENDER_BATCH_MEASURES });
+            incrementalComplete = progress.done;
+            renderedMeasureIndex = Math.max(
+              renderedMeasureIndex,
+              ...progress.lastRenderedMeasure.map((measure) => measure.parentSourceMeasure.measureListIndex),
+            );
+            scheduleMeasure();
+          } catch {
+            failCurrentRender();
+            return;
+          } finally {
+            renderingBatch = false;
+          }
+
+        }
+
+        function scheduleRenderBatch() {
+          if (disposed || incrementalComplete || renderFrameId != null) {
+            return;
+          }
+          renderFrameId = requestAnimationFrame(renderNextBatch);
+        }
+
+        function maybeRenderMore() {
+          const scroll = scrollRef.current;
+          const svg = hostElement.querySelector("svg") as SVGSVGElement | null;
+          if (disposed || incrementalComplete || !scroll || !svg) {
+            return;
+          }
+
+          const scrollRect = scroll.getBoundingClientRect();
+          const svgRect = svg.getBoundingClientRect();
+          const renderedRight = svgRect.right - scrollRect.left + scroll.scrollLeft;
+          const visibleRight = scroll.scrollLeft + scroll.clientWidth;
+          if (visibleRight >= renderedRight - scroll.clientWidth * 1.5) {
+            scheduleRenderBatch();
+          }
+        }
+
+        const ensureMeasureRendered = (measureIndex: number) => {
+          if (measureIndex <= renderedMeasureIndex || incrementalComplete) return;
+          pendingMeasureIndex = Math.max(pendingMeasureIndex, measureIndex);
+          scheduleRenderBatch();
+        };
+
+        const seekScoreTick = (tick: number) => {
+          const targetTick = clampNumber(tick, 0, scoreData.totalTicks);
+          let measureIndex = scoreData.measureStarts.length - 1;
+          while (measureIndex > 0 && scoreData.measureStarts[measureIndex] > targetTick) {
+            measureIndex -= 1;
+          }
+          pendingScrollTick = targetTick;
+          pendingMeasureIndex = Math.max(pendingMeasureIndex, measureIndex);
+          if (measureIndex <= renderedMeasureIndex || incrementalComplete) {
+            scheduleMeasure();
+          } else {
+            scheduleRenderBatch();
+          }
+        };
+
         scheduleMeasureRef.current = scheduleMeasure;
+        ensureMeasureRenderedRef.current = ensureMeasureRendered;
+        seekScoreTickRef.current = seekScoreTick;
         resizeObserver = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(scheduleMeasure);
-        resizeObserver?.observe(hostElement);
         if (scrollRef.current) {
           resizeObserver?.observe(scrollRef.current);
+          handleScrollRender = maybeRenderMore;
+          scrollRef.current.addEventListener("scroll", handleScrollRender, { passive: true });
         }
 
         handleViewportChange = scheduleMeasure;
@@ -651,9 +730,17 @@ export default function ScoreViewer({
         window.removeEventListener("resize", handleViewportChange);
         window.removeEventListener("orientationchange", handleViewportChange);
       }
+      if (handleScrollRender && scrollRef.current) {
+        scrollRef.current.removeEventListener("scroll", handleScrollRender);
+      }
       if (animationFrameId != null) {
         cancelAnimationFrame(animationFrameId);
       }
+      if (renderFrameId != null) {
+        cancelAnimationFrame(renderFrameId);
+      }
+      ensureMeasureRenderedRef.current = () => undefined;
+      seekScoreTickRef.current = () => undefined;
       if (scheduleMeasureRef.current === handleViewportChange) {
         scheduleMeasureRef.current = null;
       }
@@ -661,14 +748,29 @@ export default function ScoreViewer({
   }, [score]);
 
   useEffect(() => {
-    if (!followActive || !activeGroups.length || progressX == null || !scrollRef.current) {
+    if (!followActive) {
+      followedMeasureRef.current = null;
+      return;
+    }
+
+    if (activeMeasureIndex != null) {
+      ensureMeasureRenderedRef.current(activeMeasureIndex);
+    }
+
+    if (
+      activeMeasureIndex == null
+      || activeMeasureX == null
+      || followedMeasureRef.current === activeMeasureIndex
+      || !scrollRef.current
+    ) {
       return;
     }
 
     const scroll = scrollRef.current;
-    const targetLeft = Math.max(0, progressX - scroll.clientWidth * 0.38);
+    followedMeasureRef.current = activeMeasureIndex;
+    const targetLeft = Math.max(0, activeMeasureX - scroll.clientWidth * 0.38);
     scroll.scrollTo({ left: targetLeft, behavior: "smooth" });
-  }, [activeGroups.length, followActive, progressX]);
+  }, [activeMeasureIndex, activeMeasureX, followActive]);
 
   useEffect(() => {
     const scroll = scrollRef.current;
@@ -677,14 +779,17 @@ export default function ScoreViewer({
     }
 
     const updateProgress = () => {
-      const total = scroll.scrollWidth;
-      const viewport = scroll.clientWidth;
-      if (total <= viewport) {
-        setScrollProgress(1);
+      if (!score || layouts.length === 0 || score.totalTicks <= 0) {
+        setScrollProgress(0);
         return;
       }
-
-      setScrollProgress(Math.max(0, Math.min(1, scroll.scrollLeft / (total - viewport))));
+      const probeX = scroll.scrollLeft + Math.min(80, scroll.clientWidth * 0.1);
+      const nearest = layouts.reduce<ScoreGroupLayout | null>((current, layout) => {
+        if (!current) return layout;
+        return Math.abs(layout.timeX - probeX) < Math.abs(current.timeX - probeX) ? layout : current;
+      }, null);
+      const tick = nearest ? groupById.get(nearest.groupId)?.absoluteTick ?? 0 : 0;
+      setScrollProgress(clampNumber(tick / score.totalTicks, 0, 1));
     };
 
     updateProgress();
@@ -694,18 +799,16 @@ export default function ScoreViewer({
       scroll.removeEventListener("scroll", updateProgress);
       window.removeEventListener("resize", updateProgress);
     };
-  }, [surfaceSize.width]);
+  }, [groupById, layouts, score, surfaceSize.width]);
 
   function seekScrollProgress(progress: number) {
-    const scroll = scrollRef.current;
-    if (!scroll) {
+    if (!score) {
       return;
     }
 
     const nextProgress = clampNumber(progress, 0, 1);
-    const maxScrollLeft = Math.max(0, scroll.scrollWidth - scroll.clientWidth);
     setScrollProgress(nextProgress);
-    scroll.scrollLeft = nextProgress * maxScrollLeft;
+    seekScoreTickRef.current(nextProgress * score.totalTicks);
   }
 
   function seekScrollProgressAtPointer(element: HTMLDivElement, clientX: number, clientY: number) {
@@ -785,64 +888,15 @@ export default function ScoreViewer({
       idsToColor.add(loopGroupId);
     }
 
-    const overlay = overlayRef.current;
-    if (!overlay) {
-      return;
-    }
-    const overlayRect = overlay.getBoundingClientRect();
-
     for (const groupId of idsToColor) {
-      const layout = layoutById.get(groupId);
-      if (!layout) {
-        continue;
-      }
-
       for (const element of svgTargetsByGroupRef.current.get(groupId) ?? []) {
         renderableSvgElements(element).forEach((child) => {
-          if (!svgChildBelongsToLayout(child, layout, overlayRect)) {
-            return;
-          }
-
           applySvgHighlight(child);
           coloredElementsRef.current.add(child);
         });
       }
     }
-
-    const selected = new Set(selectedIds);
-    const selectedLayouts = layouts.filter((layout) => selected.has(layout.groupId));
-    const selectedHighlightTargets: HighlightTarget[] = selectedVisualFrames
-      .filter((frame) => frame.className === "selected")
-      .map((frame) => ({
-        frame,
-        layouts: selectedLayouts.filter((layout) => rectsIntersect(frame, layoutFrame(layout))),
-      }))
-      .filter((target) => target.layouts.length > 0);
-    const groupHighlightTargets: HighlightTarget[] = Array.from(idsToColor).flatMap((groupId) => {
-      const layout = layoutById.get(groupId);
-      if (!layout) {
-        return [];
-      }
-
-      const frame = frameFromLayouts(`highlight-${groupId}`, "highlight", [layout]);
-      return frame ? [{ frame, layouts: [layout] }] : [];
-    });
-    const highlightTargets = [...selectedHighlightTargets, ...groupHighlightTargets];
-
-    if (highlightTargets.length > 0) {
-      for (const notehead of overlay.ownerDocument.querySelectorAll(".osmd-host svg .vf-notehead path")) {
-        if (
-          highlightTargets.some((target) =>
-            elementIntersectsFrame(notehead, target.frame, overlayRect) &&
-            target.layouts.some((layout) => svgChildBelongsToLayout(notehead, layout, overlayRect)),
-          )
-        ) {
-          applySvgHighlight(notehead);
-          coloredElementsRef.current.add(notehead);
-        }
-      }
-    }
-  }, [activeGroups, hoveredId, layoutById, layouts, loopGroupIds, selectedIds, selectedVisualFrames]);
+  }, [activeGroups, hoveredId, layouts, loopGroupIds, selectedIds]);
 
   const visualFrames = useMemo(() => {
     const frames = [...selectedVisualFrames];
@@ -913,6 +967,30 @@ export default function ScoreViewer({
     };
   }
 
+  function updateHoveredGroup(point: { x: number; y: number }, eventTarget?: EventTarget | null) {
+    if (!onGroupHover) {
+      return;
+    }
+    const target = eventTarget instanceof Element ? eventTarget : null;
+    const groupId = target?.closest(".performance-score-overlay")
+      ? null
+      : getScoreGroupAtPoint(hitIndex, point.x, point.y)?.groupId ?? null;
+    if (hoveredHitGroupRef.current === groupId) {
+      return;
+    }
+
+    hoveredHitGroupRef.current = groupId;
+    onGroupHover(groupId);
+  }
+
+  function clearHoveredGroup() {
+    if (!onGroupHover || hoveredHitGroupRef.current == null) {
+      return;
+    }
+    hoveredHitGroupRef.current = null;
+    onGroupHover(null);
+  }
+
   function getResizeTickAtX(x: number): number | null {
     let closest: SelectionResizeTarget | null = null;
     let closestDistance = Number.POSITIVE_INFINITY;
@@ -980,8 +1058,8 @@ export default function ScoreViewer({
   function handlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
     const target = event.target as HTMLElement;
     const resizeEdge = target.closest<HTMLElement>("[data-selection-resize-edge]")?.dataset.selectionResizeEdge;
-    const targetGroupId = target.closest<HTMLElement>("[data-group-id]")?.dataset.groupId ?? null;
     const point = getLocalPoint(event);
+    const targetGroupId = getScoreGroupAtPoint(hitIndex, point.x, point.y)?.groupId ?? null;
     event.currentTarget.setPointerCapture(event.pointerId);
 
     if (resizeEdge === "start" || resizeEdge === "end") {
@@ -1040,7 +1118,11 @@ export default function ScoreViewer({
 
   function handlePointerMove(event: React.PointerEvent<HTMLDivElement>) {
     const session = pointerRef.current;
-    if (!session || session.pointerId !== event.pointerId) {
+    if (!session) {
+      updateHoveredGroup(getLocalPoint(event), event.target);
+      return;
+    }
+    if (session.pointerId !== event.pointerId) {
       return;
     }
 
@@ -1101,8 +1183,22 @@ export default function ScoreViewer({
     }
   }
 
+  function handlePointerCancel(event: React.PointerEvent<HTMLDivElement>) {
+    const session = pointerRef.current;
+    if (!session || session.pointerId !== event.pointerId) {
+      return;
+    }
+
+    pointerRef.current = null;
+    setSelectionBox(null);
+    setActiveResizeEdge(null);
+  }
+
   return (
-    <section className="score-panel" aria-label="乐谱">
+    <section
+      className={`score-panel ${showScrollProgress ? "" : "without-scroll-progress"}`}
+      aria-label="乐谱"
+    >
       {!score ? <div className="empty-score-hint">点击右上角打开曲库或导入曲目</div> : null}
       <div
         className="score-scroll"
@@ -1114,7 +1210,10 @@ export default function ScoreViewer({
           }
         }}
       >
-        <div className="score-surface" style={{ width: surfaceSize.width }}>
+        <div
+          className={`score-surface ${performanceOverlay ? "with-performance-overlay performance-overlay-overview" : ""}`}
+          style={{ width: surfaceSize.width }}
+        >
           <div ref={osmdHostRef} className="osmd-host" />
           {renderError ? <div className="score-render-error">{renderError}</div> : null}
           <div
@@ -1124,42 +1223,27 @@ export default function ScoreViewer({
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
-            onPointerCancel={handlePointerUp}
-            onPointerLeave={() => onGroupHover(null)}
+            onPointerCancel={handlePointerCancel}
+            onPointerLeave={clearHoveredGroup}
           >
-            {score && scoreLayoutReady && followActive && activeGroups.length > 0 && progressX != null ? (
+            {score && scoreLayoutReady && showActiveCursor && activeGroups.length > 0 && progressX != null ? (
               <div
                 className="progress-line"
                 style={{ left: progressX, top: scoreFrame.top, height: scoreFrame.height }}
               />
             ) : null}
 
-            {layouts.map((layout) => {
-              const group = groupById.get(layout.groupId);
-              if (!group) {
-                return null;
-              }
-
-              return (
-                <button
-                  type="button"
-                  data-group-id={group.id}
-                  key={group.id}
-                  className="note-hit-zone"
-                  style={{
-                    left: layout.x + HIT_GAP * 0.5,
-                    top: layout.y,
-                    width: layout.width - HIT_GAP,
-                    height: layout.height,
-                  }}
-                  onPointerEnter={() => onGroupHover(group.id)}
-                  onPointerLeave={() => onGroupHover(null)}
-                  aria-label={`${group.hand === "right" ? "右手" : "左手"} ${group.notes
-                    .map((note) => note.name)
-                    .join(" ")}`}
-                />
-              );
-            })}
+            {score && performanceOverlay && scoreLayoutReady ? (
+              <PerformanceScoreOverlay
+                score={score}
+                layouts={layouts}
+                staffGeometry={staffGeometry}
+                scoreFrame={scoreFrame}
+                surfaceWidth={surfaceSize.width}
+                surfaceHeight={surfaceSize.height}
+                {...performanceOverlay}
+              />
+            ) : null}
 
             {visualFrames.map((frame) => (
               <div
@@ -1269,29 +1353,39 @@ export default function ScoreViewer({
           </div>
         </div>
       </div>
-      {scoreLayoutReady ? (
-        <div
-          className="score-scroll-progress"
-          role="slider"
-          tabIndex={0}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={Math.round(scrollProgress * 100)}
-          aria-label="谱面位置"
-          aria-valuetext={`${Math.round(scrollProgress * 100)}%`}
-          title="点击或拖拽跳转谱面"
-          onPointerDown={handleScrollProgressPointerDown}
-          onPointerMove={handleScrollProgressPointerMove}
-          onPointerUp={handleScrollProgressPointerEnd}
-          onPointerCancel={handleScrollProgressPointerEnd}
-          onKeyDown={handleScrollProgressKeyDown}
-        >
-          <span className="score-scroll-progress-track" aria-hidden="true">
-            <span className="score-scroll-progress-fill" style={{ width: `${scrollProgress * 100}%` }} />
-            <span className="score-scroll-progress-thumb" style={{ left: `${scrollProgress * 100}%` }} />
-          </span>
+      {scoreLayoutReady && showScrollProgress ? (
+        <div className="playback-progress-row">
+          <time className="playback-progress-time" aria-label={`当前时间 ${progressCurrentTime}`}>
+            {progressCurrentTime}
+          </time>
+          <div
+            className="score-scroll-progress"
+            role="slider"
+            tabIndex={0}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.round(scrollProgress * 100)}
+            aria-label="谱面位置"
+            aria-valuetext={`${Math.round(scrollProgress * 100)}%`}
+            title="点击或拖拽跳转谱面"
+            onPointerDown={handleScrollProgressPointerDown}
+            onPointerMove={handleScrollProgressPointerMove}
+            onPointerUp={handleScrollProgressPointerEnd}
+            onPointerCancel={handleScrollProgressPointerEnd}
+            onKeyDown={handleScrollProgressKeyDown}
+          >
+            <span className="score-scroll-progress-track" aria-hidden="true">
+              <span className="score-scroll-progress-fill" style={{ width: `${scrollProgress * 100}%` }} />
+              <span className="score-scroll-progress-thumb" style={{ left: `${scrollProgress * 100}%` }} />
+            </span>
+          </div>
+          <time className="playback-progress-time" aria-label={`总时长 ${progressTotalTime}`}>
+            {progressTotalTime}
+          </time>
         </div>
       ) : null}
     </section>
   );
 }
+
+export default memo(ScoreViewer);

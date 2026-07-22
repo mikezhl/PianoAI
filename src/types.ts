@@ -1,7 +1,24 @@
 export type Hand = "left" | "right";
 
+export interface RationalNumber {
+  numerator: number;
+  denominator: number;
+}
+
+export interface ScoreNoteRef {
+  partId: string;
+  measureIndex: number;
+  offsetQuarter: RationalNumber;
+  staff: number;
+  voice: string;
+  writtenPitch: string;
+  ordinalAtPosition: number;
+  playbackOccurrence?: number;
+}
+
 export interface ParsedNote {
   id: string;
+  scoreRef: ScoreNoteRef;
   midi: number;
   name: string;
   writtenName?: string;
@@ -12,6 +29,22 @@ export interface ParsedNote {
   absoluteTick: number;
   durationTicks: number;
   playbackEvents: PlaybackEvent[];
+  ornament?: NotatedOrnament;
+  graceNotes?: NotatedGraceNote[];
+}
+
+export type NotatedOrnamentKind = "trill" | "mordent" | "inverted-mordent" | "turn" | "inverted-turn";
+
+export interface NotatedOrnament {
+  kind: NotatedOrnamentKind;
+  hasWavyLine: boolean;
+  expectedPitches: number[];
+}
+
+export interface NotatedGraceNote {
+  midi: number;
+  slash: boolean;
+  order: number;
 }
 
 export interface NoteGroup {
@@ -36,14 +69,25 @@ export interface TimeSignature {
   beatType: number;
 }
 
+export interface MeasurePlaybackOccurrence {
+  measureIndex: number;
+  playbackOccurrence: number;
+  timelineStartTick: number;
+  durationTicks: number;
+}
+
 export interface ScoreData {
   title: string;
   xml: string;
   noteGroups: NoteGroup[];
+  /** MusicXML `<measure number>` values in written measure order. */
+  measureNumbers?: string[];
   measureStarts: number[];
   measureDurations: number[];
   measureTimeSignatures: TimeSignature[];
   totalTicks: number;
+  measurePlaybackOrder?: MeasurePlaybackOccurrence[];
+  timelineTotalTicks?: number;
   canSeparateHands: boolean;
   hasLeftHand: boolean;
   hasRightHand: boolean;
@@ -71,6 +115,15 @@ export interface MidiState {
   pressedNotes: number[];
   eventId: number;
   error: string | null;
+}
+
+export interface RawMidiEvent {
+  timeUs: number;
+  status: number;
+  data1: number;
+  data2: number;
+  channel: number;
+  deviceId: string;
 }
 
 export interface SelectionRange {

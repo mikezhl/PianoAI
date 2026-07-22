@@ -13,7 +13,7 @@ export function midiToName(midi: number): string {
   return `${NOTE_NAMES[((midi % 12) + 12) % 12]}${octave}`;
 }
 
-export function isBlackKey(midi: number): boolean {
+function isBlackKey(midi: number): boolean {
   return [1, 3, 6, 8, 10].includes(((midi % 12) + 12) % 12);
 }
 

@@ -1,5 +1,15 @@
-import { Hand, NoteGroup, ParsedNote, PlaybackEvent, ScoreData, TICKS_PER_QUARTER } from "../types";
+import {
+  Hand,
+  NoteGroup,
+  NotatedGraceNote,
+  NotatedOrnament,
+  ParsedNote,
+  PlaybackEvent,
+  ScoreData,
+  TICKS_PER_QUARTER,
+} from "../types";
 import { midiToName } from "./piano";
+import { scoreNoteRefId, ticksToQuarterRational } from "./scoreIdentity";
 
 const STEP_TO_SEMITONE: Record<string, number> = {
   C: 0,
@@ -61,6 +71,7 @@ interface PendingGraceNote {
   hand: Hand;
   staff: number;
   voice: string;
+  slash: boolean;
 }
 
 interface ActiveTie {
@@ -69,6 +80,18 @@ interface ActiveTie {
   ornaments: Element | null;
   accidentals: OrnamentAccidental[];
   graceNotes: PendingGraceNote[];
+  keyAlterByStep: Record<string, number>;
+}
+
+function keySignatureAlterations(fifths: number): Record<string, number> {
+  const result: Record<string, number> = {};
+  const order = fifths >= 0
+    ? ["F", "C", "G", "D", "A", "E", "B"]
+    : ["B", "E", "A", "D", "G", "C", "F"];
+  for (let index = 0; index < Math.min(7, Math.abs(fifths)); index += 1) {
+    result[order[index]] = fifths >= 0 ? 1 : -1;
+  }
+  return result;
 }
 
 function directChild(parent: Element, tagName: string): Element | null {
@@ -143,10 +166,6 @@ function pitchToInfo(note: Element): PitchInfo | null {
     octave,
     midi: (octave + 1) * 12 + STEP_TO_SEMITONE[step] + alter,
   };
-}
-
-function pitchToMidi(note: Element): number | null {
-  return pitchToInfo(note)?.midi ?? null;
 }
 
 function pitchInfoToMidi(pitch: Pick<PitchInfo, "step" | "alter" | "octave">): number {
@@ -332,6 +351,7 @@ function auxiliaryMidi(
   direction: "above" | "below",
   element: Element | null,
   accidentals: OrnamentAccidental[],
+  keyAlterByStep: Record<string, number>,
 ): number {
   const placement = direction === "above" ? "above" : "below";
   const markedAlter = getMarkedAuxiliaryAlter(accidentals, placement);
@@ -339,6 +359,13 @@ function auxiliaryMidi(
     return diatonicNeighborMidi(pitch, direction, markedAlter);
   }
 
+  const explicitStep = element?.getAttribute("trill-step");
+  if (!explicitStep) {
+    const stepIndex = STEP_TO_INDEX[pitch.step];
+    const nextIndex = direction === "above" ? stepIndex + 1 : stepIndex - 1;
+    const neighborStep = STEP_NAMES[(nextIndex + STEP_NAMES.length) % STEP_NAMES.length];
+    return diatonicNeighborMidi(pitch, direction, keyAlterByStep[neighborStep] ?? 0);
+  }
   const interval = trillStepInterval(element);
   return direction === "above" ? pitch.midi + interval : pitch.midi - interval;
 }
@@ -385,6 +412,7 @@ function buildOrnamentEvents(
   offsetTicks: number,
   ornaments: Element | null,
   accidentals: OrnamentAccidental[],
+  keyAlterByStep: Record<string, number>,
 ): PlaybackEvent[] {
   if (!ornaments) {
     return [];
@@ -395,7 +423,7 @@ function buildOrnamentEvents(
   if (trill) {
     return buildAlternatingEvents(
       pitch.midi,
-      auxiliaryMidi(pitch, "above", trill, accidentals),
+      auxiliaryMidi(pitch, "above", trill, accidentals, keyAlterByStep),
       trill,
       offsetTicks,
       availableTicks,
@@ -406,7 +434,7 @@ function buildOrnamentEvents(
   if (invertedMordent) {
     return buildAlternatingEvents(
       pitch.midi,
-      auxiliaryMidi(pitch, "above", invertedMordent, accidentals),
+      auxiliaryMidi(pitch, "above", invertedMordent, accidentals, keyAlterByStep),
       invertedMordent,
       offsetTicks,
       Math.min(availableTicks, ORNAMENT_NOTE_TICKS * 3),
@@ -417,7 +445,7 @@ function buildOrnamentEvents(
   if (mordent) {
     return buildAlternatingEvents(
       pitch.midi,
-      auxiliaryMidi(pitch, "below", mordent, accidentals),
+      auxiliaryMidi(pitch, "below", mordent, accidentals, keyAlterByStep),
       mordent,
       offsetTicks,
       Math.min(availableTicks, ORNAMENT_NOTE_TICKS * 3),
@@ -428,9 +456,9 @@ function buildOrnamentEvents(
   if (turn) {
     return buildSequenceEvents(
       [
-        auxiliaryMidi(pitch, "above", turn, accidentals),
+        auxiliaryMidi(pitch, "above", turn, accidentals, keyAlterByStep),
         pitch.midi,
-        auxiliaryMidi(pitch, "below", turn, accidentals),
+        auxiliaryMidi(pitch, "below", turn, accidentals, keyAlterByStep),
         pitch.midi,
       ],
       offsetTicks,
@@ -442,9 +470,9 @@ function buildOrnamentEvents(
   if (invertedTurn) {
     return buildSequenceEvents(
       [
-        auxiliaryMidi(pitch, "below", invertedTurn, accidentals),
+        auxiliaryMidi(pitch, "below", invertedTurn, accidentals, keyAlterByStep),
         pitch.midi,
-        auxiliaryMidi(pitch, "above", invertedTurn, accidentals),
+        auxiliaryMidi(pitch, "above", invertedTurn, accidentals, keyAlterByStep),
         pitch.midi,
       ],
       offsetTicks,
@@ -455,12 +483,46 @@ function buildOrnamentEvents(
   return [];
 }
 
+function getNotatedOrnament(
+  pitch: PitchInfo,
+  ornaments: Element | null,
+  accidentals: OrnamentAccidental[],
+  keyAlterByStep: Record<string, number>,
+): NotatedOrnament | undefined {
+  if (!ornaments) return undefined;
+  const definitions = [
+    ["trill-mark", "trill", "above"],
+    ["inverted-mordent", "inverted-mordent", "above"],
+    ["mordent", "mordent", "below"],
+    ["turn", "turn", "above"],
+    ["inverted-turn", "inverted-turn", "below"],
+  ] as const;
+  for (const [tagName, kind, direction] of definitions) {
+    const element = directChild(ornaments, tagName);
+    if (!element) continue;
+    const expectedPitches = new Set<number>([pitch.midi]);
+    if (kind === "turn" || kind === "inverted-turn") {
+      expectedPitches.add(auxiliaryMidi(pitch, "above", element, accidentals, keyAlterByStep));
+      expectedPitches.add(auxiliaryMidi(pitch, "below", element, accidentals, keyAlterByStep));
+    } else {
+      expectedPitches.add(auxiliaryMidi(pitch, direction, element, accidentals, keyAlterByStep));
+    }
+    return {
+      kind,
+      hasWavyLine: directChildren(ornaments, "wavy-line").length > 0,
+      expectedPitches: [...expectedPitches].sort((left, right) => left - right),
+    };
+  }
+  return undefined;
+}
+
 function buildPlaybackEvents(
   pitch: PitchInfo,
   durationTicks: number,
   ornaments: Element | null,
   accidentals: OrnamentAccidental[],
   graceNotes: PendingGraceNote[],
+  keyAlterByStep: Record<string, number>,
 ): PlaybackEvent[] {
   const safeDurationTicks = Math.max(MIN_ORNAMENT_NOTE_TICKS, durationTicks || ORNAMENT_NOTE_TICKS);
   const graceNoteTicks = graceNotes.length > 0
@@ -472,7 +534,14 @@ function buildPlaybackEvents(
     durationTicks: graceNoteTicks,
   }));
   const mainOffsetTicks = graceNotes.length * graceNoteTicks;
-  const ornamentEvents = buildOrnamentEvents(pitch, safeDurationTicks, mainOffsetTicks, ornaments, accidentals);
+  const ornamentEvents = buildOrnamentEvents(
+    pitch,
+    safeDurationTicks,
+    mainOffsetTicks,
+    ornaments,
+    accidentals,
+    keyAlterByStep,
+  );
 
   if (ornamentEvents.length > 0) {
     return [...graceEvents, ...ornamentEvents];
@@ -502,14 +571,19 @@ export function parseMusicXml(xml: string, fileName: string): ScoreData {
   }
 
   const notes: ParsedNote[] = [];
+  const measureNumbers: string[] = [];
   const measureDurations: number[] = [];
   const measureStarts: number[] = [];
   const measureTimeSignatures: ScoreData["measureTimeSignatures"] = [];
-  let globalNoteIndex = 0;
+  const forwardRepeatMeasures = new Set<number>();
+  const backwardRepeatMeasures = new Set<number>();
   let explicitStaffCount = 0;
+  const noteOrdinalByPosition = new Map<string, number>();
 
   for (const part of parts) {
+    const partId = part.getAttribute("id") || `part-${parts.indexOf(part) + 1}`;
     let divisions = 1;
+    let keyAlterByStep: Record<string, number> = {};
     let fallbackTiming: MeasureTiming = {
       durationTicks: TICKS_PER_QUARTER * 4,
       timeSignature: { beats: 4, beatType: 4 },
@@ -518,9 +592,22 @@ export function parseMusicXml(xml: string, fileName: string): ScoreData {
     const activeTies = new Map<string, ActiveTie>();
 
     directChildren(part, "measure").forEach((measure, measureIndex) => {
+      if (part === parts[0]) {
+        measureNumbers[measureIndex] = measure.getAttribute("number")?.trim() || String(measureIndex + 1);
+      }
+      if (part === parts[0]) {
+        for (const descendant of Array.from(measure.getElementsByTagName("*"))) {
+          if (descendant.localName !== "repeat") continue;
+          const direction = descendant.getAttribute("direction");
+          if (direction === "forward") forwardRepeatMeasures.add(measureIndex);
+          if (direction === "backward") backwardRepeatMeasures.add(measureIndex);
+        }
+      }
       const attributes = directChild(measure, "attributes");
       if (attributes) {
         divisions = numberText(attributes, "divisions", divisions);
+        const key = directChild(attributes, "key");
+        if (key) keyAlterByStep = keySignatureAlterations(numberText(key, "fifths", 0));
       }
 
       fallbackTiming = getMeasureTiming(measure, fallbackTiming);
@@ -576,7 +663,13 @@ export function parseMusicXml(xml: string, fileName: string): ScoreData {
           const hand = getHand(child, midi, hasExplicitStaff);
           const staff = Number.parseInt(childText(child, "staff") ?? (hand === "left" ? "2" : "1"), 10);
           if (isGrace) {
-            pendingGraceNotes.push({ midi, hand, staff, voice });
+            pendingGraceNotes.push({
+              midi,
+              hand,
+              staff,
+              voice,
+              slash: directChild(child, "grace")?.getAttribute("slash") === "yes",
+            });
             continue;
           }
 
@@ -594,6 +687,7 @@ export function parseMusicXml(xml: string, fileName: string): ScoreData {
               activeTie.ornaments,
               activeTie.accidentals,
               activeTie.graceNotes,
+              activeTie.keyAlterByStep,
             );
 
             if (!isTieStart) {
@@ -604,22 +698,50 @@ export function parseMusicXml(xml: string, fileName: string): ScoreData {
             const ornamentAccidentals = getOrnamentAccidentals(child, pendingOrnamentAccidentals);
             const graceNotes = pendingGraceNotes.filter((grace) => grace.staff === staff && grace.voice === voice);
             pendingGraceNotes = pendingGraceNotes.filter((grace) => grace.staff !== staff || grace.voice !== voice);
+            const writtenPitch = pitchInfoToWrittenName(pitch);
+            const ordinalKey = JSON.stringify([partId, measureIndex, startTick, staff, voice, writtenPitch]);
+            const ordinalAtPosition = noteOrdinalByPosition.get(ordinalKey) ?? 0;
+            noteOrdinalByPosition.set(ordinalKey, ordinalAtPosition + 1);
+            const scoreRef = {
+              partId,
+              measureIndex,
+              offsetQuarter: ticksToQuarterRational(startTick),
+              staff,
+              voice,
+              writtenPitch,
+              ordinalAtPosition,
+            };
             const parsedNote: ParsedNote = {
-              id: `n-${globalNoteIndex}`,
+              id: scoreNoteRefId(scoreRef),
+              scoreRef,
               midi,
               name: midiToName(midi),
-              writtenName: pitchInfoToWrittenName(pitch),
+              writtenName: writtenPitch,
               hand,
               staff,
               measureIndex,
               startTick,
               absoluteTick: partMeasureStart + startTick,
               durationTicks,
-              playbackEvents: buildPlaybackEvents(pitch, durationTicks, ornaments, ornamentAccidentals, graceNotes),
+              playbackEvents: buildPlaybackEvents(
+                pitch,
+                durationTicks,
+                ornaments,
+                ornamentAccidentals,
+                graceNotes,
+                keyAlterByStep,
+              ),
+              ornament: getNotatedOrnament(pitch, ornaments, ornamentAccidentals, keyAlterByStep),
+              graceNotes: graceNotes.length > 0
+                ? graceNotes.map<NotatedGraceNote>((grace, order) => ({
+                    midi: grace.midi,
+                    slash: grace.slash,
+                    order,
+                  }))
+                : undefined,
             };
 
             notes.push(parsedNote);
-            globalNoteIndex += 1;
             if (isTieStart) {
               activeTies.set(activeTieKey, {
                 note: parsedNote,
@@ -627,6 +749,7 @@ export function parseMusicXml(xml: string, fileName: string): ScoreData {
                 ornaments,
                 accidentals: ornamentAccidentals,
                 graceNotes,
+                keyAlterByStep: { ...keyAlterByStep },
               });
             }
           }
@@ -688,15 +811,41 @@ export function parseMusicXml(xml: string, fileName: string): ScoreData {
     ...noteGroups.map((group) => group.absoluteTick + group.durationTicks),
     measureDurations.reduce((sum, duration) => sum + duration, 0),
   );
+  const writtenMeasureOrder = Array.from({ length: measureDurations.length }, (_, measureIndex) => measureIndex);
+  const unfoldedMeasureOrder: number[] = [];
+  let repeatStart = 0;
+  for (const measureIndex of writtenMeasureOrder) {
+    unfoldedMeasureOrder.push(measureIndex);
+    if (forwardRepeatMeasures.has(measureIndex)) repeatStart = measureIndex;
+    if (backwardRepeatMeasures.has(measureIndex)) {
+      for (let repeatedMeasure = repeatStart; repeatedMeasure <= measureIndex; repeatedMeasure += 1) {
+        unfoldedMeasureOrder.push(repeatedMeasure);
+      }
+      repeatStart = measureIndex + 1;
+    }
+  }
+  const occurrenceByMeasure = new Map<number, number>();
+  let timelineStartTick = 0;
+  const measurePlaybackOrder = unfoldedMeasureOrder.map((measureIndex) => {
+    const playbackOccurrence = occurrenceByMeasure.get(measureIndex) ?? 0;
+    occurrenceByMeasure.set(measureIndex, playbackOccurrence + 1);
+    const durationTicks = measureDurations[measureIndex] ?? 0;
+    const occurrence = { measureIndex, playbackOccurrence, timelineStartTick, durationTicks };
+    timelineStartTick += durationTicks;
+    return occurrence;
+  });
 
   return {
     title: getTitle(fileName),
     xml,
     noteGroups,
+    measureNumbers,
     measureStarts,
     measureDurations,
     measureTimeSignatures,
     totalTicks,
+    measurePlaybackOrder,
+    timelineTotalTicks: timelineStartTick,
     canSeparateHands: explicitStaffCount > 0 || (hasLeftHand && hasRightHand),
     hasLeftHand,
     hasRightHand,
@@ -719,7 +868,7 @@ export function getGroupsAtTick(score: ScoreData | null, tick: number): NoteGrou
   return score.noteGroups.filter((group) => group.absoluteTick === tick);
 }
 
-export function groupContainsAllPressed(group: NoteGroup, pressedNotes: number[]): boolean {
+function groupContainsAllPressed(group: NoteGroup, pressedNotes: number[]): boolean {
   return group.notes.every((note) => pressedNotes.includes(note.midi));
 }
 

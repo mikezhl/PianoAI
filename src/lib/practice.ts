@@ -1,6 +1,6 @@
 import type { Hand, NoteGroup, ScoreData, SelectionRange, SelectionState } from "../types";
 
-export const HANDS: Hand[] = ["right", "left"];
+const HANDS: Hand[] = ["right", "left"];
 
 export interface LoopStep {
   tick: number;
@@ -15,7 +15,7 @@ export function handEnabled(group: NoteGroup, followLeft: boolean, followRight: 
   return group.hand === "left" ? followLeft : followRight;
 }
 
-export function sortGroupsByScore(score: ScoreData, ids: string[]): NoteGroup[] {
+function sortGroupsByScore(score: ScoreData, ids: string[]): NoteGroup[] {
   const idSet = new Set(ids);
   return score.noteGroups.filter((group) => idSet.has(group.id));
 }
@@ -71,7 +71,7 @@ export function getSelectedIds(score: ScoreData, selection: SelectionState): str
   return getSelectedGroups(score, selection).map((group) => group.id);
 }
 
-export function selectGroups(score: ScoreData, groupIds: string[]): SelectionState {
+function selectGroups(score: ScoreData, groupIds: string[]): SelectionState {
   const groups = sortGroupsByScore(score, groupIds);
   if (groups.length === 0) {
     return { range: null, loopIndex: 0 };

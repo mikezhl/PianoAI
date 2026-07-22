@@ -39,11 +39,11 @@ export default function PianoKeyboard({ targetNotes, pressedNotes, onKeyPress, o
             const stateClass = getKeyClasses(key.midi, targetSet, pressedSet);
 
             return (
-              <div
+              <button
+                type="button"
                 key={key.midi}
                 className={`piano-key white-key ${stateClass}`}
                 style={{ width: `${whiteWidth}%` }}
-                role="button"
                 tabIndex={-1}
                 aria-label={key.name}
                 onPointerDown={(event) => {
@@ -55,7 +55,7 @@ export default function PianoKeyboard({ targetNotes, pressedNotes, onKeyPress, o
                 onLostPointerCapture={() => onKeyRelease(key.midi)}
               >
                 {labels.has(key.midi) ? <span>{key.name}</span> : null}
-              </div>
+              </button>
             );
           })}
         </div>
@@ -65,14 +65,14 @@ export default function PianoKeyboard({ targetNotes, pressedNotes, onKeyPress, o
             const stateClass = getKeyClasses(key.midi, targetSet, pressedSet);
 
             return (
-              <div
+              <button
+                type="button"
                 key={key.midi}
                 className={`piano-key black-key ${stateClass}`}
                 style={{
                   left: `${key.leftPercent}%`,
                   width: `${whiteWidth * 0.64}%`,
                 }}
-                role="button"
                 tabIndex={-1}
                 aria-label={key.name}
                 onPointerDown={(event) => {
@@ -84,7 +84,7 @@ export default function PianoKeyboard({ targetNotes, pressedNotes, onKeyPress, o
                 onLostPointerCapture={() => onKeyRelease(key.midi)}
               >
                 {labels.has(key.midi) ? <span>{key.name}</span> : null}
-              </div>
+              </button>
             );
           })}
         </div>

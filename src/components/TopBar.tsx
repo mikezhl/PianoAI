@@ -58,6 +58,21 @@ function GitHubIcon() {
   );
 }
 
+function GitHubLink() {
+  return (
+    <a
+      className="flat-button github-link"
+      href="https://github.com/mikezhl/PianoAI"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="打开 GitHub 仓库"
+      title="GitHub"
+    >
+      <GitHubIcon />
+    </a>
+  );
+}
+
 export default function TopBar({
   title,
   mode,
@@ -98,7 +113,7 @@ export default function TopBar({
   );
 
   return (
-    <header className="topbar">
+    <header className={`topbar ${mode === "performance" ? "performance-topbar" : ""}`}>
       <div className="topbar-left">
         <div className="score-title" aria-live="polite">
           {title}
@@ -106,17 +121,19 @@ export default function TopBar({
         <ModeSwitch mode={mode} onChange={onModeChange} />
       </div>
 
+      {mode === "performance" ? (
+        <div className="topbar-performance-actions">
+          <GitHubLink />
+          <div
+            id="performance-topbar-controls"
+            className="topbar-mode-controls"
+            aria-label="演绎选项"
+          />
+        </div>
+      ) : null}
+
       <div className="topbar-right">
-        <a
-          className="flat-button github-link"
-          href="https://github.com/mikezhl/PianoAI"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="打开 GitHub 仓库"
-          title="GitHub"
-        >
-          <GitHubIcon />
-        </a>
+        {mode !== "performance" ? <GitHubLink /> : null}
 
         <div className="score-zoom-control" ref={scoreZoomControlRef}>
           <button
@@ -154,7 +171,7 @@ export default function TopBar({
           ) : null}
         </div>
 
-        <div className="tempo-control" ref={tempoControlRef}>
+        {mode !== "performance" ? <div className="tempo-control" ref={tempoControlRef}>
           <button
             type="button"
             className={`flat-button tempo-button ${tempoPanelOpen ? "active" : ""}`}
@@ -191,7 +208,7 @@ export default function TopBar({
               ))}
             </div>
           ) : null}
-        </div>
+        </div> : null}
 
         {mode === "practice" ? <div className="midi-control" ref={midiControlRef}>
           <button

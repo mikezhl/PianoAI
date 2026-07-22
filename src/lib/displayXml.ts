@@ -302,7 +302,32 @@ function serializeXmlDocument(doc: Document): string {
     : `<?xml version="1.0" encoding="UTF-8"?>\n${serialized}`;
 }
 
-function prepareMusicXmlForDisplay(xml: string, removeFingerings: boolean): string {
+function addForcedSystemBreaks(doc: Document, measureIndexes: number[]): void {
+  const requestedIndexes = new Set(measureIndexes.filter((measureIndex) => measureIndex > 0));
+  if (requestedIndexes.size === 0) {
+    return;
+  }
+
+  for (const part of elementsByLocalName(doc, "part")) {
+    directChildren(part, "measure").forEach((measure, measureIndex) => {
+      if (!requestedIndexes.has(measureIndex)) {
+        return;
+      }
+      let print = directChild(measure, "print");
+      if (!print) {
+        print = doc.createElement("print");
+        measure.prepend(print);
+      }
+      print.setAttribute("new-system", "yes");
+    });
+  }
+}
+
+function prepareMusicXmlForDisplay(
+  xml: string,
+  removeFingerings: boolean,
+  forcedSystemBreakMeasureIndexes: number[] = [],
+): string {
   const doc = new DOMParser().parseFromString(xml, "application/xml");
   if (elementsByLocalName(doc, "parsererror").length > 0) {
     return xml;
@@ -318,6 +343,7 @@ function prepareMusicXmlForDisplay(xml: string, removeFingerings: boolean): stri
   normalizeGrandStaffPedals(doc);
   normalizeSmuflOrnamentAccidentals(doc);
   removeUnsupportedPrivateUseWords(doc);
+  addForcedSystemBreaks(doc, forcedSystemBreakMeasureIndexes);
 
   removeEmptyElements(doc, "technical");
   removeEmptyElements(doc, "notations");
@@ -331,6 +357,9 @@ export function prepareMusicXmlForPracticeDisplay(xml: string): string {
   return prepareMusicXmlForDisplay(xml, true);
 }
 
-export function prepareMusicXmlForAnalysisDisplay(xml: string): string {
-  return prepareMusicXmlForDisplay(xml, false);
+export function prepareMusicXmlForAnalysisDisplay(
+  xml: string,
+  forcedSystemBreakMeasureIndexes: number[] = [],
+): string {
+  return prepareMusicXmlForDisplay(xml, false, forcedSystemBreakMeasureIndexes);
 }

@@ -13,6 +13,8 @@
     "moduleResolution": "Bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "tsBuildInfoFile": ".cache/typescript/tsconfig.app.tsbuildinfo",
     "noEmit": true,
     "jsx": "react-jsx"

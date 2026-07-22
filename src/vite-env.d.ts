@@ -1,5 +1,7 @@
 /// <reference types="vite/client" />
 
+declare const __REFERENCE_AUDIO_BASE_URL__: string;
+
 declare module "virtual:musicxml-library" {
   export interface MusicXmlLibraryItem {
     id: string;
@@ -9,6 +11,7 @@ declare module "virtual:musicxml-library" {
     scoreId?: string;
     analysisUrl?: string;
     sourceHash?: string;
+    canonicalHash: string;
   }
 
   export const MUSICXML_LIBRARY: MusicXmlLibraryItem[];

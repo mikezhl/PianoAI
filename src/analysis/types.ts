@@ -8,6 +8,7 @@ export interface RationalNumber {
 export interface ScorePosition {
   measureIndex: number;
   offsetQuarter: RationalNumber;
+  playbackOccurrence?: number;
   staff?: number;
   voice?: string;
 }
@@ -200,7 +201,7 @@ export interface ScoreAnalysis {
 }
 
 export type AnalysisTab = "structure" | "motif" | "left-hand";
-export type AppMode = "practice" | "analysis";
+export type AppMode = "practice" | "analysis" | "performance";
 
 export type AnalysisViewItem =
   | { kind: "section"; id: string; label: string; summary: string; ranges: ScoreRange[]; entity: AnalysisSection }

@@ -1,6 +1,6 @@
 ---
 name: piano-score-analysis
-description: Analyze, revise, audit, and validate PianoAI built-in MusicXML or MXL scores into score-analysis Schema 2.1.0, including independent form segmentation, motif/theme families, texture-aware left-hand analysis, evidence, cross-validation, manifest integration, and per-piece validation records. Use when Codex needs to add a new PianoAI library analysis, improve an existing analysis JSON, regenerate chord occurrences, author polyphonic left-hand texture families, review analysis quality, or verify complete library coverage.
+description: Analyze, revise, and validate PianoAI built-in MusicXML or MXL scores into score-analysis Schema 2.1.0, including independent form segmentation, motif/theme families, texture-aware left-hand analysis, evidence, cross-validation, and manifest integration. Use when Codex needs to add a new PianoAI library analysis, improve an existing analysis JSON, regenerate chord occurrences, author polyphonic left-hand texture families, review analysis quality, or verify complete library coverage.
 ---
 
 # Piano Score Analysis
@@ -13,39 +13,38 @@ Produce static, reviewable analysis for PianoAI. Treat the exact source score as
 2. Generate or refresh facts:
 
 ```powershell
-npm run analysis:inspect -- "public/musicxml/<source-file>.mxl" `
-  --output "analysis/facts/<score-id>.facts.json"
+npm run analysis:inspect -- "data/scores/<score-id>.mxl" `
+  --output ".cache/analysis-facts/<score-id>.facts.json"
 ```
 
-3. Read `references/analysis-guide.md` and the generated facts. Confirm source hash, internal measures, complete-measure count, pickup/tail durations, display-number map, key/meter/tempo changes, ranges, and exact repeated sequences.
-4. Do not infer major mode from a key signature whose MusicXML `<mode>` is absent. Establish mode from work identity, tonic/cadence evidence, and score spelling; document the reasoning in `analysis/<score-id>-validation.md`.
+3. Read `references/analysis-guide.md` and the generated facts. Confirm source hash, internal measures, complete-measure count, pickup/tail durations, display-number map, key/meter/tempo changes, ranges, and exact repeated sequences. Facts are disposable working data under `.cache`; do not commit them.
+4. Do not infer major mode from a key signature whose MusicXML `<mode>` is absent. Establish mode from work identity, tonic/cadence evidence, and score spelling; store material ambiguity and evidence in the analysis JSON's `crossValidation` and relevant explanation fields.
    Use `pickupMeasureIndex: null` when the opening measure is complete.
 5. Inspect the score around every proposed section boundary and repeated sequence. Exact-repeat output is evidence, not a form label.
-6. Research suitable independent sources when available. Prefer scholarly, institutional, edition, or detailed pedagogical sources. Record conflicts instead of forcing agreement.
+6. Research suitable independent sources when available. Prefer scholarly, institutional, edition, or detailed pedagogical sources. Store adopted sources and material conflicts in `sources` and `crossValidation` instead of creating a separate report.
 7. Read `references/left-hand-analysis-conventions.md`. Decide whether the lower-staff material forms defensible metrical chord groups or a polyphonic texture before generating any families. Store the decision in `leftHandAnalysisMode`; never select a mode from the title.
 8. Read `references/schema-guide.md`. Start from `assets/analysis-template.json` and replace every placeholder. In `chord-groups` mode configure `leftHandChordGrouping`; in `polyphonic-texture` mode keep grouping `null` and author reviewed texture families.
 9. Write an independent analysis for the piece. Do not copy section counts, form labels, motif names, chord grouping, or prose from another score.
 10. For `chord-groups`, generate duration-aware left-hand occurrences:
 
 ```powershell
-npm run analysis:chords -- public/analysis/<score-id>.analysis.json
+npm run analysis:chords -- data/analyses/<score-id>.json
 ```
 
 11. Inspect the resulting left-hand analysis. For `chord-groups`, confirm that every occurrence is one defensible accompaniment group rather than an arbitrary time slice. For `polyphonic-texture`, confirm that each family represents a bass framework, sustained interval, voice-leading chain, or closing gesture with explicit score evidence; do not repeat one held state once per beat.
 12. Validate the file:
 
 ```powershell
-python .agents/skills/piano-score-analysis/scripts/validate_analysis.py `
-  public/analysis/<score-id>.analysis.json `
-  --schema analysis/schema/score-analysis.schema.json `
-  --source "public/musicxml/<source-file>.mxl"
+python tools/score-analysis/validate_analysis.py `
+  data/analyses/<score-id>.json `
+  --schema schemas/score-analysis.schema.json `
+  --source "data/scores/<score-id>.mxl"
 
-npm run analysis:chords -- --check public/analysis/<score-id>.analysis.json
+npm run analysis:chords -- --check data/analyses/<score-id>.json
 ```
 
-13. Create or update `analysis/<score-id>-validation.md` with source identity, independent form decision, deterministic evidence, motif decisions, chord grouping and counts, cross-validation outcomes, limitations, and exact commands used.
-14. Add the manifest entry only after single-file validation passes.
-15. Validate complete coverage and integration:
+13. Add the `data/catalog.json` entry only after single-file validation passes.
+14. Validate complete coverage and integration:
 
 ```powershell
 npm run analysis:validate
@@ -53,7 +52,7 @@ npm test -- --run
 npm run build
 ```
 
-16. Verify the actual app on desktop and `390x844`: structure, motif, left-hand family selection, occurrence navigation, range playback, vertical cursor, long-score rendering, detail expansion, and horizontal overflow.
+15. Verify the actual app on desktop and `390x844`: structure, motif, left-hand family selection, occurrence navigation, range playback, vertical cursor, long-score rendering, detail expansion, and horizontal overflow.
 
 ## Evidence rules
 
@@ -97,7 +96,7 @@ Complete one score only when:
 - motif occurrences distinguish exact reuse from variation;
 - `leftHandAnalysisMode` records the reviewed texture decision instead of relying on an implicit guess;
 - chord families were regenerated after final grouping decisions, or polyphonic texture families were independently audited;
-- the validation record states limitations and cross-validation outcomes;
+- material limitations and cross-validation outcomes are represented in the analysis JSON;
 - desktop/mobile navigation, chord clicking, playback, and cursor behavior work on the real score.
 
 Complete the library only when `npm run analysis:validate` passes with `--require-complete` through the package script.

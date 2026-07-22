@@ -1,0 +1,222 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pianoai.local/schema/score-interpretation-2.1.0.json",
+  "title": "PianoAI ScoreInterpretation",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "interpretationId",
+    "score",
+    "timeMap",
+    "noteExpressions",
+    "pedals",
+    "generation"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "2.1.0" },
+    "interpretationId": { "type": "string", "minLength": 1 },
+    "score": { "$ref": "#/$defs/scoreIdentity" },
+    "timeMap": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "$ref": "#/$defs/timeAnchor" }
+    },
+    "noteExpressions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/noteExpression" }
+    },
+    "pedals": { "$ref": "#/$defs/pedals" },
+    "generation": { "$ref": "#/$defs/generation" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "rational": {
+      "type": "object",
+      "required": ["numerator", "denominator"],
+      "properties": {
+        "numerator": { "type": "integer" },
+        "denominator": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "scoreIdentity": {
+      "type": "object",
+      "required": ["scoreId", "sourceHash", "identitySource"],
+      "properties": {
+        "scoreId": { "type": "string", "minLength": 1 },
+        "sourceHash": { "type": "string", "pattern": "^sha256:[0-9A-F]{64}$" },
+        "identitySource": { "enum": ["library-source", "canonical-xml"] }
+      },
+      "additionalProperties": false
+    },
+    "scorePosition": {
+      "type": "object",
+      "required": ["measureIndex", "offsetQuarter"],
+      "properties": {
+        "measureIndex": { "type": "integer", "minimum": 0 },
+        "offsetQuarter": { "$ref": "#/$defs/rational" },
+        "playbackOccurrence": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "scoreNoteRef": {
+      "type": "object",
+      "required": ["partId", "measureIndex", "offsetQuarter", "staff", "voice", "writtenPitch", "ordinalAtPosition"],
+      "properties": {
+        "partId": { "type": "string", "minLength": 1 },
+        "measureIndex": { "type": "integer", "minimum": 0 },
+        "offsetQuarter": { "$ref": "#/$defs/rational" },
+        "staff": { "type": "integer", "minimum": 1 },
+        "voice": { "type": "string" },
+        "writtenPitch": { "type": "string", "minLength": 1 },
+        "ordinalAtPosition": { "type": "integer", "minimum": 0 },
+        "playbackOccurrence": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "timeAnchor": {
+      "type": "object",
+      "required": ["scorePosition", "timeUs", "confidence"],
+      "properties": {
+        "scorePosition": { "$ref": "#/$defs/scorePosition" },
+        "timeUs": { "type": "integer", "minimum": 0 },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "noteExpression": {
+      "oneOf": [
+        { "$ref": "#/$defs/performedNoteExpression" },
+        { "$ref": "#/$defs/ornamentNoteExpression" }
+      ]
+    },
+    "performedNoteExpression": {
+      "type": "object",
+      "required": ["scoreNoteRef", "kind", "onsetUs", "releaseUs", "intensity", "confidence"],
+      "properties": {
+        "scoreNoteRef": { "$ref": "#/$defs/scoreNoteRef" },
+        "kind": { "const": "performed" },
+        "onsetUs": { "type": "integer", "minimum": 0 },
+        "releaseUs": { "type": "integer", "minimum": 0 },
+        "intensity": { "type": "number", "minimum": 0, "maximum": 1 },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "ornamentNoteExpression": {
+      "type": "object",
+      "required": ["scoreNoteRef", "kind", "realizations", "realizationKind", "confidence"],
+      "properties": {
+        "scoreNoteRef": { "$ref": "#/$defs/scoreNoteRef" },
+        "kind": { "const": "ornament" },
+        "realizations": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "$ref": "#/$defs/noteRealization" }
+        },
+        "realizationKind": { "enum": ["trill", "mordent", "inverted-mordent", "turn", "inverted-turn", "grace", "mixed"] },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "noteRealization": {
+      "type": "object",
+      "required": ["pitch", "onsetUs", "releaseUs", "intensity"],
+      "properties": {
+        "pitch": { "type": "integer", "minimum": 0, "maximum": 127 },
+        "onsetUs": { "type": "integer", "minimum": 0 },
+        "releaseUs": { "type": "integer", "minimum": 0 },
+        "intensity": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "pedalPoint": {
+      "type": "object",
+      "required": ["timeUs", "value"],
+      "properties": {
+        "timeUs": { "type": "integer", "minimum": 0 },
+        "value": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "pedals": {
+      "type": "object",
+      "required": ["sustain"],
+      "properties": {
+        "sustain": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/pedalPoint" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "coverage": {
+      "type": "object",
+      "required": [
+        "scoreNotes",
+        "matchedNotes",
+        "ornamentGestures",
+        "uncertainNotes",
+        "extraEvents",
+        "scoreCoverage",
+        "performanceCoverage"
+      ],
+      "properties": {
+        "scoreNotes": { "type": "integer", "minimum": 0 },
+        "matchedNotes": { "type": "integer", "minimum": 0 },
+        "ornamentGestures": { "type": "integer", "minimum": 0 },
+        "uncertainNotes": { "type": "integer", "minimum": 0 },
+        "extraEvents": { "type": "integer", "minimum": 0 },
+        "scoreCoverage": { "type": "number", "minimum": 0, "maximum": 1 },
+        "performanceCoverage": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "dimensions": {
+      "type": "object",
+      "properties": {
+        "pitch": { "type": "number", "minimum": 0, "maximum": 1 },
+        "note-onset": { "type": "number", "minimum": 0, "maximum": 1 },
+        "note-offset": { "type": "number", "minimum": 0, "maximum": 1 },
+        "pedal": { "type": "number", "minimum": 0, "maximum": 1 },
+        "ornament": { "type": "number", "minimum": 0, "maximum": 1 },
+        "dynamics": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "generation": {
+      "type": "object",
+      "required": [
+        "status",
+        "algorithmVersion",
+        "validationPolicyVersion",
+        "models",
+        "evaluationId",
+        "evaluationSha256",
+        "dimensions",
+        "coverage"
+      ],
+      "properties": {
+        "status": { "enum": ["automated-candidate", "automatically-validated"] },
+        "algorithmVersion": { "type": "string", "minLength": 1 },
+        "validationPolicyVersion": { "type": "string", "minLength": 1 },
+        "models": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "evaluationId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "evaluationSha256": { "type": "string", "pattern": "^sha256:[0-9A-F]{64}$" },
+        "dimensions": { "$ref": "#/$defs/dimensions" },
+        "coverage": { "$ref": "#/$defs/coverage" }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "automatically-validated" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "dimensions": { "required": ["pitch", "note-onset"] }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

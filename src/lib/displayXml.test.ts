@@ -51,6 +51,34 @@ describe("prepareMusicXmlForPracticeDisplay", () => {
       vi.stubGlobal("XMLSerializer", OriginalXMLSerializer);
     }
   });
+
+  it("preserves continuous pedal notation and its source attributes", () => {
+    const xml = `<?xml version="1.0"?><score-partwise><part><measure>
+      <direction placement="below"><direction-type><pedal type="start" line="no" sign="yes" color="#123456"/></direction-type><staff>2</staff></direction>
+      <direction placement="below"><direction-type><pedal type="change" line="yes" sign="no"/></direction-type><staff>2</staff></direction>
+      <direction placement="below"><direction-type><pedal type="stop" line="no" sign="yes"/></direction-type><staff>2</staff></direction>
+      <direction placement="below"><direction-type><pedal type="continue" line="yes" sign="no"/></direction-type><staff>2</staff></direction>
+    </measure></part></score-partwise>`;
+
+    const prepared = prepareMusicXmlForPracticeDisplay(xml);
+    const doc = new DOMParser().parseFromString(prepared, "application/xml");
+    const pedals = Array.from(doc.getElementsByTagName("pedal"));
+
+    expect(pedals).toHaveLength(4);
+    expect(pedals.map((pedal) => ({
+      type: pedal.getAttribute("type"),
+      line: pedal.getAttribute("line"),
+      sign: pedal.getAttribute("sign"),
+    }))).toEqual([
+      { type: "start", line: "no", sign: "yes" },
+      { type: "change", line: "yes", sign: "no" },
+      { type: "stop", line: "no", sign: "yes" },
+      { type: "continue", line: "yes", sign: "no" },
+    ]);
+    expect(pedals[0].getAttribute("color")).toBe("#123456");
+    expect(doc.getElementsByTagName("direction")).toHaveLength(4);
+    expect(doc.getElementsByTagName("staff")[0]?.textContent).toBe("2");
+  });
 });
 
 describe("prepareMusicXmlForAnalysisDisplay", () => {
@@ -59,5 +87,16 @@ describe("prepareMusicXmlForAnalysisDisplay", () => {
     const result = prepareMusicXmlForAnalysisDisplay(xml);
     const doc = new DOMParser().parseFromString(result, "application/xml");
     expect(doc.getElementsByTagName("fingering")[0]?.textContent).toBe("3");
+  });
+
+  it("adds display-only system breaks at virtual score chunk boundaries", () => {
+    const xml = `<?xml version="1.0"?><score-partwise><part><measure number="1"/><measure number="2"><print new-page="yes"/></measure><measure number="3"/></part></score-partwise>`;
+    const result = prepareMusicXmlForAnalysisDisplay(xml, [1, 2]);
+    const doc = new DOMParser().parseFromString(result, "application/xml");
+    const measures = Array.from(doc.getElementsByTagName("measure"));
+    expect(measures[0].getElementsByTagName("print")).toHaveLength(0);
+    expect(measures[1].getElementsByTagName("print")[0]?.getAttribute("new-page")).toBe("yes");
+    expect(measures[1].getElementsByTagName("print")[0]?.getAttribute("new-system")).toBe("yes");
+    expect(measures[2].getElementsByTagName("print")[0]?.getAttribute("new-system")).toBe("yes");
   });
 });

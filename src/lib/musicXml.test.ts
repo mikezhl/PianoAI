@@ -1,7 +1,31 @@
+import { readFileSync } from "node:fs";
+import JSZip from "jszip";
 import { describe, expect, it } from "vitest";
 import { parseMusicXml } from "./musicXml";
 
 describe("parseMusicXml", () => {
+  it("keeps the library nocturne's ornaments, grace clusters, and tie consolidation in one canonical model", async () => {
+    const archive = await JSZip.loadAsync(readFileSync("data/scores/chopin-nocturne-op9-no2.mxl"));
+    const xml = await archive.file("score.xml")!.async("string");
+    const score = parseMusicXml(xml, "Nocturne Op. 9 No. 2.mxl");
+    const notes = score.noteGroups.flatMap((group) => group.notes);
+    const ornaments = notes.filter((note) => note.ornament);
+    const graceClusters = notes.filter((note) => note.graceNotes?.length);
+
+    expect(notes).toHaveLength(1228);
+    expect(ornaments).toHaveLength(11);
+    expect(graceClusters).toHaveLength(8);
+    expect(graceClusters.reduce((sum, note) => sum + (note.graceNotes?.length ?? 0), 0)).toBe(15);
+    expect(score.measureNumbers?.slice(0, 3)).toEqual(["0", "1", "2"]);
+    expect(score.measureNumbers?.slice(32, 36)).toEqual(["32", "32", "33", "34"]);
+    expect(ornaments.find((note) => note.measureIndex === 7 && note.startTick === 0)?.ornament).toMatchObject({
+      kind: "trill",
+      hasWavyLine: true,
+      expectedPitches: [77, 79],
+    });
+    expect(ornaments.find((note) => note.measureIndex === 26)?.ornament?.expectedPitches).toEqual([74, 75, 77]);
+  });
+
   it("groups chords and keeps backup/forward timing on separate staves", () => {
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <score-partwise version="3.1">
@@ -28,6 +52,7 @@ describe("parseMusicXml", () => {
     const score = parseMusicXml(xml, "timing.musicxml");
 
     expect(score.title).toBe("timing");
+    expect(score.measureNumbers).toEqual(["1"]);
     expect(score.canSeparateHands).toBe(true);
     expect(score.noteGroups.map((group) => ({
       hand: group.hand,
@@ -39,6 +64,18 @@ describe("parseMusicXml", () => {
       { hand: "right", tick: 480, midis: [62] },
       { hand: "left", tick: 960, midis: [55] },
     ]);
+    expect(score.noteGroups[0].notes[0].scoreRef).toEqual({
+      partId: "P1",
+      measureIndex: 0,
+      offsetQuarter: { numerator: 0, denominator: 1 },
+      staff: 1,
+      voice: "1",
+      writtenPitch: "C4",
+      ordinalAtPosition: 0,
+    });
+    expect(parseMusicXml(xml, "timing.musicxml").noteGroups[0].notes[0].id).toBe(
+      score.noteGroups[0].notes[0].id,
+    );
   });
 
   it("keeps tied notes as one practice group with the combined duration", () => {
@@ -202,6 +239,34 @@ describe("parseMusicXml", () => {
     const score = parseMusicXml(xml, "Nocturne Op. 9 No. 2.mxl");
 
     expect(score.title).toBe("Nocturne Op. 9 No. 2");
+  });
+
+  it("builds an unfolded measure order without duplicating the written score", () => {
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<score-partwise version="3.1">
+  <part-list><score-part id="P1"><part-name>Piano</part-name></score-part></part-list>
+  <part id="P1">
+    <measure number="1"><attributes><divisions>1</divisions></attributes><note><pitch><step>C</step><octave>4</octave></pitch><duration>1</duration></note></measure>
+    <measure number="2"><barline location="left"><repeat direction="forward"/></barline><note><pitch><step>D</step><octave>4</octave></pitch><duration>1</duration></note></measure>
+    <measure number="3"><note><pitch><step>E</step><octave>4</octave></pitch><duration>1</duration></note><barline location="right"><repeat direction="backward"/></barline></measure>
+    <measure number="4"><note><pitch><step>F</step><octave>4</octave></pitch><duration>1</duration></note></measure>
+  </part>
+</score-partwise>`;
+    const score = parseMusicXml(xml, "repeat.musicxml");
+    expect(score.noteGroups).toHaveLength(4);
+    expect(score.measurePlaybackOrder?.map((occurrence) => [
+      occurrence.measureIndex,
+      occurrence.playbackOccurrence,
+      occurrence.timelineStartTick,
+    ])).toEqual([
+      [0, 0, 0],
+      [1, 0, 480],
+      [2, 0, 960],
+      [1, 1, 1440],
+      [2, 1, 1920],
+      [3, 0, 2400],
+    ]);
+    expect(score.timelineTotalTicks).toBe(2880);
   });
 
   it("normalizes fractional pitch alters to piano semitones", () => {

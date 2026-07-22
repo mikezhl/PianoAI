@@ -105,7 +105,7 @@ export default function AnalysisNavigator({
           const badge = itemBadge(item);
           const preview = itemPreview(item);
           const rangeLabel = metadata && item.ranges[0] ? formatScoreRange(metadata, item.ranges[0]) : "";
-          const canPlay = item.kind === "section" || item.kind === "chord" || item.kind === "texture";
+          const canPlay = item.ranges.length > 0;
           const isPlaying = playingItemId === item.id;
           return (
             <div
@@ -132,7 +132,11 @@ export default function AnalysisNavigator({
                   className={`analysis-list-play ${isPlaying ? "playing" : ""}`}
                   onClick={() => onTogglePlay(item.id)}
                   aria-label={`${isPlaying ? "停止" : "播放"}${item.label}`}
-                  title={item.kind === "section" ? "播放段落" : "仅播放左手"}
+                  title={item.kind === "section"
+                    ? "播放段落"
+                    : item.kind === "motif"
+                      ? "播放动机"
+                      : "仅播放左手"}
                 >
                   {isPlaying ? <Pause size={14} aria-hidden="true" /> : <Play size={14} aria-hidden="true" />}
                 </button>

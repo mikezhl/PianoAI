@@ -1,6 +1,4 @@
 import type { ScoreAnalysisMetadata, ScorePosition, ScoreRange } from "../../analysis/types";
-import type { ScoreData } from "../../types";
-import { TICKS_PER_QUARTER } from "../../types";
 
 function compareRationals(left: ScorePosition["offsetQuarter"], right: ScorePosition["offsetQuarter"]): number {
   return left.numerator * right.denominator - right.numerator * left.denominator;
@@ -16,25 +14,6 @@ export function compareScorePositions(left: ScorePosition, right: ScorePosition)
 
 export function isZeroOffset(position: ScorePosition): boolean {
   return position.offsetQuarter.numerator === 0;
-}
-
-export function scorePositionToTick(score: ScoreData, position: ScorePosition): number {
-  if (position.measureIndex >= score.measureStarts.length) {
-    return score.totalTicks;
-  }
-
-  const measureStart = score.measureStarts[position.measureIndex] ?? score.totalTicks;
-  const offsetTicks = Math.round(
-    (position.offsetQuarter.numerator * TICKS_PER_QUARTER) / position.offsetQuarter.denominator,
-  );
-  return Math.max(0, Math.min(score.totalTicks, measureStart + offsetTicks));
-}
-
-export function scoreRangeToTickBounds(score: ScoreData, range: ScoreRange): { startTick: number; endTick: number } {
-  return {
-    startTick: scorePositionToTick(score, range.start),
-    endTick: scorePositionToTick(score, range.end),
-  };
 }
 
 export function getDisplayMeasureLabel(metadata: ScoreAnalysisMetadata, measureIndex: number): string {
@@ -65,17 +44,4 @@ export function formatScoreRange(metadata: ScoreAnalysisMetadata, range: ScoreRa
   const startLabel = getDisplayMeasureLabel(metadata, startIndex);
   const endLabel = getDisplayMeasureLabel(metadata, endIndex);
   return startLabel === endLabel ? startLabel : `${startLabel}–${endLabel}`;
-}
-
-export function wholeScoreRange(metadata: ScoreAnalysisMetadata): ScoreRange {
-  return {
-    start: {
-      measureIndex: 0,
-      offsetQuarter: { numerator: 0, denominator: 1 },
-    },
-    end: {
-      measureIndex: metadata.internalMeasureCount,
-      offsetQuarter: { numerator: 0, denominator: 1 },
-    },
-  };
 }

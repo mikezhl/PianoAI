@@ -1,0 +1,1071 @@
+{
+  "schemaVersion": "2.1.0",
+  "references": [
+    {
+      "interpretationId": "chopin-op9-no2-seong-jin-cho-bv1ph4y117ty",
+      "score": {
+        "scoreId": "chopin-nocturne-op9-no2",
+        "sourceHash": "sha256:8D28A6EF828288C10B2BADD2E20E802F9AF34AFFA679B6216EA34F79AE269B85",
+        "identitySource": "library-source"
+      },
+      "performerId": "seong-jin-cho",
+      "performerName": "赵成珍",
+      "evidenceId": "bilibili-bv1ph4y117ty-audio",
+      "source": {
+        "title": "【赵成珍】肖邦夜曲 Op. 9 No. 2",
+        "url": "https://www.bilibili.com/video/BV1Ph4y117tY/",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-op9-no2-seong-jin-cho.m4a",
+        "objectKey": "reference-audio/f0dc4fedeaf08ae420d7d5c9d84f708b33a4957640d9a0543a39cb2d136d1dcd.m4a",
+        "sha256": "F0DC4FEDEAF08AE420D7D5C9D84F708B33A4957640D9A0543A39CB2D136D1DCD",
+        "durationUs": 262463667,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-op9-no2-maria-joao-pires-bv1vn41157mi",
+      "score": {
+        "scoreId": "chopin-nocturne-op9-no2",
+        "sourceHash": "sha256:8D28A6EF828288C10B2BADD2E20E802F9AF34AFFA679B6216EA34F79AE269B85",
+        "identitySource": "library-source"
+      },
+      "performerId": "maria-joao-pires",
+      "performerName": "玛利亚·若昂·皮尔斯",
+      "evidenceId": "bilibili-bv1vn41157mi-audio",
+      "source": {
+        "title": "肖邦降E大调夜曲——“优雅从容 钢琴女王”玛利亚·胡奥·皮尔斯",
+        "url": "https://www.bilibili.com/video/BV1VN41157Mi/",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-op9-no2-maria-joao-pires.m4a",
+        "objectKey": "reference-audio/7591a20012c0a20526a2a131c740ebac25064177d09bcf861f90496960d8d74e.m4a",
+        "sha256": "7591A20012C0A20526A2A131C740EBAC25064177D09BCF861F90496960D8D74E",
+        "durationUs": 272323197,
+        "format": "audio/mp4",
+        "sampleRate": 44100,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-op9-no1-maria-joao-pires-bv1x94y1a7gf",
+      "score": {
+        "scoreId": "chopin-nocturne-op9-no1",
+        "sourceHash": "sha256:66CF22D69119653984E2ED3993C9C475043C43BC7033301A82AF037237CD5809",
+        "identitySource": "library-source"
+      },
+      "performerId": "maria-joao-pires",
+      "performerName": "玛利亚·若昂·皮尔斯",
+      "evidenceId": "bilibili-bv1x94y1a7gf-audio",
+      "source": {
+        "title": "肖邦-夜曲Op.9No.1——“钢琴瑰宝 琴坛女神”玛利亚·胡奥·皮尔斯",
+        "url": "https://www.bilibili.com/video/BV1x94y1A7Gf/",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-op9-no1-maria-joao-pires.m4a",
+        "objectKey": "reference-audio/067d917b406ed8d10fab8e580b344285d602468ec253ba6af770ea57ac78a9e2.m4a",
+        "sha256": "067D917B406ED8D10FAB8E580B344285D602468EC253BA6AF770EA57AC78A9E2",
+        "durationUs": 321990680,
+        "format": "audio/mp4",
+        "sampleRate": 44100,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-op9-no1-shen-wenyu-bv1ev411x7sc",
+      "score": {
+        "scoreId": "chopin-nocturne-op9-no1",
+        "sourceHash": "sha256:66CF22D69119653984E2ED3993C9C475043C43BC7033301A82AF037237CD5809",
+        "identitySource": "library-source"
+      },
+      "performerId": "shen-wenyu",
+      "performerName": "沈文裕",
+      "evidenceId": "bilibili-bv1ev411x7sc-audio",
+      "source": {
+        "title": "钢琴家沈文裕演奏肖邦夜曲 Op.9 No.1",
+        "url": "https://www.bilibili.com/video/BV1eV411x7Sc/",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-op9-no1-shen-wenyu.m4a",
+        "objectKey": "reference-audio/bbdace2a46722cdf0e94e92f95268ec5e2b99b776fa163f32aacab9bba4adf07.m4a",
+        "sha256": "BBDACE2A46722CDF0E94E92F95268EC5E2B99B776FA163F32AACAB9BBA4ADF07",
+        "durationUs": 392341000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-op9-no1-claudio-arrau-youtube-eklonpjnypi",
+      "score": {
+        "scoreId": "chopin-nocturne-op9-no1",
+        "sourceHash": "sha256:66CF22D69119653984E2ED3993C9C475043C43BC7033301A82AF037237CD5809",
+        "identitySource": "library-source"
+      },
+      "performerId": "claudio-arrau",
+      "performerName": "克劳迪奥·阿劳",
+      "evidenceId": "youtube-eklonpjnypi-audio",
+      "source": {
+        "title": "Chopin: Nocturne No. 1 in B-Flat Minor, Op. 9 No. 1 — Claudio Arrau",
+        "url": "https://www.youtube.com/watch?v=EKlonPJnypI",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-op9-no1-claudio-arrau.m4a",
+        "objectKey": "reference-audio/578df116ab0ab38fef661018779a8040ce3f14380afef37226d004b956d2c9e9.m4a",
+        "sha256": "578DF116AB0AB38FEF661018779A8040CE3F14380AFEF37226D004B956D2C9E9",
+        "durationUs": 346500000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-op9-no1-vladimir-ashkenazy-youtube-bro20nyegjo",
+      "score": {
+        "scoreId": "chopin-nocturne-op9-no1",
+        "sourceHash": "sha256:66CF22D69119653984E2ED3993C9C475043C43BC7033301A82AF037237CD5809",
+        "identitySource": "library-source"
+      },
+      "performerId": "vladimir-ashkenazy",
+      "performerName": "弗拉基米尔·阿什肯纳齐",
+      "evidenceId": "youtube-bro20nyegjo-audio",
+      "source": {
+        "title": "Chopin: Nocturne No. 1 in B-Flat Minor, Op. 9 No. 1 — Vladimir Ashkenazy",
+        "url": "https://www.youtube.com/watch?v=bro20nYeGjo",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-op9-no1-vladimir-ashkenazy.m4a",
+        "objectKey": "reference-audio/b330abf5f573fb10c470935f9eab36fe83d6745aed4262d2c56540a1fa115518.m4a",
+        "sha256": "B330ABF5F573FB10C470935F9EAB36FE83D6745AED4262D2C56540A1FA115518",
+        "durationUs": 348433000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-op9-no1-idil-biret-youtube-yg-jkznjyte",
+      "score": {
+        "scoreId": "chopin-nocturne-op9-no1",
+        "sourceHash": "sha256:66CF22D69119653984E2ED3993C9C475043C43BC7033301A82AF037237CD5809",
+        "identitySource": "library-source"
+      },
+      "performerId": "idil-biret",
+      "performerName": "伊迪尔·比芮特",
+      "evidenceId": "youtube-yg_jkznjyte-audio",
+      "source": {
+        "title": "Nocturne No. 1 in B-Flat Minor, Op. 9 No. 1 — İdil Biret",
+        "url": "https://www.youtube.com/watch?v=yG_jkZNJytE",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-op9-no1-idil-biret.m4a",
+        "objectKey": "reference-audio/5560770a9687651377ec0d2c8453a1c9b6a688d75455bf5b823ad591418494bf.m4a",
+        "sha256": "5560770A9687651377EC0D2C8453A1C9B6A688D75455BF5B823AD591418494BF",
+        "durationUs": 338847000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-op9-no2-claudio-arrau-youtube-ughzbrdqniy",
+      "score": {
+        "scoreId": "chopin-nocturne-op9-no2",
+        "sourceHash": "sha256:8D28A6EF828288C10B2BADD2E20E802F9AF34AFFA679B6216EA34F79AE269B85",
+        "identitySource": "library-source"
+      },
+      "performerId": "claudio-arrau",
+      "performerName": "克劳迪奥·阿劳",
+      "evidenceId": "youtube-ughzbrdqniy-audio",
+      "source": {
+        "title": "Chopin: Nocturne No. 2 in E-Flat Major, Op. 9 No. 2 (1978) — Claudio Arrau",
+        "url": "https://www.youtube.com/watch?v=UghzbRdqniY",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-op9-no2-claudio-arrau.m4a",
+        "objectKey": "reference-audio/def0e99c067216d6682203ce0452d287eed9cfcc9d489cdeb7279e9abbb37679.m4a",
+        "sha256": "DEF0E99C067216D6682203CE0452D287EED9CFCC9D489CDEB7279E9ABBB37679",
+        "durationUs": 290454000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-op9-no2-vladimir-ashkenazy-youtube-eldfgoolqi4",
+      "score": {
+        "scoreId": "chopin-nocturne-op9-no2",
+        "sourceHash": "sha256:8D28A6EF828288C10B2BADD2E20E802F9AF34AFFA679B6216EA34F79AE269B85",
+        "identitySource": "library-source"
+      },
+      "performerId": "vladimir-ashkenazy",
+      "performerName": "弗拉基米尔·阿什肯纳齐",
+      "evidenceId": "youtube-eldfgoolqi4-audio",
+      "source": {
+        "title": "Chopin: Nocturne No. 2 in E-Flat Major, Op. 9 No. 2 — Vladimir Ashkenazy",
+        "url": "https://www.youtube.com/watch?v=eLDfGoolqI4",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-op9-no2-vladimir-ashkenazy.m4a",
+        "objectKey": "reference-audio/bad8d2c1380aea5e717d4379ab8f0c974924aee15c277d6984476fb340c6f299.m4a",
+        "sha256": "BAD8D2C1380AEA5E717D4379AB8F0C974924AEE15C277D6984476FB340C6F299",
+        "durationUs": 239513000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-op9-no2-idil-biret-youtube-q4qziqzpajy",
+      "score": {
+        "scoreId": "chopin-nocturne-op9-no2",
+        "sourceHash": "sha256:8D28A6EF828288C10B2BADD2E20E802F9AF34AFFA679B6216EA34F79AE269B85",
+        "identitySource": "library-source"
+      },
+      "performerId": "idil-biret",
+      "performerName": "伊迪尔·比芮特",
+      "evidenceId": "youtube-q4qziqzpajy-audio",
+      "source": {
+        "title": "Nocturne No. 2 in E-Flat Major, Op. 9 No. 2 — İdil Biret",
+        "url": "https://www.youtube.com/watch?v=Q4QZIqzpajY",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-op9-no2-idil-biret.m4a",
+        "objectKey": "reference-audio/3f138d08702349beed1b70b1a51fc3bc306eff54b84c11881d6020a85592a0de.m4a",
+        "sha256": "3F138D08702349BEED1B70B1A51FC3BC306EFF54B84C11881D6020A85592A0DE",
+        "durationUs": 273580000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-op9-no2-arthur-rubinstein-youtube-zqyiamnhz9u",
+      "score": {
+        "scoreId": "chopin-nocturne-op9-no2",
+        "sourceHash": "sha256:8D28A6EF828288C10B2BADD2E20E802F9AF34AFFA679B6216EA34F79AE269B85",
+        "identitySource": "library-source"
+      },
+      "performerId": "arthur-rubinstein",
+      "performerName": "阿图尔·鲁宾斯坦",
+      "evidenceId": "youtube-zqyiamnhz9u-audio",
+      "source": {
+        "title": "Nocturne No. 2 in E-Flat Major, Op. 9 No. 2 — Arthur Rubinstein",
+        "url": "https://www.youtube.com/watch?v=zqyIamnHz9U",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-op9-no2-arthur-rubinstein.m4a",
+        "objectKey": "reference-audio/550aeb93e808cab7c29cc1db5314765d8e03ecda6f83b786a5e99c0ab6672e6e.m4a",
+        "sha256": "550AEB93E808CAB7C29CC1DB5314765D8E03ECDA6F83B786A5E99C0AB6672E6E",
+        "durationUs": 274487000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-waltz-a-minor-claudio-arrau-youtube-n-vozrgjuvc",
+      "score": {
+        "scoreId": "chopin-waltz-a-minor",
+        "sourceHash": "sha256:B21513E649C021B25F2E87677C691843B050F9B1CD318BC8118CB3441917F1FE",
+        "identitySource": "library-source"
+      },
+      "performerId": "claudio-arrau",
+      "performerName": "克劳迪奥·阿劳",
+      "evidenceId": "youtube-n-vozrgjuvc-audio",
+      "source": {
+        "title": "Chopin: Waltz No. 19 in A Minor, KK IVb/11 — Claudio Arrau",
+        "url": "https://www.youtube.com/watch?v=n-voZrgjUVc",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-waltz-a-minor-claudio-arrau.m4a",
+        "objectKey": "reference-audio/9e7eb002d9daf2814c1672e9548453f7e460b119de9d9d39d34d7bdc59395cc5.m4a",
+        "sha256": "9E7EB002D9DAF2814C1672E9548453F7E460B119DE9D9D39D34D7BDC59395CC5",
+        "durationUs": 152007000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-waltz-a-minor-vladimir-ashkenazy-youtube-b9wxd-tu26q",
+      "score": {
+        "scoreId": "chopin-waltz-a-minor",
+        "sourceHash": "sha256:B21513E649C021B25F2E87677C691843B050F9B1CD318BC8118CB3441917F1FE",
+        "identitySource": "library-source"
+      },
+      "performerId": "vladimir-ashkenazy",
+      "performerName": "弗拉基米尔·阿什肯纳齐",
+      "evidenceId": "youtube-b9wxd_tu26q-audio",
+      "source": {
+        "title": "Chopin: Waltz No. 19 in A Minor, KK IVb/11 — Vladimir Ashkenazy",
+        "url": "https://www.youtube.com/watch?v=B9wXD_tu26Q",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-waltz-a-minor-vladimir-ashkenazy.m4a",
+        "objectKey": "reference-audio/d666192ec6c919f649bce7075519d3995696881d998dbf94f4f8cb5adf9dfb27.m4a",
+        "sha256": "D666192EC6C919F649BCE7075519D3995696881D998DBF94F4F8CB5ADF9DFB27",
+        "durationUs": 110647000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-waltz-a-minor-idil-biret-youtube-hl-i15gsvu4",
+      "score": {
+        "scoreId": "chopin-waltz-a-minor",
+        "sourceHash": "sha256:B21513E649C021B25F2E87677C691843B050F9B1CD318BC8118CB3441917F1FE",
+        "identitySource": "library-source"
+      },
+      "performerId": "idil-biret",
+      "performerName": "伊迪尔·比芮特",
+      "evidenceId": "youtube-hl-i15gsvu4-audio",
+      "source": {
+        "title": "Waltz No. 19 in A Minor, Op. posth. — İdil Biret",
+        "url": "https://www.youtube.com/watch?v=Hl-i15GsVU4",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-waltz-a-minor-idil-biret.m4a",
+        "objectKey": "reference-audio/eeec7b06a75ea763aae52db4f349df50a772f9e7095a512143a495d40063c28b.m4a",
+        "sha256": "EEEC7B06A75EA763AAE52DB4F349DF50A772F9E7095A512143A495D40063C28B",
+        "durationUs": 109260000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-waltz-a-minor-cyprien-katsaris-youtube-n8p7plj6gsa",
+      "score": {
+        "scoreId": "chopin-waltz-a-minor",
+        "sourceHash": "sha256:B21513E649C021B25F2E87677C691843B050F9B1CD318BC8118CB3441917F1FE",
+        "identitySource": "library-source"
+      },
+      "performerId": "cyprien-katsaris",
+      "performerName": "西普里安·卡萨利斯",
+      "evidenceId": "youtube-n8p7plj6gsa-audio",
+      "source": {
+        "title": "Waltz No. 19 in A Minor — Cyprien Katsaris",
+        "url": "https://www.youtube.com/watch?v=n8p7PLJ6gsA",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-waltz-a-minor-cyprien-katsaris.m4a",
+        "objectKey": "reference-audio/d104bb38b2d5794832b5ef98e0e7e59de30a4f4a5461dc55d0e401b0ce85ac95.m4a",
+        "sha256": "D104BB38B2D5794832B5EF98E0E7E59DE30A4F4A5461DC55D0E401B0CE85AC95",
+        "durationUs": 110940000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-waltz-a-minor-garrick-ohlsson-youtube-stsvbj4gcg0",
+      "score": {
+        "scoreId": "chopin-waltz-a-minor",
+        "sourceHash": "sha256:B21513E649C021B25F2E87677C691843B050F9B1CD318BC8118CB3441917F1FE",
+        "identitySource": "library-source"
+      },
+      "performerId": "garrick-ohlsson",
+      "performerName": "加里克·奥尔松",
+      "evidenceId": "youtube-stsvbj4gcg0-audio",
+      "source": {
+        "title": "Chopin: Waltz No. 19 in A Minor, KK IVb/11 — Garrick Ohlsson",
+        "url": "https://www.youtube.com/watch?v=sTsVBJ4gcg0",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-waltz-a-minor-garrick-ohlsson.m4a",
+        "objectKey": "reference-audio/13644e0680aa059e6ac1bed58cc51aaa47139f2683ca6b909d9596c50e0add45.m4a",
+        "sha256": "13644E0680AA059E6AC1BED58CC51AAA47139F2683CA6B909D9596C50E0ADD45",
+        "durationUs": 136073000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-waltz-a-minor-nikita-magaloff-youtube-knsvj8cinjy",
+      "score": {
+        "scoreId": "chopin-waltz-a-minor",
+        "sourceHash": "sha256:B21513E649C021B25F2E87677C691843B050F9B1CD318BC8118CB3441917F1FE",
+        "identitySource": "library-source"
+      },
+      "performerId": "nikita-magaloff",
+      "performerName": "尼基塔·马加洛夫",
+      "evidenceId": "youtube-knsvj8cinjy-audio",
+      "source": {
+        "title": "Chopin: Waltz No. 19 in A Minor, KK IVb/11 — Nikita Magaloff",
+        "url": "https://www.youtube.com/watch?v=KNsVj8cinjY",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-waltz-a-minor-nikita-magaloff.m4a",
+        "objectKey": "reference-audio/597079f0d556e05fb00a71e6003dc96d613a0dcdfe3ab492d3698d372d136bfa.m4a",
+        "sha256": "597079F0D556E05FB00A71E6003DC96D613A0DCDFE3AB492D3698D372D136BFA",
+        "durationUs": 115007000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-waltz-c-sharp-minor-claudio-arrau-youtube-9zyxyjqvkgo",
+      "score": {
+        "scoreId": "chopin-waltz-c-sharp-minor",
+        "sourceHash": "sha256:29767F6FF672D4FE9EA3636C9E2D5A29ACEAA4DB03D2AFDC467CE412E594A672",
+        "identitySource": "library-source"
+      },
+      "performerId": "claudio-arrau",
+      "performerName": "克劳迪奥·阿劳",
+      "evidenceId": "youtube-9zyxyjqvkgo-audio",
+      "source": {
+        "title": "Chopin: Waltz No. 7 in C-Sharp Minor, Op. 64 No. 2 — Claudio Arrau",
+        "url": "https://www.youtube.com/watch?v=9zYXyJqvkGo",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-waltz-c-sharp-minor-claudio-arrau.m4a",
+        "objectKey": "reference-audio/ab0d12778fc10f371932a6f798eaa079a1a37a1762f2741d4de1b77fb1402486.m4a",
+        "sha256": "AB0D12778FC10F371932A6F798EAA079A1A37A1762F2741D4DE1B77FB1402486",
+        "durationUs": 261073000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-waltz-c-sharp-minor-vladimir-ashkenazy-youtube-drrybpmhu3c",
+      "score": {
+        "scoreId": "chopin-waltz-c-sharp-minor",
+        "sourceHash": "sha256:29767F6FF672D4FE9EA3636C9E2D5A29ACEAA4DB03D2AFDC467CE412E594A672",
+        "identitySource": "library-source"
+      },
+      "performerId": "vladimir-ashkenazy",
+      "performerName": "弗拉基米尔·阿什肯纳齐",
+      "evidenceId": "youtube-drrybpmhu3c-audio",
+      "source": {
+        "title": "Chopin: Waltz No. 7 in C-Sharp Minor, Op. 64 No. 2 — Vladimir Ashkenazy",
+        "url": "https://www.youtube.com/watch?v=dRrYbpmHu3c",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-waltz-c-sharp-minor-vladimir-ashkenazy.m4a",
+        "objectKey": "reference-audio/42dce3fe5926b2550b6f90401f247c1afbc8f63960f6a2f1bbb2e65b86cd961a.m4a",
+        "sha256": "42DCE3FE5926B2550B6F90401F247C1AFBC8F63960F6A2F1BBB2E65B86CD961A",
+        "durationUs": 205300000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-waltz-c-sharp-minor-idil-biret-youtube-0tm6b6uptrc",
+      "score": {
+        "scoreId": "chopin-waltz-c-sharp-minor",
+        "sourceHash": "sha256:29767F6FF672D4FE9EA3636C9E2D5A29ACEAA4DB03D2AFDC467CE412E594A672",
+        "identitySource": "library-source"
+      },
+      "performerId": "idil-biret",
+      "performerName": "伊迪尔·比芮特",
+      "evidenceId": "youtube-0tm6b6uptrc-audio",
+      "source": {
+        "title": "Waltz No. 7 in C-Sharp Minor, Op. 64 No. 2 — İdil Biret",
+        "url": "https://www.youtube.com/watch?v=0tm6B6uPtRc",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-waltz-c-sharp-minor-idil-biret.m4a",
+        "objectKey": "reference-audio/8d3083b0f75c5b009f4cf2d2e72c79f37ce1a888f7d2f9499c93c8f79c2e2d35.m4a",
+        "sha256": "8D3083B0F75C5B009F4CF2D2E72C79F37CE1A888F7D2F9499C93C8F79C2E2D35",
+        "durationUs": 238687000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-waltz-c-sharp-minor-maria-joao-pires-youtube-6gzibqjj5io",
+      "score": {
+        "scoreId": "chopin-waltz-c-sharp-minor",
+        "sourceHash": "sha256:29767F6FF672D4FE9EA3636C9E2D5A29ACEAA4DB03D2AFDC467CE412E594A672",
+        "identitySource": "library-source"
+      },
+      "performerId": "maria-joao-pires",
+      "performerName": "玛利亚·若昂·皮尔斯",
+      "evidenceId": "youtube-6gzibqjj5io-audio",
+      "source": {
+        "title": "Chopin: Waltz No. 7 in C-Sharp Minor, Op. 64 No. 2 — Maria João Pires",
+        "url": "https://www.youtube.com/watch?v=6GzibQJJ5Io",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-waltz-c-sharp-minor-maria-joao-pires.m4a",
+        "objectKey": "reference-audio/df89fafb1f213127f0c76d7ffa0e8112349184eb2d4bc33bd5e11e37bdfc814d.m4a",
+        "sha256": "DF89FAFB1F213127F0C76D7FFA0E8112349184EB2D4BC33BD5E11E37BDFC814D",
+        "durationUs": 196233000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-waltz-c-sharp-minor-arthur-rubinstein-youtube-775bu-imi7a",
+      "score": {
+        "scoreId": "chopin-waltz-c-sharp-minor",
+        "sourceHash": "sha256:29767F6FF672D4FE9EA3636C9E2D5A29ACEAA4DB03D2AFDC467CE412E594A672",
+        "identitySource": "library-source"
+      },
+      "performerId": "arthur-rubinstein",
+      "performerName": "阿图尔·鲁宾斯坦",
+      "evidenceId": "youtube-775bu_imi7a-audio",
+      "source": {
+        "title": "Waltz in C-Sharp Minor, Op. 64 No. 2 (Remastered) — Arthur Rubinstein",
+        "url": "https://www.youtube.com/watch?v=775BU_iMI7A",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-waltz-c-sharp-minor-arthur-rubinstein.m4a",
+        "objectKey": "reference-audio/00ee426c059547f7b81a4f9f7d1a7dd9f7e3720bf01cc978f68f99bab46ccff8.m4a",
+        "sha256": "00EE426C059547F7B81A4F9F7D1A7DD9F7E3720BF01CC978F68F99BAB46CCFF8",
+        "durationUs": 226007000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-waltz-c-sharp-minor-cyprien-katsaris-youtube-awhkj4efe8a",
+      "score": {
+        "scoreId": "chopin-waltz-c-sharp-minor",
+        "sourceHash": "sha256:29767F6FF672D4FE9EA3636C9E2D5A29ACEAA4DB03D2AFDC467CE412E594A672",
+        "identitySource": "library-source"
+      },
+      "performerId": "cyprien-katsaris",
+      "performerName": "西普里安·卡萨利斯",
+      "evidenceId": "youtube-awhkj4efe8a-audio",
+      "source": {
+        "title": "Waltz No. 7 in C-Sharp Minor, Op. 64 No. 2 — Cyprien Katsaris",
+        "url": "https://www.youtube.com/watch?v=AwHkj4eFe8A",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-waltz-c-sharp-minor-cyprien-katsaris.m4a",
+        "objectKey": "reference-audio/53398c45749171b43cbd3b87b3432b2e703dd8455502d17152f436b9d6958caf.m4a",
+        "sha256": "53398C45749171B43CBD3B87B3432B2E703DD8455502D17152F436B9D6958CAF",
+        "durationUs": 234527000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "schumann-traumerei-claudio-arrau-youtube-bohap1dqm8e",
+      "score": {
+        "scoreId": "schumann-traumerei-op15-no7",
+        "sourceHash": "sha256:01A46C8C52741B7A458487DFB8AAAC7EC19A78151E58F5282384C3AECB1BBB7F",
+        "identitySource": "library-source"
+      },
+      "performerId": "claudio-arrau",
+      "performerName": "克劳迪奥·阿劳",
+      "evidenceId": "youtube-bohap1dqm8e-audio",
+      "source": {
+        "title": "Schumann: Kinderszenen, Op. 15: No. 7, Träumerei — Claudio Arrau",
+        "url": "https://www.youtube.com/watch?v=bohAP1DQm8E",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "schumann-traumerei-claudio-arrau.m4a",
+        "objectKey": "reference-audio/d32e5c7eac7e3e9a3811e2af28f94ecdec6ea525d737a7514683f72a52a20895.m4a",
+        "sha256": "D32E5C7EAC7E3E9A3811E2AF28F94ECDEC6EA525D737A7514683F72A52A20895",
+        "durationUs": 181007000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "schumann-traumerei-vladimir-ashkenazy-youtube-ry1ls57bvxg",
+      "score": {
+        "scoreId": "schumann-traumerei-op15-no7",
+        "sourceHash": "sha256:01A46C8C52741B7A458487DFB8AAAC7EC19A78151E58F5282384C3AECB1BBB7F",
+        "identitySource": "library-source"
+      },
+      "performerId": "vladimir-ashkenazy",
+      "performerName": "弗拉基米尔·阿什肯纳齐",
+      "evidenceId": "youtube-ry1ls57bvxg-audio",
+      "source": {
+        "title": "Schumann: Kinderszenen, Op. 15: No. 7, Träumerei — Vladimir Ashkenazy",
+        "url": "https://www.youtube.com/watch?v=rY1lS57BVXg",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "schumann-traumerei-vladimir-ashkenazy.m4a",
+        "objectKey": "reference-audio/d5a02d4819d9c8a2598b797194cbb995ac929cdc8eb31958bf3535689becc70e.m4a",
+        "sha256": "D5A02D4819D9C8A2598B797194CBB995AC929CDC8EB31958BF3535689BECC70E",
+        "durationUs": 168047000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "schumann-traumerei-idil-biret-youtube-whi5xsg3sc8",
+      "score": {
+        "scoreId": "schumann-traumerei-op15-no7",
+        "sourceHash": "sha256:01A46C8C52741B7A458487DFB8AAAC7EC19A78151E58F5282384C3AECB1BBB7F",
+        "identitySource": "library-source"
+      },
+      "performerId": "idil-biret",
+      "performerName": "伊迪尔·比芮特",
+      "evidenceId": "youtube-whi5xsg3sc8-audio",
+      "source": {
+        "title": "Kinderszenen, Op. 15: No. 7, Träumerei — İdil Biret",
+        "url": "https://www.youtube.com/watch?v=whI5XSG3sc8",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "schumann-traumerei-idil-biret.m4a",
+        "objectKey": "reference-audio/773ed21ebb047e47e348a2d1d246c9213128a53be34de2d66ca7aadd249467b3.m4a",
+        "sha256": "773ED21EBB047E47E348A2D1D246C9213128A53BE34DE2D66CA7AADD249467B3",
+        "durationUs": 164007000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "schumann-traumerei-maria-joao-pires-youtube-dzkyjvilrlc",
+      "score": {
+        "scoreId": "schumann-traumerei-op15-no7",
+        "sourceHash": "sha256:01A46C8C52741B7A458487DFB8AAAC7EC19A78151E58F5282384C3AECB1BBB7F",
+        "identitySource": "library-source"
+      },
+      "performerId": "maria-joao-pires",
+      "performerName": "玛利亚·若昂·皮尔斯",
+      "evidenceId": "youtube-dzkyjvilrlc-audio",
+      "source": {
+        "title": "Kinderszenen, Op. 15: No. 7, Träumerei — Maria João Pires",
+        "url": "https://www.youtube.com/watch?v=dzKYJVIlrLc",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "schumann-traumerei-maria-joao-pires.m4a",
+        "objectKey": "reference-audio/d53d172d3ed717fec8ee01b0fec1957183c823f5a3904ef9b0b2068771bbbe1c.m4a",
+        "sha256": "D53D172D3ED717FEC8EE01B0FEC1957183C823F5A3904EF9B0B2068771BBBE1C",
+        "durationUs": 194433000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "schumann-traumerei-arthur-rubinstein-youtube-itp2ofqpfd0",
+      "score": {
+        "scoreId": "schumann-traumerei-op15-no7",
+        "sourceHash": "sha256:01A46C8C52741B7A458487DFB8AAAC7EC19A78151E58F5282384C3AECB1BBB7F",
+        "identitySource": "library-source"
+      },
+      "performerId": "arthur-rubinstein",
+      "performerName": "阿图尔·鲁宾斯坦",
+      "evidenceId": "youtube-itp2ofqpfd0-audio",
+      "source": {
+        "title": "Kinderszenen, Op. 15: No. 7, Träumerei — Arthur Rubinstein",
+        "url": "https://www.youtube.com/watch?v=ItP2OfQpfD0",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "schumann-traumerei-arthur-rubinstein.m4a",
+        "objectKey": "reference-audio/853fccf753b6df46870c3df91a6ed8f6e2429f28dcad151e921eccc9b8c926b6.m4a",
+        "sha256": "853FCCF753B6DF46870C3DF91A6ED8F6E2429F28DCAD151E921ECCC9B8C926B6",
+        "durationUs": 173807000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "schumann-traumerei-cyprien-katsaris-youtube-bdvjsb5lp94",
+      "score": {
+        "scoreId": "schumann-traumerei-op15-no7",
+        "sourceHash": "sha256:01A46C8C52741B7A458487DFB8AAAC7EC19A78151E58F5282384C3AECB1BBB7F",
+        "identitySource": "library-source"
+      },
+      "performerId": "cyprien-katsaris",
+      "performerName": "西普里安·卡萨利斯",
+      "evidenceId": "youtube-bdvjsb5lp94-audio",
+      "source": {
+        "title": "Kinderszenen, Op. 15: No. 7, Träumerei — Cyprien Katsaris",
+        "url": "https://www.youtube.com/watch?v=bdVJsb5lp94",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "schumann-traumerei-cyprien-katsaris.m4a",
+        "objectKey": "reference-audio/2039c45e25462e16b0456e220b044141486e1aeea5a23a93ea930dc89c220bfc.m4a",
+        "sha256": "2039C45E25462E16B0456E220B044141486E1AEEA5A23A93EA930DC89C220BFC",
+        "durationUs": 172647000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-ballade-op23-no1-krystian-zimerman-youtube-mxx-wcjv5u8",
+      "score": {
+        "scoreId": "chopin-ballade-op23-no1",
+        "sourceHash": "sha256:0FE2EC2432518EF6CB28327B965B4F39DB59117AEECF1365CD5023CE4AA327DA",
+        "identitySource": "library-source"
+      },
+      "performerId": "krystian-zimerman",
+      "performerName": "克里斯蒂安·齐默尔曼",
+      "evidenceId": "youtube-mxx_wcjv5u8-audio",
+      "source": {
+        "title": "Chopin: Ballade No. 1 in G Minor, Op. 23 — Krystian Zimerman",
+        "url": "https://www.youtube.com/watch?v=mxx_WcjV5U8",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-ballade-op23-no1-krystian-zimerman.m4a",
+        "objectKey": "reference-audio/d41827dc8f2340a37bc03b59b48efc86461171679a9a6fe1484b69e12362c5f9.m4a",
+        "sha256": "D41827DC8F2340A37BC03B59B48EFC86461171679A9A6FE1484B69E12362C5F9",
+        "durationUs": 575447000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-ballade-op23-no1-martha-argerich-youtube-payc4pktzqo",
+      "score": {
+        "scoreId": "chopin-ballade-op23-no1",
+        "sourceHash": "sha256:0FE2EC2432518EF6CB28327B965B4F39DB59117AEECF1365CD5023CE4AA327DA",
+        "identitySource": "library-source"
+      },
+      "performerId": "martha-argerich",
+      "performerName": "玛塔·阿格里奇",
+      "evidenceId": "youtube-payc4pktzqo-audio",
+      "source": {
+        "title": "Chopin: Ballade No. 1 in G Minor, Op. 23 — Martha Argerich",
+        "url": "https://www.youtube.com/watch?v=payc4PKtzQo",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-ballade-op23-no1-martha-argerich.m4a",
+        "objectKey": "reference-audio/661b13e8876edee058176815bdf54bebf92591b4e6beb03d0c27ac6efdf22298.m4a",
+        "sha256": "661B13E8876EDEE058176815BDF54BEBF92591B4E6BEB03D0C27AC6EFDF22298",
+        "durationUs": 509140000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-ballade-op23-no1-arthur-rubinstein-youtube-jngf8ecjxes",
+      "score": {
+        "scoreId": "chopin-ballade-op23-no1",
+        "sourceHash": "sha256:0FE2EC2432518EF6CB28327B965B4F39DB59117AEECF1365CD5023CE4AA327DA",
+        "identitySource": "library-source"
+      },
+      "performerId": "arthur-rubinstein",
+      "performerName": "阿图尔·鲁宾斯坦",
+      "evidenceId": "youtube-jngf8ecjxes-audio",
+      "source": {
+        "title": "Ballade No. 1 in G Minor, Op. 23 (2023.b Remastered, Studio 1959) — Arthur Rubinstein",
+        "url": "https://www.youtube.com/watch?v=jNgF8EcjXes",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-ballade-op23-no1-arthur-rubinstein.m4a",
+        "objectKey": "reference-audio/b2c0ffb4a70885f87dd1c6a74a15f708f207124b58c21071863d56d869e20bd5.m4a",
+        "sha256": "B2C0FFB4A70885F87DD1C6A74A15F708F207124B58C21071863D56D869E20BD5",
+        "durationUs": 561757000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-ballade-op23-no1-maurizio-pollini-youtube-zfbbaxufti4",
+      "score": {
+        "scoreId": "chopin-ballade-op23-no1",
+        "sourceHash": "sha256:0FE2EC2432518EF6CB28327B965B4F39DB59117AEECF1365CD5023CE4AA327DA",
+        "identitySource": "library-source"
+      },
+      "performerId": "maurizio-pollini",
+      "performerName": "毛里齐奥·波利尼",
+      "evidenceId": "youtube-zfbbaxufti4-audio",
+      "source": {
+        "title": "Ballade No. 1 in G Minor, Op. 23 — Maurizio Pollini",
+        "url": "https://www.youtube.com/watch?v=zfbbAxUFti4",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-ballade-op23-no1-maurizio-pollini.m4a",
+        "objectKey": "reference-audio/95000ea7bf09eb18381297d0fddac24452337cd596dc97317cee50a4a140ac0c.m4a",
+        "sha256": "95000EA7BF09EB18381297D0FDDAC24452337CD596DC97317CEE50A4A140AC0C",
+        "durationUs": 544273000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-ballade-op23-no1-vladimir-ashkenazy-youtube-ggn3q0ucd3o",
+      "score": {
+        "scoreId": "chopin-ballade-op23-no1",
+        "sourceHash": "sha256:0FE2EC2432518EF6CB28327B965B4F39DB59117AEECF1365CD5023CE4AA327DA",
+        "identitySource": "library-source"
+      },
+      "performerId": "vladimir-ashkenazy",
+      "performerName": "弗拉基米尔·阿什肯纳齐",
+      "evidenceId": "youtube-ggn3q0ucd3o-audio",
+      "source": {
+        "title": "Chopin: Ballade No. 1 in G Minor, Op. 23 — Vladimir Ashkenazy",
+        "url": "https://www.youtube.com/watch?v=GGN3Q0uCD3o",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-ballade-op23-no1-vladimir-ashkenazy.m4a",
+        "objectKey": "reference-audio/7c31ce38b3020ca90784677c1fe7963ed7520ca07a435ef83ffe8dd35c4699ba.m4a",
+        "sha256": "7C31CE38B3020CA90784677C1FE7963ED7520CA07A435EF83FFE8DD35C4699BA",
+        "durationUs": 585633000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-ballade-op52-no4-krystian-zimerman-youtube-a3wriv-qete",
+      "score": {
+        "scoreId": "chopin-ballade-op52-no4",
+        "sourceHash": "sha256:3B1823138833A90E191440CE34B566585B6DFE8FE39A4FC318831BBECBC17522",
+        "identitySource": "library-source"
+      },
+      "performerId": "krystian-zimerman",
+      "performerName": "克里斯蒂安·齐默尔曼",
+      "evidenceId": "youtube-a3wriv-qete-audio",
+      "source": {
+        "title": "Chopin: Ballade No. 4 in F Minor, Op. 52 — Krystian Zimerman",
+        "url": "https://www.youtube.com/watch?v=A3Wriv-QEtE",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-ballade-op52-no4-krystian-zimerman.m4a",
+        "objectKey": "reference-audio/6a18c5ad2c3fb0f25828ffc485576e9f11760263d9c7151d72f4ceda48c65f11.m4a",
+        "sha256": "6A18C5AD2C3FB0F25828FFC485576E9F11760263D9C7151D72F4CEDA48C65F11",
+        "durationUs": 719167000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-ballade-op52-no4-martha-argerich-youtube-zxhnbylv7gm",
+      "score": {
+        "scoreId": "chopin-ballade-op52-no4",
+        "sourceHash": "sha256:3B1823138833A90E191440CE34B566585B6DFE8FE39A4FC318831BBECBC17522",
+        "identitySource": "library-source"
+      },
+      "performerId": "martha-argerich",
+      "performerName": "玛塔·阿格里奇",
+      "evidenceId": "youtube-zxhnbylv7gm-audio",
+      "source": {
+        "title": "Ballade No. 4 in F Minor, Op. 52 — Martha Argerich",
+        "url": "https://www.youtube.com/watch?v=Zxhnbylv7GM",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-ballade-op52-no4-martha-argerich.m4a",
+        "objectKey": "reference-audio/cb9e2312897cbd32b9dc04af68fd5432d24cc33fbf18046933f6c19177b27eb2.m4a",
+        "sha256": "CB9E2312897CBD32B9DC04AF68FD5432D24CC33FBF18046933F6C19177B27EB2",
+        "durationUs": 553113000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-ballade-op52-no4-vladimir-horowitz-youtube-m0okrm9wz5m",
+      "score": {
+        "scoreId": "chopin-ballade-op52-no4",
+        "sourceHash": "sha256:3B1823138833A90E191440CE34B566585B6DFE8FE39A4FC318831BBECBC17522",
+        "identitySource": "library-source"
+      },
+      "performerId": "vladimir-horowitz",
+      "performerName": "弗拉基米尔·霍洛维茨",
+      "evidenceId": "youtube-m0okrm9wz5m-audio",
+      "source": {
+        "title": "Ballade No. 4 in F Minor, Op. 52 (1952 Version) — Vladimir Horowitz",
+        "url": "https://www.youtube.com/watch?v=M0OKRm9WZ5M",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-ballade-op52-no4-vladimir-horowitz.m4a",
+        "objectKey": "reference-audio/82b3d9fae799cd4d4cc34de0187fc0899f73cb68d64809eddf7ca1a9a809cf4e.m4a",
+        "sha256": "82B3D9FAE799CD4D4CC34DE0187FC0899F73CB68D64809EDDF7CA1A9A809CF4E",
+        "durationUs": 613953000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-ballade-op52-no4-maurizio-pollini-youtube-wtoq0wm8nve",
+      "score": {
+        "scoreId": "chopin-ballade-op52-no4",
+        "sourceHash": "sha256:3B1823138833A90E191440CE34B566585B6DFE8FE39A4FC318831BBECBC17522",
+        "identitySource": "library-source"
+      },
+      "performerId": "maurizio-pollini",
+      "performerName": "毛里齐奥·波利尼",
+      "evidenceId": "youtube-wtoq0wm8nve-audio",
+      "source": {
+        "title": "Chopin: Ballade No. 4 in F Minor, Op. 52 — Maurizio Pollini",
+        "url": "https://www.youtube.com/watch?v=wTOq0wm8nVE",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-ballade-op52-no4-maurizio-pollini.m4a",
+        "objectKey": "reference-audio/389eb8ceb24171c24c9ae87add9d678b437ea1d2e6dc25f3cd21bb7d3fef2545.m4a",
+        "sha256": "389EB8CEB24171C24C9AE87ADD9D678B437EA1D2E6DC25F3CD21BB7D3FEF2545",
+        "durationUs": 594215000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-ballade-op52-no4-vladimir-ashkenazy-youtube-axksmcqetma",
+      "score": {
+        "scoreId": "chopin-ballade-op52-no4",
+        "sourceHash": "sha256:3B1823138833A90E191440CE34B566585B6DFE8FE39A4FC318831BBECBC17522",
+        "identitySource": "library-source"
+      },
+      "performerId": "vladimir-ashkenazy",
+      "performerName": "弗拉基米尔·阿什肯纳齐",
+      "evidenceId": "youtube-axksmcqetma-audio",
+      "source": {
+        "title": "Chopin: Ballade No. 4 in F Minor, Op. 52 — Vladimir Ashkenazy",
+        "url": "https://www.youtube.com/watch?v=aXKsMCqEtMA",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-ballade-op52-no4-vladimir-ashkenazy.m4a",
+        "objectKey": "reference-audio/10110dd3da42d76fb3b739a8c16b05647ba230b8f7acd3e3ac0460790e9a33ba.m4a",
+        "sha256": "10110DD3DA42D76FB3B739A8C16B05647BA230B8F7ACD3E3AC0460790E9A33BA",
+        "durationUs": 657073000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-ballade-op23-no1-vladimir-horowitz-youtube-on1s8thwlze",
+      "score": {
+        "scoreId": "chopin-ballade-op23-no1",
+        "sourceHash": "sha256:0FE2EC2432518EF6CB28327B965B4F39DB59117AEECF1365CD5023CE4AA327DA",
+        "identitySource": "library-source"
+      },
+      "performerId": "vladimir-horowitz",
+      "performerName": "弗拉基米尔·霍洛维茨",
+      "evidenceId": "youtube-on1s8thwlze-audio",
+      "source": {
+        "title": "Ballade No. 1 in G Minor, Op. 23 — Vladimir Horowitz",
+        "url": "https://www.youtube.com/watch?v=On1s8THWLZE",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-ballade-op23-no1-vladimir-horowitz-on1s8thwlze.m4a",
+        "objectKey": "reference-audio/be8ce8a5f90f6081f63928a0f22c941314ec4f585afaef4fadabd21083858c27.m4a",
+        "sha256": "BE8CE8A5F90F6081F63928A0F22C941314EC4F585AFAEF4FADABD21083858C27",
+        "durationUs": 567073000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    },
+    {
+      "interpretationId": "chopin-ballade-op52-no4-arthur-rubinstein-youtube-7tqm2yp8opq",
+      "score": {
+        "scoreId": "chopin-ballade-op52-no4",
+        "sourceHash": "sha256:3B1823138833A90E191440CE34B566585B6DFE8FE39A4FC318831BBECBC17522",
+        "identitySource": "library-source"
+      },
+      "performerId": "arthur-rubinstein",
+      "performerName": "阿图尔·鲁宾斯坦",
+      "evidenceId": "youtube-7tqm2yp8opq-audio",
+      "source": {
+        "title": "Ballade No. 4 in F Minor, Op. 52 (2023.b Remastered, Studio 1959) — Arthur Rubinstein",
+        "url": "https://www.youtube.com/watch?v=7TQM2Yp8OpQ",
+        "kind": "original-recording"
+      },
+      "audio": {
+        "fileName": "chopin-ballade-op52-no4-arthur-rubinstein-7tqm2yp8opq.m4a",
+        "objectKey": "reference-audio/d5b57ea22ebfa98c67247dbad1095546fecc7f15af62d22756ee2f4fbde4d651.m4a",
+        "sha256": "D5B57EA22EBFA98C67247DBAD1095546FECC7F15AF62D22756EE2F4FBDE4D651",
+        "durationUs": 652882000,
+        "format": "audio/mp4",
+        "sampleRate": 48000,
+        "channels": 2,
+        "storage": "cloudflare-r2"
+      }
+    }
+  ]
+}
