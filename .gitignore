@@ -31,7 +31,7 @@ playwright-report/
 test-results/
 
 # Local media and long-lived tool environments
-assets/
+/assets/
 .local/
 
 # Local scratch files
