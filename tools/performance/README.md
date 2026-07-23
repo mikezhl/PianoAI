@@ -115,7 +115,7 @@ npm run performance:generate:cached
 
 ## 本地与在线音频
 
-`npm run dev` 优先流式读取本地录音，缺失时按 catalog 的 `objectKey` 回退到 R2；开发服务器固定在 `http://127.0.0.1:5173/`，对应 Origin 必须出现在 R2 CORS policy 中。`npm run build:local` 仍会严格校验 SHA-256 并复制 catalog 引用的全部本地音频；`npm run build` 不访问 `assets/`，只生成使用 `VITE_REFERENCE_AUDIO_BASE_URL` 的线上包。
+`npm run dev` 使用 Vite 的默认端口选择，优先流式读取本地录音，缺失时按 catalog 的 `objectKey` 回退到 R2。`npm run build:local` 仍会严格校验 SHA-256 并复制 catalog 引用的全部本地音频；`npm run build` 不访问 `assets/`，只生成使用 `VITE_REFERENCE_AUDIO_BASE_URL` 的线上包。
 
 R2 object key 由音频 SHA-256 和扩展名生成。同步前必须先 dry run：
 

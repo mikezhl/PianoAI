@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { AnalysisSection } from "../../analysis/types";
 import { scorePositionToTick } from "../../lib/scoreIdentity";
 import type { ScoreGroupLayout, ScoreStaffGeometry } from "../../lib/scoreOverlay";
@@ -6,6 +6,13 @@ import type {
   PerformanceGroupVisualization,
   ReferencePerformanceVisualization,
 } from "../../performance/referenceVisualization";
+import {
+  buildDynamicsDisplayScale,
+  scaleDynamicsIntensity,
+  type DynamicsDisplayScale,
+  type DynamicsScaleMode,
+  type DynamicsViewport,
+} from "../../performance/dynamicsScale";
 import type {
   ReferenceAnalysisCapabilities,
   TempoSample,
@@ -14,6 +21,7 @@ import type { ScoreData } from "../../types";
 
 export interface PerformanceScoreOverlayConfig {
   capabilities: ReferenceAnalysisCapabilities;
+  dynamicsScaleMode: DynamicsScaleMode;
   tempo: TempoSample[];
   sections: AnalysisSection[];
   visualization: ReferencePerformanceVisualization | null;
@@ -53,9 +61,64 @@ interface OverlayHoverTarget {
   tooltipTop: number;
 }
 
+interface TouchLaneSession {
+  pointerId: number;
+  startPointerX: number;
+  startScrollLeft: number;
+  moved: boolean;
+}
+
+const TOUCH_PAN_THRESHOLD = 12;
+
+function layoutOffsetWithinAncestor(element: HTMLElement, ancestor: HTMLElement): { x: number; y: number } {
+  let x = 0;
+  let y = 0;
+  let current: HTMLElement | null = element;
+
+  while (current && current !== ancestor) {
+    x += current.offsetLeft;
+    y += current.offsetTop;
+    current = current.offsetParent as HTMLElement | null;
+  }
+
+  return { x, y };
+}
+
+function logicalPointerX(element: HTMLElement, clientX: number, clientY: number): number {
+  const appShell = element.closest<HTMLElement>(".app-shell");
+  if (appShell?.dataset.layoutMode === "rotated-long-edge") {
+    const transform = window.getComputedStyle(appShell).transform;
+    if (transform && transform !== "none") {
+      return new DOMPoint(clientX, clientY).matrixTransform(new DOMMatrixReadOnly(transform).inverse()).x;
+    }
+  }
+
+  return clientX;
+}
+
+function laneContentX(element: HTMLElement, clientX: number, clientY: number): number {
+  const appShell = element.closest<HTMLElement>(".app-shell");
+  const scroll = element.closest<HTMLElement>(".score-scroll");
+  if (appShell?.dataset.layoutMode === "rotated-long-edge") {
+    const transform = window.getComputedStyle(appShell).transform;
+    if (transform && transform !== "none") {
+      const appPoint = new DOMPoint(clientX, clientY).matrixTransform(new DOMMatrixReadOnly(transform).inverse());
+      const offset = layoutOffsetWithinAncestor(element, appShell);
+      return appPoint.x - offset.x + (scroll?.scrollLeft ?? 0);
+    }
+  }
+
+  return clientX - element.getBoundingClientRect().left;
+}
+
 interface TickRange {
   startTick: number;
   endTick: number;
+}
+
+interface OverlayRenderWindow {
+  left: number;
+  right: number;
 }
 
 interface OverlayHoverLane {
@@ -108,21 +171,8 @@ function median(values: number[]): number {
     : ordered[middle] ?? 0;
 }
 
-function percentile(values: number[], ratio: number): number {
-  if (values.length === 0) return 0;
-  const ordered = [...values].sort((left, right) => left - right);
-  return ordered[Math.min(ordered.length - 1, Math.max(0, Math.ceil(ordered.length * ratio) - 1))] ?? 0;
-}
-
 function clamp(value: number, minimum: number, maximum: number): number {
   return Math.max(minimum, Math.min(maximum, value));
-}
-
-function robustScale(values: number[], value: number, lowRatio = 0.1, highRatio = 0.9): number {
-  const low = percentile(values, lowRatio);
-  const high = percentile(values, highRatio);
-  if (high <= low) return 0.5;
-  return clamp((value - low) / (high - low), 0, 1);
 }
 
 function formatTempoDelta(value: number): string {
@@ -342,12 +392,15 @@ function DynamicsOverlay({
   samples,
   xByGroup,
   bands,
+  scale,
+  renderWindow,
 }: {
   samples: PerformanceGroupVisualization[];
   xByGroup: Map<string, number>;
   bands: { right: OverlayBand; left: OverlayBand };
+  scale: DynamicsDisplayScale;
+  renderWindow: OverlayRenderWindow | null;
 }) {
-  const intensityValues = samples.flatMap((sample) => sample.intensity == null ? [] : [sample.intensity]);
   const groupedMarks = new Map<string, Array<{
     x: number;
     centerY: number;
@@ -358,12 +411,13 @@ function DynamicsOverlay({
   for (const sample of samples) {
     const x = xByGroup.get(sample.groupId);
     if (x == null || sample.intensity == null) continue;
+    if (renderWindow && (x < renderWindow.left || x > renderWindow.right)) continue;
     const hand = sample.hand;
     const displayBand = bands[hand];
     const bandTop = displayBand.top;
     const bandBottom = displayBand.bottom;
     const centerY = displayBand.middle;
-    const scaled = robustScale(intensityValues, sample.intensity);
+    const scaled = scaleDynamicsIntensity(sample.intensity, scale);
     const maximumHalfLength = (bandBottom - bandTop) / 2 - 5;
     const level = scaled < 0.3 ? "soft" : scaled > 0.72 ? "strong" : "medium";
     const key = `${hand}-${level}`;
@@ -455,13 +509,21 @@ function ExpressionOverlay({
   samples,
   xByGroup,
   bands,
+  scale,
+  renderWindow,
 }: {
   samples: PerformanceGroupVisualization[];
   xByGroup: Map<string, number>;
   bands: { right: OverlayBand; left: OverlayBand };
+  scale: DynamicsDisplayScale;
+  renderWindow: OverlayRenderWindow | null;
 }) {
   const visibleByHand = (hand: "right" | "left") => samples
-    .filter((sample) => sample.hand === hand && xByGroup.has(sample.groupId))
+    .filter((sample) => {
+      if (sample.hand !== hand) return false;
+      const x = xByGroup.get(sample.groupId);
+      return x != null && (!renderWindow || (x >= renderWindow.left && x <= renderWindow.right));
+    })
     .sort((left, right) => (xByGroup.get(left.groupId) ?? 0) - (xByGroup.get(right.groupId) ?? 0));
 
   const marks = (["right", "left"] as const).flatMap((hand) => {
@@ -474,7 +536,8 @@ function ExpressionOverlay({
       const x = xByGroup.get(sample.groupId);
       if (x == null || sample.intensity == null || sample.durationRatio == null) return;
       const maximumHeight = Math.max(6, band.bottom - band.top - 3);
-      const height = 4 + clamp(sample.intensity, 0, 1) * (maximumHeight - 4);
+      const scaledIntensity = scaleDynamicsIntensity(sample.intensity, scale);
+      const height = 4 + scaledIntensity * (maximumHeight - 4);
       const width = 2 + clamp(sample.durationRatio, 0.2, 2) * 6;
       const y = hand === "right" ? band.bottom - height : band.top;
       paths.push(rectPath(x - width / 2, y, width, height));
@@ -708,11 +771,15 @@ export default function PerformanceScoreOverlay({
   surfaceWidth,
   surfaceHeight,
   capabilities,
+  dynamicsScaleMode,
   tempo,
   sections,
   visualization,
 }: PerformanceScoreOverlayProps) {
+  const overlayRootRef = useRef<HTMLDivElement | null>(null);
   const tooltipRef = useRef<HTMLOutputElement | null>(null);
+  const touchLaneSessionRef = useRef<TouchLaneSession | null>(null);
+  const [viewport, setViewport] = useState<DynamicsViewport>({ left: 0, width: 0 });
   const xAtTick = useMemo(
     () => buildTickMapper(score, layouts, surfaceWidth),
     [layouts, score, surfaceWidth],
@@ -721,6 +788,14 @@ export default function PerformanceScoreOverlay({
     () => new Map(layouts.map((layout) => [layout.groupId, layout.timeX])),
     [layouts],
   );
+  const dynamicsScale = useMemo(
+    () => buildDynamicsDisplayScale(visualization?.groups ?? [], xByGroup, viewport, dynamicsScaleMode),
+    [dynamicsScaleMode, viewport, visualization, xByGroup],
+  );
+  const dynamicsRenderWindow = useMemo<OverlayRenderWindow | null>(() => viewport.width > 0 ? {
+    left: Math.max(0, viewport.left - viewport.width),
+    right: Math.min(surfaceWidth, viewport.left + viewport.width * 2),
+  } : null, [surfaceWidth, viewport]);
   const geometry = useMemo(
     () => buildOverlayGeometry(staffGeometry, scoreFrame, surfaceHeight),
     [scoreFrame, staffGeometry, surfaceHeight],
@@ -750,6 +825,36 @@ export default function PerformanceScoreOverlay({
   ], [capabilities, geometry, hiddenTempoRanges, overviewExpressionBands, score, tempo, visualization, xAtTick, xByGroup]);
   const hoverLanes = useMemo(() => buildHoverLanes(hoverTargets), [hoverTargets]);
   const ariaLabel = "在谱面上综合标注速度、力度、触键时值与踏板";
+
+  useLayoutEffect(() => {
+    const root = overlayRootRef.current;
+    if (!root) return;
+    const scroll = root.closest<HTMLElement>(".score-scroll");
+    let frameId: number | null = null;
+    const publishViewport = () => {
+      frameId = null;
+      const next = {
+        left: scroll?.scrollLeft ?? 0,
+        width: scroll?.clientWidth || surfaceWidth,
+      };
+      setViewport((current) => current.left === next.left && current.width === next.width ? current : next);
+    };
+    const scheduleViewport = () => {
+      if (frameId != null) return;
+      frameId = window.requestAnimationFrame(publishViewport);
+    };
+    publishViewport();
+    scroll?.addEventListener("scroll", scheduleViewport, { passive: true });
+    window.addEventListener("resize", scheduleViewport);
+    const resizeObserver = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(scheduleViewport);
+    if (scroll) resizeObserver?.observe(scroll);
+    return () => {
+      scroll?.removeEventListener("scroll", scheduleViewport);
+      window.removeEventListener("resize", scheduleViewport);
+      resizeObserver?.disconnect();
+      if (frameId != null) window.cancelAnimationFrame(frameId);
+    };
+  }, [surfaceWidth]);
 
   useEffect(() => {
     const tooltip = tooltipRef.current;
@@ -786,6 +891,20 @@ export default function PerformanceScoreOverlay({
     showDataTarget(target);
   }
 
+  function activateLaneTargetAtPointer(
+    element: HTMLElement,
+    lane: OverlayHoverLane,
+    clientX: number,
+    clientY: number,
+  ) {
+    const target = hoverTargetAtX(lane.targets, laneContentX(element, clientX, clientY));
+    if (target) {
+      activateLaneTarget(element, lane, lane.targets.indexOf(target));
+    } else {
+      clearDataTarget();
+    }
+  }
+
   const visualizationLayer = useMemo(() => (
     <>
       {capabilities.sectionTempo ? (
@@ -804,9 +923,17 @@ export default function PerformanceScoreOverlay({
               samples={visualization.groups}
               xByGroup={xByGroup}
               bands={overviewExpressionBands}
+              scale={dynamicsScale}
+              renderWindow={dynamicsRenderWindow}
             />
           ) : capabilities.dynamics ? (
-            <DynamicsOverlay samples={visualization.groups} xByGroup={xByGroup} bands={overviewExpressionBands} />
+            <DynamicsOverlay
+              samples={visualization.groups}
+              xByGroup={xByGroup}
+              bands={overviewExpressionBands}
+              scale={dynamicsScale}
+              renderWindow={dynamicsRenderWindow}
+            />
           ) : capabilities.articulation ? (
             <ArticulationOverlay samples={visualization.groups} xByGroup={xByGroup} bands={overviewExpressionBands} />
           ) : null}
@@ -822,6 +949,8 @@ export default function PerformanceScoreOverlay({
     </>
   ), [
     capabilities,
+    dynamicsRenderWindow,
+    dynamicsScale,
     geometry,
     hiddenTempoRanges,
     overviewExpressionBands,
@@ -834,9 +963,13 @@ export default function PerformanceScoreOverlay({
 
   return (
     <div
+      ref={overlayRootRef}
       className="performance-score-overlay overview"
       style={{ width: surfaceWidth, height: surfaceHeight }}
       data-performance-view="overview"
+      data-dynamics-scale-mode={dynamicsScale.mode}
+      data-dynamics-scale-low={dynamicsScale.low}
+      data-dynamics-scale-high={dynamicsScale.high}
     >
       <svg width={surfaceWidth} height={surfaceHeight} role="img" aria-label={ariaLabel}>
         <title>{ariaLabel}</title>
@@ -856,10 +989,21 @@ export default function PerformanceScoreOverlay({
             height: lane.height,
           }}
           onPointerMove={(event) => {
-            const x = event.clientX - event.currentTarget.getBoundingClientRect().left;
-            const target = hoverTargetAtX(lane.targets, x);
-            if (target) activateLaneTarget(event.currentTarget, lane, lane.targets.indexOf(target));
-            else clearDataTarget();
+            const session = touchLaneSessionRef.current;
+            const isTouchPointer = event.pointerType === "touch" || event.pointerType === "pen";
+            if (isTouchPointer && session && session.pointerId === event.pointerId) {
+              const pointerX = logicalPointerX(event.currentTarget, event.clientX, event.clientY);
+              const deltaX = pointerX - session.startPointerX;
+              session.moved = session.moved || Math.abs(deltaX) > TOUCH_PAN_THRESHOLD;
+              if (session.moved) {
+                const scroll = event.currentTarget.closest<HTMLElement>(".score-scroll");
+                if (scroll) scroll.scrollLeft = session.startScrollLeft - deltaX;
+                clearDataTarget();
+              }
+              return;
+            }
+
+            activateLaneTargetAtPointer(event.currentTarget, lane, event.clientX, event.clientY);
           }}
           onPointerLeave={clearDataTarget}
           onFocus={(event) => activateLaneTarget(
@@ -882,7 +1026,35 @@ export default function PerformanceScoreOverlay({
             event.stopPropagation();
             activateLaneTarget(event.currentTarget, lane, nextIndex);
           }}
-          onPointerDown={(event) => event.stopPropagation()}
+          onPointerDown={(event) => {
+            event.stopPropagation();
+            if (event.pointerType !== "touch" && event.pointerType !== "pen") return;
+            const scroll = event.currentTarget.closest<HTMLElement>(".score-scroll");
+            event.currentTarget.setPointerCapture(event.pointerId);
+            touchLaneSessionRef.current = {
+              pointerId: event.pointerId,
+              startPointerX: logicalPointerX(event.currentTarget, event.clientX, event.clientY),
+              startScrollLeft: scroll?.scrollLeft ?? 0,
+              moved: false,
+            };
+          }}
+          onPointerUp={(event) => {
+            event.stopPropagation();
+            const session = touchLaneSessionRef.current;
+            if (!session || session.pointerId !== event.pointerId) return;
+            touchLaneSessionRef.current = null;
+            if (!session.moved) {
+              activateLaneTargetAtPointer(event.currentTarget, lane, event.clientX, event.clientY);
+            }
+          }}
+          onPointerCancel={(event) => {
+            event.stopPropagation();
+            const session = touchLaneSessionRef.current;
+            if (session && session.pointerId === event.pointerId) {
+              touchLaneSessionRef.current = null;
+            }
+            clearDataTarget();
+          }}
           role="slider"
           aria-label={`${ariaLabel}，数据点 1/${lane.targets.length}`}
           aria-valuemin={1}

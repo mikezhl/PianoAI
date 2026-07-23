@@ -13,11 +13,11 @@ const midi = {
   error: null,
 } satisfies MidiState;
 
-function topBarMarkup(): string {
+function topBarMarkup(mode: "practice" | "performance" = "practice"): string {
   const controlRef = createRef<HTMLDivElement>();
   return renderToStaticMarkup(createElement(TopBar, {
     title: "Fixture",
-    mode: "practice",
+    mode,
     libraryItems: [],
     selectedLibraryItemId: null,
     midi,
@@ -41,6 +41,7 @@ function topBarMarkup(): string {
     onPlaybackBpmChange: vi.fn(),
     onImportScore: vi.fn(),
     onToggleMidiPanel: vi.fn(),
+    onOpenAskAi: vi.fn(),
     onSelectLibraryItem: vi.fn(),
     onSelectMidiInput: vi.fn(),
   }));
@@ -53,4 +54,18 @@ describe("TopBar", () => {
 
     expect(container.querySelector(".import-button")?.getAttribute("aria-label")).toBe("Import score");
   });
+
+  it.each(["practice", "performance"] as const)(
+    "places Ask AI immediately after GitHub in %s mode",
+    (mode) => {
+      const container = document.createElement("div");
+      container.innerHTML = topBarMarkup(mode);
+      const actions = container.querySelector(".topbar-external-actions");
+      const items = Array.from(actions?.children ?? []);
+
+      expect(items[0]?.classList.contains("github-link")).toBe(true);
+      expect(items[1]?.classList.contains("ask-ai-button")).toBe(true);
+      expect(items[1]?.getAttribute("aria-haspopup")).toBe("dialog");
+    },
+  );
 });

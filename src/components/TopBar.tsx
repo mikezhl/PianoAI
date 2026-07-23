@@ -1,4 +1,4 @@
-import { Check, ChevronDown, Gauge, Keyboard, Music, Upload, ZoomIn } from "lucide-react";
+import { Bot, Check, ChevronDown, Gauge, Keyboard, Music, Upload, ZoomIn } from "lucide-react";
 import type { CSSProperties, RefObject } from "react";
 import type { AppMode } from "../analysis/types";
 import { MAX_SCORE_ZOOM, MIN_SCORE_ZOOM, SCORE_ZOOM_STEP } from "../lib/scoreZoom";
@@ -32,6 +32,7 @@ interface TopBarProps {
   onPlaybackBpmChange: (bpm: number) => void;
   onImportScore: () => void;
   onToggleMidiPanel: () => void;
+  onOpenAskAi: () => void;
   onSelectLibraryItem: (libraryItem: MusicXmlLibraryItem) => void;
   onSelectMidiInput: (inputId: string) => void;
 }
@@ -73,6 +74,25 @@ function GitHubLink() {
   );
 }
 
+function ExternalActions({ onOpenAskAi }: { onOpenAskAi: () => void }) {
+  return (
+    <div className="topbar-external-actions">
+      <GitHubLink />
+      <button
+        type="button"
+        className="flat-button ask-ai-button"
+        onClick={onOpenAskAi}
+        aria-label="Ask AI"
+        aria-haspopup="dialog"
+        title="Ask AI"
+      >
+        <Bot size={20} aria-hidden="true" />
+        <span>Ask AI</span>
+      </button>
+    </div>
+  );
+}
+
 export default function TopBar({
   title,
   mode,
@@ -99,6 +119,7 @@ export default function TopBar({
   onPlaybackBpmChange,
   onImportScore,
   onToggleMidiPanel,
+  onOpenAskAi,
   onSelectLibraryItem,
   onSelectMidiInput,
 }: TopBarProps) {
@@ -123,7 +144,7 @@ export default function TopBar({
 
       {mode === "performance" ? (
         <div className="topbar-performance-actions">
-          <GitHubLink />
+          <ExternalActions onOpenAskAi={onOpenAskAi} />
           <div
             id="performance-topbar-controls"
             className="topbar-mode-controls"
@@ -133,7 +154,7 @@ export default function TopBar({
       ) : null}
 
       <div className="topbar-right">
-        {mode !== "performance" ? <GitHubLink /> : null}
+        {mode !== "performance" ? <ExternalActions onOpenAskAi={onOpenAskAi} /> : null}
 
         <div className="score-zoom-control" ref={scoreZoomControlRef}>
           <button

@@ -4,6 +4,7 @@ import PianoKeyboard from "./components/PianoKeyboard";
 import PracticeControls from "./components/PracticeControls";
 import ScoreViewer from "./components/ScoreViewer";
 import TopBar from "./components/TopBar";
+import AskAiDialog from "./components/AskAiDialog";
 import PerformanceWorkspace from "./components/performance/PerformanceWorkspace";
 import AnalysisWorkspace, { type AnalysisLoadState } from "./components/analysis/AnalysisWorkspace";
 import type { AppMode, ScoreAnalysis } from "./analysis/types";
@@ -36,6 +37,7 @@ import {
   ticksToMilliseconds,
 } from "./lib/playbackTiming";
 import { clampScoreZoom, floorScoreZoomToStep, MAX_SCORE_ZOOM, MIN_SCORE_ZOOM } from "./lib/scoreZoom";
+import { buildAgentPrompt, resolveAgentGuideUrl } from "./lib/agentPrompt";
 import { Hand, ScoreData, SelectionState } from "./types";
 import type { ScoreIdentity } from "./performance/types";
 import useScoreInteraction from "./hooks/useScoreInteraction";
@@ -142,6 +144,7 @@ export default function App() {
   const [libraryPanelOpen, setLibraryPanelOpen] = useState(false);
   const [selectedLibraryItemId, setSelectedLibraryItemId] = useState<string | null>(null);
   const [midiPanelOpen, setMidiPanelOpen] = useState(false);
+  const [askAiDialogOpen, setAskAiDialogOpen] = useState(false);
   const [pointerPressedNotes, setPointerPressedNotes] = useState<number[]>([]);
   const [pointerInputEventId, setPointerInputEventId] = useState(0);
   const [selection, setSelection] = useState<SelectionState>({
@@ -162,7 +165,11 @@ export default function App() {
     }) as CSSProperties,
     [viewportProfile.longEdge, viewportProfile.shortEdge],
   );
-  const effectiveLayoutMode = appMode === "practice" ? viewportProfile.layoutMode : "natural-long-edge";
+  const effectiveLayoutMode = viewportProfile.layoutMode;
+  const agentPrompt = useMemo(
+    () => buildAgentPrompt(resolveAgentGuideUrl(window.location.href)),
+    [],
+  );
 
   const loadScoreXml = useCallback((xml: string, fileName: string) => {
     const parsed = parseMusicXml(xml, fileName);
@@ -198,7 +205,7 @@ export default function App() {
     setSelection,
     navigationFallbackGroup: activeGroups[0] ?? null,
     playbackBpm,
-    keyboardEnabled: appMode === "practice" || appMode === "performance",
+    keyboardEnabled: !askAiDialogOpen && (appMode === "practice" || appMode === "performance"),
   });
   const waitingGroups = useMemo(
     () => activeGroups.filter((group) => handEnabled(group, followLeft, followRight)),
@@ -711,6 +718,14 @@ export default function App() {
     setScoreZoomPanelOpen((current) => !current);
   }
 
+  function openAskAiDialog() {
+    setScoreZoomPanelOpen(false);
+    setTempoPanelOpen(false);
+    setLibraryPanelOpen(false);
+    setMidiPanelOpen(false);
+    setAskAiDialogOpen(true);
+  }
+
   function handleScoreZoomChange(nextZoom: number) {
     setScoreZoom(clampScoreZoom(nextZoom, scoreZoomMax));
   }
@@ -814,8 +829,15 @@ export default function App() {
           fileInputRef.current?.click();
         }}
         onToggleMidiPanel={toggleMidiPanel}
+        onOpenAskAi={openAskAiDialog}
         onSelectLibraryItem={handleLibraryItemSelect}
         onSelectMidiInput={handleMidiInputSelect}
+      />
+
+      <AskAiDialog
+        open={askAiDialogOpen}
+        prompt={agentPrompt}
+        onClose={() => setAskAiDialogOpen(false)}
       />
 
       {importError ? <div className="notice-strip">{importError}</div> : null}

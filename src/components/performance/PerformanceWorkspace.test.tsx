@@ -2,6 +2,7 @@ import { act, createElement, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ScoreAnalysis } from "../../analysis/types";
+import type { PerformanceScoreOverlayConfig } from "./PerformanceScoreOverlay";
 import type { ReferenceInterpretation, ScoreIdentity } from "../../performance/types";
 import type { ScoreData, SelectionState } from "../../types";
 import useScoreInteraction from "../../hooks/useScoreInteraction";
@@ -33,7 +34,7 @@ vi.mock("../ScoreViewer", () => ({
     activeGroups?: Array<{ id: string }>;
     followActive?: boolean;
     showActiveCursor?: boolean;
-    performanceOverlay?: unknown;
+    performanceOverlay?: PerformanceScoreOverlayConfig | null;
     onGroupHover?: (groupId: string | null) => void;
     onGroupSelect?: (groupId: string, extend: boolean) => void;
   }) => createElement(
@@ -44,6 +45,7 @@ vi.mock("../ScoreViewer", () => ({
       "data-follow-active": String(followActive),
       "data-show-active-cursor": String(showActiveCursor),
       "data-performance-overlay": performanceOverlay ? "overview" : "",
+      "data-dynamics-scale-mode": performanceOverlay?.dynamicsScaleMode ?? "",
       "data-group-hover-enabled": String(Boolean(onGroupHover)),
     },
     score?.noteGroups.map((group) => createElement("button", {
@@ -177,6 +179,7 @@ const analysis = {
 } as unknown as ScoreAnalysis;
 let topbarTarget: HTMLDivElement;
 let scheduledAnimationFrame: FrameRequestCallback | null;
+let referenceFixtures: ReferenceInterpretation[];
 
 function reference(id: string, performerName: string, durationUs: number): ReferenceInterpretation {
   return {
@@ -260,6 +263,7 @@ function InteractiveWorkspace({ scoreData = score }: { scoreData?: ScoreData }) 
 }
 
 beforeEach(() => {
+  window.localStorage.clear();
   document.getElementById("performance-topbar-controls")?.remove();
   topbarTarget = document.createElement("div");
   topbarTarget.id = "performance-topbar-controls";
@@ -277,11 +281,11 @@ beforeEach(() => {
     return 1;
   }));
   vi.stubGlobal("cancelAnimationFrame", vi.fn());
-  const references = [reference("one", "Pianist One", 1_000_000), reference("two", "Pianist Two", 1_200_000)];
+  referenceFixtures = [reference("one", "Pianist One", 1_000_000), reference("two", "Pianist Two", 1_200_000)];
   vi.stubGlobal("fetch", vi.fn(async (input: string | URL | Request) => {
     const url = String(input);
     if (url.endsWith("/data/performances/catalog.json")) {
-      const catalogEntries = references.map(({ schemaVersion: _schema, timeMap: _timeMap, noteExpressions: _notes, pedals: _pedals, generation: _generation, ...entry }) => {
+      const catalogEntries = referenceFixtures.map(({ schemaVersion: _schema, timeMap: _timeMap, noteExpressions: _notes, pedals: _pedals, generation: _generation, ...entry }) => {
         const { url: _audioUrl, ...audio } = entry.audio;
         return { ...entry, audio };
       });
@@ -290,7 +294,7 @@ beforeEach(() => {
         headers: { "Content-Type": "application/json" },
       });
     }
-    const detail = references.find((candidate) => url.endsWith(`/data/performances/interpretations/${candidate.interpretationId}.json`));
+    const detail = referenceFixtures.find((candidate) => url.endsWith(`/data/performances/interpretations/${candidate.interpretationId}.json`));
     return new Response(JSON.stringify(detail && {
       schemaVersion: detail.schemaVersion,
       interpretationId: detail.interpretationId,
@@ -341,7 +345,15 @@ describe("PerformanceWorkspace", () => {
     expect(Array.from(playbackActions.children).map((element) => element.className)).toEqual([
       "performance-playback-source-switch",
       "practice-controls performance-practice-controls",
+      "performance-playback-secondary",
     ]);
+    const secondaryControls = playbackActions.querySelector(".performance-playback-secondary")!;
+    expect(Array.from(secondaryControls.children).map((element) => element.className)).toEqual([
+      "performance-dynamics-scale-toggle active",
+    ]);
+    const dynamicsScaleToggle = secondaryControls.querySelector('button[aria-label="Local dynamics scale"]')!;
+    expect(dynamicsScaleToggle.getAttribute("aria-pressed")).toBe("true");
+    expect(container.querySelector('[data-testid="score-viewer"]')?.getAttribute("data-dynamics-scale-mode")).toBe("local");
     expect(playbackActions.querySelector('button[aria-label="选择机械原谱"]')).not.toBeNull();
     expect(playbackActions.querySelector('button[aria-label="选择标准化演绎"]')?.getAttribute("aria-pressed")).toBe("true");
     expect(playbackActions.querySelector('button[aria-label="选择原始录音"]')).not.toBeNull();
@@ -366,6 +378,33 @@ describe("PerformanceWorkspace", () => {
     expect(topbarTarget.querySelectorAll(".performance-menu")).toHaveLength(1);
     expect(container.querySelector(".performance-tempo-display")).toBeNull();
     await act(async () => root.unmount());
+  });
+
+  it("toggles the local dynamics scale and restores the saved preference", async () => {
+    referenceFixtures.forEach((fixture) => {
+      fixture.generation.status = "automatically-validated";
+      fixture.generation.dimensions = { dynamics: 1 };
+    });
+    const container = document.createElement("div");
+    const root = createRoot(container);
+    await act(async () => root.render(createElement(PerformanceWorkspace, workspaceProps())));
+    await vi.waitFor(() => {
+      expect(container.querySelector('.performance-dynamics-scale-toggle:not(:disabled)')).not.toBeNull();
+    });
+
+    const toggle = container.querySelector('button[aria-label="Local dynamics scale"]') as HTMLButtonElement;
+    await act(async () => toggle.click());
+    expect(toggle.getAttribute("aria-pressed")).toBe("false");
+    expect(container.querySelector('[data-testid="score-viewer"]')?.getAttribute("data-dynamics-scale-mode")).toBe("global");
+    expect(window.localStorage.getItem("pianoai.performance.dynamics-scale-mode")).toBe("global");
+    await act(async () => root.unmount());
+
+    const restoredRoot = createRoot(container);
+    await act(async () => restoredRoot.render(createElement(PerformanceWorkspace, workspaceProps())));
+    await vi.waitFor(() => {
+      expect(container.querySelector('button[aria-label="Local dynamics scale"]')?.getAttribute("aria-pressed")).toBe("false");
+    });
+    await act(async () => restoredRoot.unmount());
   });
 
   it("使用练习模式播放引擎播放机械原谱并在谱面跟随当前音组", async () => {

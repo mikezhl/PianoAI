@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import type { AnalysisSection } from "../../analysis/types";
 import type { ScoreGroupLayout, ScoreStaffGeometry } from "../../lib/scoreOverlay";
 import type { ReferencePerformanceVisualization } from "../../performance/referenceVisualization";
+import type { DynamicsScaleMode } from "../../performance/dynamicsScale";
 import type { ScoreData } from "../../types";
 import PerformanceScoreOverlay, { formatMeasureLabel } from "./PerformanceScoreOverlay";
 
@@ -134,10 +135,25 @@ async function renderOverview(
   layoutData = layouts,
   staffGeometryData = staffGeometry,
   surfaceHeightData = 500,
+  withScoreScroll = false,
+  dynamicsScaleMode: DynamicsScaleMode = "global",
+  scoreScrollWidth?: number,
 ) {
   container = document.createElement("div");
   document.body.appendChild(container);
-  const root = createRoot(container);
+  const mount = document.createElement("div");
+  if (withScoreScroll) {
+    const scoreScroll = document.createElement("div");
+    scoreScroll.className = "score-scroll";
+    if (scoreScrollWidth != null) {
+      Object.defineProperty(scoreScroll, "clientWidth", { value: scoreScrollWidth });
+    }
+    scoreScroll.appendChild(mount);
+    container.appendChild(scoreScroll);
+  } else {
+    container.appendChild(mount);
+  }
+  const root = createRoot(mount);
   let commitCount = 0;
   await act(async () => root.render(createElement(
     Profiler,
@@ -155,6 +171,7 @@ async function renderOverview(
         articulation: true,
         pedal: true,
       },
+      dynamicsScaleMode,
       tempo: tempoSamples,
       sections,
       visualization: visualizationData,
@@ -167,7 +184,64 @@ async function movePointer(element: Element, clientX: number) {
   await act(async () => element.dispatchEvent(new MouseEvent("pointermove", { bubbles: true, clientX })));
 }
 
+async function dispatchPointer(
+  element: Element,
+  type: string,
+  clientX: number,
+  pointerType = "touch",
+) {
+  const event = new MouseEvent(type, { bubbles: true, clientX });
+  Object.defineProperties(event, {
+    pointerId: { value: 1 },
+    pointerType: { value: pointerType },
+  });
+  await act(async () => element.dispatchEvent(event));
+}
+
 describe("PerformanceScoreOverlay", () => {
+  it("updates one shared local dynamics scale when the visible score window changes", async () => {
+    const localLayouts = Array.from({ length: 32 }, (_, index) =>
+      layout(`local-${index}`, index % 2 === 0 ? "right" : "left", 20 + index * 18, index * 30));
+    const localVisualization: ReferencePerformanceVisualization = {
+      groups: localLayouts.map((item, index) => ({
+        groupId: item.groupId,
+        tick: index * 30,
+        measureIndex: 0,
+        hand: item.hand,
+        intensity: index < 16 ? 0.35 + (index % 4) * 0.03 : 0.65 + (index % 4) * 0.03,
+        durationRatio: 1,
+        confidence: 0.9,
+      })),
+      pedal: [],
+    };
+    const rendered = await renderOverview(
+      tempo,
+      [],
+      localVisualization,
+      localLayouts,
+      staffGeometry,
+      500,
+      true,
+      "local",
+      160,
+    );
+    const overlay = rendered.element.querySelector(".performance-score-overlay") as HTMLElement;
+    const scoreScroll = rendered.element.querySelector(".score-scroll") as HTMLElement;
+    expect(overlay.dataset.dynamicsScaleMode).toBe("local");
+    const firstLow = Number(overlay.dataset.dynamicsScaleLow);
+
+    await act(async () => {
+      scoreScroll.scrollLeft = 420;
+      scoreScroll.dispatchEvent(new Event("scroll"));
+      await new Promise((resolve) => setTimeout(resolve, 25));
+    });
+
+    expect(Number(overlay.dataset.dynamicsScaleLow)).toBeGreaterThan(firstLow + 0.2);
+    expect(overlay.querySelectorAll(".expression-mark.right")).toHaveLength(1);
+    expect(overlay.querySelectorAll(".expression-mark.left")).toHaveLength(1);
+    await act(async () => rendered.root.unmount());
+  });
+
   it("positions interpretation lanes outside the rendered notation bounds", async () => {
     const rendered = await renderOverview();
     const baselines = rendered.element.querySelectorAll(".expression-baseline");
@@ -309,6 +383,28 @@ describe("PerformanceScoreOverlay", () => {
     expect(tooltip.textContent).toContain("延音踏板抬起 · 深度 0%");
     await act(async () => tempoLane.click());
     await act(async () => tempoLane.dispatchEvent(new Event("pointerleave", { bubbles: true })));
+    await act(async () => rendered.root.unmount());
+  });
+
+  it("pans the score on touch drag and preserves touch inspection on tap", async () => {
+    const rendered = await renderOverview(tempo, [], visualization, layouts, staffGeometry, 500, true);
+    const scoreScroll = rendered.element.querySelector(".score-scroll") as HTMLElement;
+    const tempoLane = rendered.element.querySelectorAll(".performance-overlay-hover-lane.overview")[0] as HTMLElement;
+    const tooltip = rendered.element.querySelector(".performance-overlay-tooltip") as HTMLOutputElement;
+    Object.defineProperty(tempoLane, "setPointerCapture", { value: () => undefined });
+    scoreScroll.scrollLeft = 40;
+
+    await dispatchPointer(tempoLane, "pointerdown", 100);
+    await dispatchPointer(tempoLane, "pointermove", 60);
+    expect(scoreScroll.scrollLeft).toBe(80);
+    expect(tooltip.hidden).toBe(true);
+    await dispatchPointer(tempoLane, "pointerup", 60);
+    expect(tooltip.hidden).toBe(true);
+
+    await dispatchPointer(tempoLane, "pointerdown", 100);
+    await dispatchPointer(tempoLane, "pointerup", 100);
+    expect(tooltip.hidden).toBe(false);
+    expect(tooltip.textContent).toContain("60 BPM");
     await act(async () => rendered.root.unmount());
   });
 

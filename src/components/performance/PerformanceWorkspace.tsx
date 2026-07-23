@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { Focus } from "lucide-react";
 import type { AnalysisSection, ScoreAnalysis, ScoreRange } from "../../analysis/types";
 import {
   cancelScheduledPlayback,
@@ -33,6 +34,7 @@ import {
   loadReferenceInterpretation,
 } from "../../performance/referenceCatalog";
 import { buildReferencePerformanceVisualization } from "../../performance/referenceVisualization";
+import type { DynamicsScaleMode } from "../../performance/dynamicsScale";
 import type {
   PerformancePlaybackNote,
   ReferenceInterpretation,
@@ -52,6 +54,15 @@ const EMPTY_PLAYBACK_TIMELINE = { originUs: 0, durationMs: 0 };
 const EMPTY_GROUP_IDS: string[] = [];
 const EMPTY_PRESSED_NOTES: number[] = [];
 const PLAYBACK_UI_INTERVAL_MS = 33;
+const DYNAMICS_SCALE_STORAGE_KEY = "pianoai.performance.dynamics-scale-mode";
+
+function initialDynamicsScaleMode(): DynamicsScaleMode {
+  try {
+    return window.localStorage.getItem(DYNAMICS_SCALE_STORAGE_KEY) === "global" ? "global" : "local";
+  } catch {
+    return "local";
+  }
+}
 
 interface PerformanceWorkspaceProps {
   score: ScoreData | null;
@@ -268,11 +279,20 @@ export default function PerformanceWorkspace({
   const [isOriginalPlaying, setIsOriginalPlaying] = useState(false);
   const [playbackPositionMs, setPlaybackPositionMs] = useState(0);
   const [playbackMode, setPlaybackMode] = useState<PlaybackMode>("standardized");
+  const [dynamicsScaleMode, setDynamicsScaleMode] = useState<DynamicsScaleMode>(initialDynamicsScaleMode);
   const [openMenu, setOpenMenu] = useState<OpenMenu>(null);
 
   useEffect(() => {
     setTopbarTarget(document.getElementById("performance-topbar-controls"));
   }, []);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(DYNAMICS_SCALE_STORAGE_KEY, dynamicsScaleMode);
+    } catch {
+      // The preference remains active for this session when storage is unavailable.
+    }
+  }, [dynamicsScaleMode]);
 
   const selectedGroups = useMemo(
     () => score ? getSelectedGroups(score, selection) : [],
@@ -835,11 +855,13 @@ export default function PerformanceWorkspace({
   const showOverlay = Boolean(score && capabilities && Object.values(capabilities).some(Boolean));
   const performanceOverlay = useMemo<PerformanceScoreOverlayConfig | null>(() => score && capabilities && showOverlay ? {
     capabilities,
+    dynamicsScaleMode,
     tempo: referenceTempo,
     sections: displaySections,
     visualization: detailedVisualization,
   } : null, [
     detailedVisualization,
+    dynamicsScaleMode,
     displaySections,
     capabilities,
     referenceTempo,
@@ -940,19 +962,6 @@ export default function PerformanceWorkspace({
         ) : null}
 
         <footer className="performance-playback-dock" aria-label="演绎播放控制">
-          {performanceSummary ? (
-            <output
-              className="performance-playback-context interpretation"
-              aria-label="参考演奏摘要"
-              title={performanceSummary.title}
-            >
-              <span className="performance-summary-label">
-                <b>{performanceSummary.label}</b>
-              </span>
-              <span className="performance-summary-detail">{performanceSummary.detail}</span>
-            </output>
-          ) : null}
-
           <div className="performance-playback-actions">
             <div className="performance-playback-source-switch" role="group" aria-label="播放模式">
               <button
@@ -1002,6 +1011,31 @@ export default function PerformanceWorkspace({
               playTitle={`${selectedModeIsPlaying ? "暂停" : "播放"}${transportLabel}`}
               onTogglePlay={toggleSelectedPlayback}
             />
+            <div className="performance-playback-secondary">
+              <button
+                type="button"
+                className={`performance-dynamics-scale-toggle ${dynamicsScaleMode === "local" ? "active" : ""}`.trim()}
+                onClick={() => setDynamicsScaleMode((current) => current === "local" ? "global" : "local")}
+                disabled={!capabilities?.dynamics}
+                aria-label="Local dynamics scale"
+                aria-pressed={dynamicsScaleMode === "local"}
+                title={capabilities?.dynamics ? `Local dynamics scale: ${dynamicsScaleMode === "local" ? "On" : "Off"}` : "Dynamics are unavailable"}
+              >
+                <Focus size={20} strokeWidth={2.25} aria-hidden="true" />
+              </button>
+              {performanceSummary ? (
+                <output
+                  className="performance-playback-context interpretation"
+                  aria-label="参考演奏摘要"
+                  title={performanceSummary.title}
+                >
+                  <span className="performance-summary-label">
+                    <b>{performanceSummary.label}</b>
+                  </span>
+                  <span className="performance-summary-detail">{performanceSummary.detail}</span>
+                </output>
+              ) : null}
+            </div>
           </div>
 
           <div className="playback-progress-row performance-playback-progress">

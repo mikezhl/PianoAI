@@ -97,6 +97,7 @@ function projectPaths(root: string) {
   return {
     dataDirectory,
     scoreCatalogPath: path.join(dataDirectory, "catalog.json"),
+    agentGuidePath: path.join(dataDirectory, "agent-guide.txt"),
     scoreDirectory: path.join(dataDirectory, "scores"),
     analysisDirectory: path.join(dataDirectory, "analyses"),
     performanceDirectory: path.join(dataDirectory, "performances"),
@@ -205,6 +206,7 @@ function runtimeAssets(root: string): RuntimeAsset[] {
   const references = readReferenceCatalog(root).references;
   const assets: RuntimeAsset[] = [
     { fileName: "data/catalog.json", sourcePath: directories.scoreCatalogPath },
+    { fileName: "data/agent-guide.txt", sourcePath: directories.agentGuidePath },
     { fileName: "data/performances/catalog.json", sourcePath: directories.performanceCatalogPath },
     ...scores.flatMap((item) => [
       {
@@ -484,8 +486,6 @@ export default defineConfig(({ command, mode }) => {
       __REFERENCE_AUDIO_BASE_URL__: JSON.stringify(referenceAudioBaseUrl),
     },
     server: {
-      port: 5173,
-      strictPort: true,
       watch: {
         ignored: ["**/.cache/**", "**/.local/**", "**/assets/**"],
       },

@@ -28,7 +28,7 @@ Keep facts, model evidence, external claims, and interpretation distinguishable 
 
 - `data/` is versioned product data. Every catalog reference must resolve and validate.
 - `assets/reference-audio/` contains original local reference recordings. It is ignored but not disposable; retain an external or R2 backup.
-- Development audio is local-first with a content-addressed R2 fallback. Keep the dev server on port 5173 so its exact origin matches the tracked R2 CORS policy.
+- Development audio is local-first with a content-addressed R2 fallback. Use the local URL reported by Vite; development must not depend on a fixed port.
 - `.local/` contains rebuildable environments and model weights. Never commit it.
 - `.cache/` contains disposable facts, transcriptions, alignments, reports, and test artifacts. Never commit it.
 - Static `ScoreAnalysis` Schema 2.1.0 must not contain user performance, MIDI, audio alignment, velocity, pedal, or coaching fields.
@@ -67,6 +67,8 @@ Keep facts, model evidence, external claims, and interpretation distinguishable 
 
 - Preserve the established React, TypeScript, OSMD, Tone.js, and Lucide patterns.
 - Keep practice, analysis, and performance state boundaries explicit.
+- Follow `docs/responsive-layout.md` for the shared viewport profile, logical-landscape rotation, transformed coordinates, pointer capabilities, mode layouts, and verification matrix.
+- Practice, analysis, and performance must use the same root `data-layout-mode`; never add a mode-specific orientation override or structural layout based on the physical portrait width.
 - Maintain keyboard, pointer, MIDI, playback, and selection behavior when editing shared score interaction code.
 - Test desktop and `390x844` mobile layouts. Check overflow, long-score rendering, range navigation, cursor position, and audio controls.
 - Do not add runtime AI calls for built-in score analysis or reference interpretation generation.

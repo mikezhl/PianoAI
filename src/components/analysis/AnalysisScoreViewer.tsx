@@ -121,6 +121,23 @@ function parseSvgDimension(value: string | null): number {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
+function withUntransformedApp<T>(element: HTMLElement, measure: () => T): T {
+  const appShell = element.closest<HTMLElement>(".app-shell");
+  if (!appShell || appShell.dataset.layoutMode !== "rotated-long-edge") {
+    return measure();
+  }
+
+  const previousTransform = appShell.style.transform;
+  appShell.style.transform = "none";
+  appShell.getBoundingClientRect();
+
+  try {
+    return measure();
+  } finally {
+    appShell.style.transform = previousTransform;
+  }
+}
+
 function finite(value: number | undefined, fallback: number): number {
   return value != null && Number.isFinite(value) ? value : fallback;
 }
@@ -710,9 +727,13 @@ export default function AnalysisScoreViewer({
             return;
           }
           removeCroppedSvgElements(clonedSvg);
-          runtime.localLayouts = buildMeasureLayouts(chunkElement, clonedSvg, activeOsmd, targetRange);
-          const renderedHeight = clonedSvg.getBoundingClientRect().height
-            || parseSvgDimension(clonedSvg.getAttribute("height"));
+          const measurement = withUntransformedApp(chunkElement, () => ({
+            layouts: buildMeasureLayouts(chunkElement, clonedSvg, activeOsmd, targetRange),
+            height: clonedSvg.getBoundingClientRect().height
+              || parseSvgDimension(clonedSvg.getAttribute("height")),
+          }));
+          runtime.localLayouts = measurement.layouts;
+          const renderedHeight = measurement.height;
           runtime.height = Math.max(
             1,
             renderedHeight || estimatedChunkHeight(chunk, width, scoreZoomRef.current),
